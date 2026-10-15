@@ -1,76 +1,82 @@
-# Warehouse Empire
+# Weapon Shop Empire
 
-A browser-first warehouse/logistics game prototype. The player directly controls one stickman warehouse worker, completes physical shipment loops, earns money, buys upgrades, and will gradually automate and expand the operation.
+## Current Version: v0.1.00
 
-## Current Version: v0.2.00
+A complete browser-first prototype combining weapon-shop management, crafting, employees, customer reputation, permanent skills, and a small playable monster-hunting area.
 
-### Play
-Open `index.html` locally, or deploy the repository with GitHub Pages.
+## Test Locally
 
-### Controls
-- **WASD / Arrow keys:** walk
-- **Shift:** run
-- **Mobile:** on-screen directional controls + RUN
+Extract the ZIP and open `index.html` in Microsoft Edge, Google Chrome, or another modern browser. No installation is required.
 
-### Gameplay Loop
-1. Walk into the blue **INBOUND** area to collect cartons.
-2. Carry cartons across the warehouse.
-3. Enter the green **OUTBOUND** area to deliver them.
-4. Fill the whole order.
-5. The shipment completes and pays money.
-6. Buy upgrades and process increasingly larger orders.
+## GitHub Pages
 
-### Permanent Progression
-`Company Training` is the first forever upgrade. Progress is stored with browser `localStorage` in this prototype.
+Upload every file from the ZIP to the root of the GitHub repository. In GitHub, open **Settings → Pages**, choose **Deploy from a branch**, select `main` and `/ (root)`, then save.
 
-## Roadmap
-- **v0.3:** first AI employee, trolley, improved warehouse art/animation
-- **v0.4:** forklift, pallet cargo, conveyors, extra loading bays
-- **v0.5:** warehouse expansion, multiple orders, rush/high-value jobs, expanded permanent upgrade tree
+## Controls
+
+- WASD / arrow keys: move
+- Shift: run
+- Space: attack while outdoors
+- Mobile: on-screen movement, RUN, and ATTACK buttons
+
+## Playable Systems
+
+- Large scrolling fantasy shop and Slime Forest
+- Directly controllable shopkeeper
+- Forge and Alchemy crafting zones
+- Attack, Defense, and Other product departments
+- Iron Sword and Small Healing Potion available at the beginning
+- Wooden Shield initially locked
+- Product SELL ON/OFF controls
+- Rarity from Poor through Legendary
+- Rare product storage with capacity limit
+- Common and inexpensive product auto-selling
+- Customers with requested products and patience
+- Tips for fast service
+- Poor products may be misrepresented to risky clients
+- Client inspection and delayed bad-review risk
+- Reputation penalties and game over below zero reputation
+- Hireable employees
+- SELL, CRAFT, ATK, and DEF employee abilities
+- Sales, Craft, Expedition, and Staff House assignments
+- Wages and daily payroll
+- Staff House capacity upgrades
+- Employee automated crafting and material expeditions
+- Direct player combat against slimes
+- Special Slime Gel material drops
+- Forever skill tree
+- New Game that retains Forever skills
+- Local browser save
+
+## Important Prototype Notes
+
+This is the first integrated game build. Artwork is generated with Canvas shapes and is intended as a playable art-direction prototype. Future v0.x releases can replace these shapes with production-quality sprites and animations without changing the core systems.
 
 ## Version History
 
-### v0.2.00 - 2026-10-15
-First GitHub-ready playable release.
-
-- Rebuilt shipment-to-money loop so money is paid reliably when a whole order is completed.
-- Added directly controllable stickman warehouse worker.
-- Added walking and Shift-to-run controls.
-- Added mobile directional controls and RUN button.
-- Added visible cartons and carton carrying capacity.
-- Added inbound and outbound loading bays with trucks.
-- Added visible order progress.
-- Added regular Shoes and Carry upgrades.
-- Added first permanent/forever Company Training upgrade.
-- Added automatic browser save using localStorage.
-- Added responsive browser layout.
-
 ### v0.1.00 - 2026-10-15
-Initial concept prototype.
 
-- Basic controllable worker movement.
-- Experimental inbound/outbound pickup zones.
-- Early upgrade concept.
-- Identified unreliable earning loop and insufficient visual presentation, leading to the v0.2 rebuild.
+First complete Weapon Shop Empire release.
 
-## Project Rules
-- The main character must always remain directly controllable.
-- Walking and running are core controls.
-- Permanent upgrades survive progression/reset systems.
-- Automation assists the player rather than replacing play.
-- The advertised mini-game style should represent the real gameplay.
-- Browser/GitHub deployment comes first; mobile-friendly design is maintained.
-- Monetization comes later, after the core game is genuinely enjoyable.
+- Replaced the previous warehouse theme with a fantasy weapon shop.
+- Added a large camera-following map.
+- Added Attack, Defense, and Other product zones.
+- Added Iron Sword and Small Healing Potion as starting products.
+- Added locked Wooden Shield recipe.
+- Added product enable/disable controls.
+- Added crafting materials, rarity, value, defects, and storage.
+- Added customers, patience, tips, inspection, delayed discovery, reviews, and reputation.
+- Added game over below zero reputation.
+- Added employee hiring, wages, capacity, assignments, and four simple abilities.
+- Added Sales, Craft, Expedition, and Staff House jobs.
+- Added automated crafting and material-gathering expeditions.
+- Added Slime Forest, player attacks, monsters, and special material drops.
+- Added Forever skills and New Game preservation.
+- Added local save and mobile controls.
 
-## Versioning
-Every release must update both:
-1. The version comment/header in the game source.
-2. This README's **Version History**.
+## Version Policy
 
-Version policy:
-- Major new function: increase major version.
-- Minor new function: increase minor version.
-- Bug-fix only: increase two-digit patch number.
-
-## GitHub Pages
-Upload all files to the repository root. Enable GitHub Pages for the repository and publish the root site. `index.html` is the entry point.
+- Continue with v0.x versions by default.
+- Bug fixes use two-digit patches, such as v0.1.01.
+- Ask the project owner before changing to v1.0.00, v2.0.00, or another major version.
+- Every release must update the version at the top of `game.js` and this README history.
