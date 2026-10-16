@@ -1,71 +1,55 @@
 # Weapon Shop Empire
 
-## Current Version: v0.10.00
+## Current Version: v0.11.00
 
-This version rebuilds the core game loop to feel like a playable mobile advertisement mini-game: the player crafts products, visibly picks them up, carries them, fills shelves, watches customers take them, and physically collects the money left at checkout.
+This package provides the next complete playable build plus a separate original art-preview gallery. The gallery demonstrates the approved colorful, slightly pixelated mobile-game direction without copying the supplied reference game.
 
-## Core Loop
+## What Is New
+
+- Added an **ART** button to the bottom management menu.
+- Added `assets/art_preview.html` with previews for:
+  - Attack products
+  - Defense products
+  - Other products
+  - Raw materials
+  - Player and worker roles
+  - Customer classes
+  - Monsters
+  - Workstations, output tables, shelves and contract crates
+  - Customer request bubbles
+- Added clearer customer request bubbles in the game.
+- Customer bubbles can show product, ATK/DEF requirement and minimum rarity.
+- Added visible stock-capacity labels to Attack, Defense and Other shelves.
+- Added visible output-capacity labels to Forge and Alchemy outputs.
+- Retained the complete physical loop from v0.10.00.
+
+## Physical Gameplay Loop
 
 ```text
-Craft at Forge/Alchemy
-→ Product appears at workshop OUTPUT
-→ Walk over the output to pick up up to 3 products
-→ Products visibly stack above the player
-→ Carry products to the matching shelf
-→ Shelf visibly fills
-→ Customer walks in and takes one product
-→ Customer leaves coins at checkout
-→ Player walks over the coins to collect money
-→ Hire helpers later to automate steps
+Craft
+→ Product waits at output
+→ Player carries product
+→ Product fills visible shelf
+→ Customer request bubble shows need
+→ Customer takes matching product
+→ Coins remain at checkout
+→ Player or employee collects coins
 ```
 
-## Major Changes
+## Larger-World Direction
 
-- New games start with **zero employees**.
-- Removed the confusing decorative objects along the upper edge.
-- Crafted products no longer jump directly into invisible stock.
-- Sword and potion products physically wait at workshop output doors.
-- Player automatically picks up nearby products, up to a carrying capacity of 3.
-- Carried products visibly stack above the player.
-- Player stocks Attack, Defense and Other shelves by walking to them.
-- Shelf stock appears visually and missing stock is immediately visible.
-- Customers take products directly from visible shelf stock.
-- Customers leave coins at the checkout.
-- Money is not added until the player or Sales employee collects the coin pile.
-- The top guide continuously explains the five-stage loop.
-- The HUD shows what the player is carrying and how much money is waiting at checkout.
-- A physical Staff Room hire pad lets the player hire the first helper for $120.
-- Sales employees move workshop output to shelves and collect checkout money.
-- Craft employees create items but leave them at physical outputs.
+The current map remains a scrolling world rather than a single-screen layout. Future artwork can be separated into `assets/tiles`, `assets/characters`, `assets/items`, `assets/buildings`, and `assets/effects` without changing the game logic.
 
-## Three Reviews Completed
+## How to Preview the Artwork
 
-### Review 1: Player Experience
-- New player starts alone.
-- First task is visible and explained.
-- Crafted output has a visible location.
-- Carrying has visible feedback.
-- Shelf fullness is visible.
-- Sales have visible product removal and coin creation.
-- Money requires a physical collection action.
+After uploading the package, either:
 
-### Review 2: Design Logic
-- Products move through consistent states: output, hands, shelf, customer, money.
-- Employees automate the same actions the player performs manually.
-- No unexplained passive money.
-- Hiring happens after the player understands manual work.
-- Product shortages are visible rather than hidden in tables.
-
-### Review 3: Playability and Regression
-- Room entrances and collision retained.
-- Drag movement and zoom retained.
-- Three save slots retained.
-- Customers, employees, wholesale, combat, tutorial, goals and crafting retained.
-- JavaScript syntax and ZIP integrity checked.
+1. Open the game and tap **ART**, or
+2. Open `/assets/art_preview.html` from the published site.
 
 ## Upload
 
-Extract and replace:
+Extract and replace these items in the repository root:
 
 ```text
 index.html
@@ -75,26 +59,40 @@ README.md
 assets/
 ```
 
-The lower-left marker must show `Weapon Shop Empire v0.10.00`.
+The bottom-left marker must show `Weapon Shop Empire v0.11.00`.
+
+## Three Reviews Completed
+
+### Review 1: Player View
+- Customer needs are visible above customers.
+- Shelf fullness is visible without opening a page.
+- Workshop output fullness is visible.
+- Art preview is accessible from the game.
+
+### Review 2: Design Logic
+- Art categories match actual gameplay categories.
+- Requests use the same Attack, Defense, Other, rarity and quality systems.
+- Art preview remains separate from gameplay collision and logic.
+
+### Review 3: Technical Regression
+- Drag movement, zoom, collision, output, carrying, stocking, sales and coins retained.
+- Zero-employee start retained.
+- Save slots, wholesale, goals, crafting and combat retained.
+- JavaScript syntax and ZIP integrity checked.
 
 ## Version History
 
+### v0.11.00 - 2026-10-16
+- Added original item-art preview gallery.
+- Added ART management button.
+- Added richer visible customer request bubbles.
+- Added shelf and output capacity labels.
+
 ### v0.10.00 - 2026-10-16
-- Added physical workshop output piles.
-- Added player carrying and shelf stocking.
-- Added visible shelf inventory.
-- Added checkout coin piles and physical collection.
-- Changed new game to start with no employees.
-- Added physical hiring pad.
-- Removed confusing upper-edge decorative objects.
-- Reworked Sales employees to automate carrying and coin collection.
-- Added three-pass player/design/playability review.
+- Added physical products, carrying, shelf stocking, checkout coins and zero-employee start.
 
-### v0.9.00 - 2026-10-16
-- Rebuilt the map into meaningful open-top rooms with visible doors.
-
-### v0.8.00 and earlier
-- Added drag movement, collisions, pixel art, zoom, daily variety, wholesale and save slots.
+### v0.9.00 and earlier
+- Added meaningful rooms, drag movement, collision, pixel presentation, zoom, daily systems, wholesale and saves.
 
 ## Version Policy
 Continue with v0.x by default. Ask before changing to v1.0.00, v2.0.00 or another major version.
