@@ -1,24 +1,8 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><meta name="theme-color" content="#241b18"><title>Weapon Shop Empire v0.3.00</title><link rel="stylesheet" href="style.css?v=0.3.00"></head>
-<body>
-<div id="slotScreen" class="slot-screen">
-  <div class="slot-window">
-    <h1>WEAPON SHOP EMPIRE</h1>
-    <p>Choose one of three shop records. Auto-save occurs only when a game day ends.</p>
-    <div id="saveSlots" class="save-slots"></div>
-    <div class="slot-help">A new slot starts at Day 1. Loading resumes from the latest completed-day auto-save.</div>
-  </div>
-</div>
-<div id="app" class="game-hidden">
-<header><div><h1>WEAPON SHOP EMPIRE</h1><small>v0.3.00 • Craft • Sell • Explore</small></div><div class="hud"><b id="cash">$250</b><span id="rep">Reputation 20</span><span id="legacy">Legacy 0</span><span id="slotBadge">Slot --</span></div></header>
-<div class="layout"><section class="game"><canvas id="game" width="1040" height="650"></canvas><div class="controls-note">Move: WASD / arrows • Run: Shift • Interact automatically by entering a glowing zone • Attack outdoors: Space</div></section>
-<aside>
-<div class="tabs five"><button class="tab active" data-tab="shop">SHOP</button><button class="tab" data-tab="products">PRODUCTS</button><button class="tab" data-tab="staff">STAFF</button><button class="tab" data-tab="wholesale">WHOLESALE</button><button class="tab" data-tab="skills">FOREVER</button></div>
-<div id="shop" class="tabpage active"><h2>SHOP STATUS</h2><div class="statrow"><span>Day</span><b id="day">1</b></div><div class="statrow"><span>Review</span><b id="review">4.0 ★</b></div><div class="statrow"><span>Customers</span><b id="customers">0 / 3</b></div><div class="statrow"><span>Storage</span><b id="storage">0 / 6</b></div><div class="statrow"><span>Iron / Wood / Herb</span><b id="materials">10 / 8 / 8</b></div><h2>QUICK GUIDE</h2><p>Craft in the Forge and Alchemy zones. Products move to Attack, Defense, or Other displays. Enabled products may auto-sell. Rare products go to storage. Enter the forest gate to fight slimes for special materials.</p><button id="saveExit">SAVE & EXIT TO SLOTS</button><button id="exitNoSave">EXIT WITHOUT SAVING</button><button id="newGame" class="danger">NEW GAME IN THIS SLOT (keeps Forever skills)</button></div>
-<div id="products" class="tabpage"><h2>SELLING PRODUCTS</h2><div id="productList"></div><p class="hint">Too many enabled products may make supply slower than demand.</p></div>
-<div id="staff" class="tabpage"><h2>EMPLOYEES <span id="staffCap">2 / 2</span></h2><div id="employeeList"></div><button id="hireBtn">HIRE CANDIDATE • $120</button><button id="staffHouseBtn">UPGRADE STAFF HOUSE • $300</button><p class="hint">Tap an employee, then tap Sales, Craft, Expedition, or Staff House.</p></div>
-<div id="wholesale" class="tabpage"><h2>WHOLESALE CONTRACT</h2><div id="wholesaleActive"></div><h2>CONTRACT WAREHOUSE</h2><div class="statrow"><span>Order slots</span><b id="contractSlots">0 / 1</b></div><div class="statrow"><span>Unit storage</span><b id="contractStorage">0 / 20</b></div><button id="contractOfficeBtn">UPGRADE CONTRACT OFFICE • $500</button><div id="wholesaleOffers"></div><p class="hint">New offers appear near the end of each day. Only one contract can be active initially. Some contracts continue across several days.</p></div><div id="skills" class="tabpage"><h2>FOREVER SKILL TREE</h2><div id="skillList"></div><p class="hint">Legacy upgrades remain after New Game.</p></div>
-</aside></div>
-<div id="mobile"><div class="pad"><button data-key="arrowup">▲</button><div><button data-key="arrowleft">◀</button><button data-key="arrowdown">▼</button><button data-key="arrowright">▶</button></div></div><div><button id="attackBtn">ATTACK</button><button id="runBtn">RUN</button></div></div>
-<div id="modal" class="modal"><div class="modalbox"><h2 id="modalTitle"></h2><div id="modalBody"></div><button id="modalClose">CLOSE</button></div></div>
-</div><script src="game.js?v=0.3.00"></script></body></html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><meta name="theme-color" content="#1d1715"><title>Weapon Shop Empire v0.4.00</title><link rel="stylesheet" href="style.css?v=0.4.00"></head><body>
+<div id="slotScreen" class="overlay show"><div class="slotbox"><h1>WEAPON SHOP EMPIRE</h1><p>Choose a shop record. Auto-save occurs only at day end.</p><div id="saveSlots" class="slots"></div></div></div>
+<div id="app" class="hidden"><canvas id="game" width="1280" height="720"></canvas>
+<div class="topHud"><b id="cash">$250</b><span id="rep">REP 20</span><span id="day">DAY 1</span><span id="clock">OPEN 2:00</span></div>
+<div class="menuButtons"><button data-page="status">SHOP</button><button data-page="products">PRODUCTS</button><button data-page="employees">EMPLOYEES</button><button data-page="wholesale">WHOLESALE</button><button data-page="skills">FOREVER</button><button data-page="save">SAVE</button></div>
+<div id="panel" class="panel"><button id="closePanel" class="close">×</button><div id="panelContent"></div></div>
+<div id="toast" class="toast"></div><div class="version">Weapon Shop Empire v0.4.00</div>
+</div><script src="game.js?v=0.4.00"></script></body></html>

@@ -1,90 +1,58 @@
 # Weapon Shop Empire
 
-## Current Version: v0.3.00
+## Current Version: v0.4.00
 
-Complete browser game package with three save slots, day-end saving, crafting, retail customers, employees, expeditions, direct combat, permanent skills, and multi-day wholesale contracts.
+## Important GitHub Upload
+Extract the ZIP. Replace the repository root files with `index.html`, `style.css`, `game.js`, and `README.md`. Do not upload the ZIP as the web page. The live page must show **Weapon Shop Empire v0.4.00** at the bottom-left.
 
-## Critical Deployment Instructions
-
-The ZIP itself must **not** be uploaded as the playable website. Extract the ZIP first, then place these four files directly in the repository root:
-
-```text
-index.html
-game.js
-style.css
-README.md
-```
-
-Delete or overwrite the old warehouse versions of `index.html`, `game.js`, and `style.css`. There should be only one root `index.html`.
-
-After committing, verify that the top of the live page reads:
-
-```text
-WEAPON SHOP EMPIRE
-v0.3.00
-```
-
-A small `Weapon Shop Empire v0.3.00` marker also appears at the bottom-left. If the old warehouse still appears, hard-refresh the browser or open the site in a private window. The HTML uses `?v=0.3.00` cache-busting parameters for CSS and JavaScript.
-
-## Wholesale Contracts
-
-- Wholesale offers appear at the end of each game day.
-- Only one contract can be active initially.
-- Contracts may last across multiple days.
-- Contract products are stored separately from retail storage.
-- A Craft employee manufactures items.
-- A Sales employee acts as the contract handler, inspecting and moving qualifying items into the Contract Warehouse.
-- The player can manually carry qualifying products to a product display, where the item is routed to the active contract first.
-- Products below the required rarity do not count.
-- Completed contracts pay cash, reputation, and one Legacy Point.
-- Failed contracts reduce reputation.
-- Contract Office upgrades add one active-order slot and 20 warehouse units.
-
-## Save System
-
-- Three independent save slots.
-- Auto-save only when a game day ends.
-- Wholesale progress and deadlines are included in day-end saves.
-- Save & Exit performs a manual save.
-- Exit Without Saving discards the unfinished day.
-- New Game retains Forever skills and Legacy Points.
+## v0.4.00 Major Improvements
+- Replaced phone direction buttons with tap-to-move controls. Tap anywhere on the shop floor and the player walks there.
+- Keyboard controls remain available on desktop.
+- Expanded the shop world to 3200 × 2200 with larger walking routes and departments.
+- Made all clients visible. Clients walk in, queue at the counter, wait, buy products, and leave.
+- Made all employees visible. Sales workers walk to customers, Craft workers walk to production stations, Expedition workers walk toward the forest, and Staff House workers return to their room.
+- Removed unexplained passive money. Cash now increases only when a visible client purchase or completed wholesale contract occurs.
+- Added visible floating payment effects at client sales.
+- Increased player activities: physically walk to Forge or Alchemy to craft; maintain product stock; fight monsters; assign employees; unlock products; and manage wholesale orders.
+- Replaced the always-visible management sidebar with six compact phone menu buttons and full-screen pop-up pages.
+- Added separate pop-up pages for Shop, Products, Employees, Wholesale, Forever skills, and Save.
+- Retained three save slots and day-end-only auto-save.
+- Retained multi-day wholesale orders and separate Contract Warehouse.
 
 ## Controls
+### Phone
+- Tap the shop floor to move.
+- Open **SAVE**, then tap **Attack Nearby Monster** when beside a slime.
+- Use the compact menu buttons to open management pages.
 
-- WASD / arrows: move
-- Shift: run
-- Space: attack outdoors
-- Mobile: on-screen movement, RUN, and ATTACK
+### Desktop
+- Click the shop floor to move, or use WASD / arrow keys.
+- Space attacks a nearby monster.
+
+## Money Rules
+Money does not increase automatically. Money is earned through:
+- A visible retail client purchase.
+- A completed wholesale order.
+
+Money is spent on wages and upgrades. If previous versions appeared to earn money continuously, that was caused by invisible automatic Sales processing. v0.4.00 makes the clients, seller movement, stock reduction, and payment animation visible.
 
 ## Version History
+### v0.4.00 - 2026-10-16
+- Added tap-to-move phone controls.
+- Added moving visible clients and employees.
+- Greatly enlarged shop and walking area.
+- Reworked money feedback and visible sales.
+- Rebuilt phone UI around pop-up management pages.
+- Added more direct player tasks and clearer activity guidance.
 
 ### v0.3.00 - 2026-10-15
-
-- Added end-of-day wholesale contract offers.
-- Added multi-day contract deadlines.
-- Added one initial active-contract slot.
-- Added Contract Office upgrades for more contract slots and storage.
-- Added separate Contract Warehouse capacity.
-- Added quality requirements, rewards, Legacy rewards, and failure penalties.
-- Added employee handling: Craft creates contract stock; Sales inspects and transfers it.
-- Added manual player delivery into contract storage.
-- Added save support for contract progress.
-- Added cache-busting URLs to prevent old warehouse JavaScript/CSS from appearing.
-- Added a permanent on-screen version marker.
-- Fixed forest background flickering caused by randomized visuals every frame.
-- Deep-reviewed root entry-point and deployment structure.
+- Added wholesale orders, contract storage, contract slots, quality requirements, deadlines, and employee contract handling.
 
 ### v0.2.00 - 2026-10-15
-
-- Added three save slots.
-- Added day-end-only auto-save.
-- Added slot summaries, manual Save & Exit, Exit Without Saving, and slot deletion.
+- Added three save slots and day-end-only auto-save.
 
 ### v0.1.00 - 2026-10-15
-
 - First complete Weapon Shop Empire release.
-- Added the fantasy shop, crafting, product zones, customers, reputation, employees, expeditions, combat, and Forever skills.
 
 ## Version Policy
-
-Continue with v0.x by default. Ask the project owner before changing to v1.0.00, v2.0.00, or another major version. Every release updates the source header and README.
+Continue with v0.x versions by default. Ask before changing to v1.0.00, v2.0.00, or another major version.
