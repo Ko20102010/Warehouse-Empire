@@ -1,65 +1,74 @@
 // Weapon Shop Empire v0.16.00
-// Forest Outpost 1870x2870 full artwork integration, aligned collision & corridor pathfinding, visible stock/output overlays, Special Visitor & Training Room.
+// 6-Layer Modular Forest Outpost Renderer (zero baked people/stock), Grid A* Pathfinding with anti-corner-cutting, 6 Recipes, Repair Kit, and Player Equipment.
 'use strict';
 const VERSION='v0.16.00';
 const c=document.getElementById('game'),g=c.getContext('2d'),$=id=>document.getElementById(id);
 let vw=1280,vh=720;
 const WORLD={w:1870,h:2870};
-const PREFIX='wse_v01600_slot_',OLD_PREFIXES=['wse_v01501_slot_','wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01600',OLD_FOREVER_KEYS=['wse_forever_v01501'];
-let slot=0,playing=false,last=performance.now(),target=null,msgTimer=0,dayTime=0,spawnTimer=2.5,zoom=.65,pinchStart=0,craftAnim=0,craftKey='sword',dragMove={active:false,id:null,sx:0,sy:0,dx:0,dy:0},animClock=0;
+const PREFIX='wse_v01600_slot_',OLD_PREFIXES=['wse_v01501_slot_','wse_v01500_slot_','wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01600';
+let slot=0,playing=false,last=performance.now(),target=null,msgTimer=0,dayTime=0,spawnTimer=2.5,zoom=.66,pinchStart=0,craftAnim=0,craftKey='sword',dragMove={active:false,id:null,sx:0,sy:0,dx:0,dy:0},animClock=0;
 
-// Load the collision-aligned Forest Outpost base map. v0.16.00 adds a lightweight modular prop layer.
-const mapArt=new Image();
-let mapTry=0;
-const mapSources=['assets/forest_outpost_map.jpg?v=0.16.00','assets/first_shop_art.png?v=0.16.00','shop_world.png'];
-mapArt.onerror=()=>{mapTry++;if(mapTry<mapSources.length)mapArt.src=mapSources[mapTry]};
-mapArt.src=mapSources[0];
+// Optional reference map image & modular PNG sprite loader (gracefully falls back to crisp procedural sprites)
+const refMapArt=new Image();
+let refTry=0;
+const refSources=['assets/forest_outpost_map.jpg?v=0.16.00','assets/first_shop_art.png?v=0.16.00','assets/first_shop_art.jpg?v=0.16.00'];
+refMapArt.onerror=()=>{refTry++;if(refTry<refSources.length)refMapArt.src=refSources[refTry]};
+refMapArt.src=refSources[0];
 
-
-// First production modular-art layer. Only assets used by this build are packaged.
-const MODULAR_ASSET_PATH='assets/modular/';
-const modularDefs={
-  anvil:{file:'props/anvil_table.png',x:300,y:1080,w:86,h:78},
-  tools:{file:'props/tool_table.png',x:450,y:1080,w:84,h:76},
-  alchemy:{file:'props/sacks.png',x:915,y:1080,w:74,h:65},
-  contractCrates:{file:'props/crates.png',x:1365,y:835,w:86,h:76},
-  contractBarrels:{file:'props/barrels.png',x:1460,y:840,w:75,h:70},
-  yardWagon:{file:'props/wagon.png',x:420,y:2420,w:105,h:88},
-  yardWell:{file:'props/well.png',x:620,y:2440,w:82,h:85},
-  forestCamp:{file:'props/campfire.png',x:1180,y:240,w:72,h:66},
-  gateLampL:{file:'props/street_lamp.png',x:850,y:310,w:44,h:92},
-  gateLampR:{file:'props/street_lamp.png',x:1040,y:310,w:44,h:92},
-  ironNode:{file:'materials/ore_iron.png',x:310,y:2510,w:58,h:52},
-  herbNode:{file:'materials/herb_bundle.png',x:760,y:2520,w:56,h:50}
+const SPRITES={};
+const MODULAR_PATHS={
+  grass:'assets/terrain/grass_plain.png',
+  grassFlower:'assets/terrain/grass_flowers_color.png',
+  floorWood:'assets/terrain/floor_wood.png',
+  floorWork:'assets/terrain/floor_workshop.png',
+  pathStone:'assets/terrain/path_sandstone.png',
+  pathMoss:'assets/terrain/path_mossy_stone.png',
+  bridge:'assets/terrain/bridge_wood.png',
+  anvil:'assets/props/anvil_table.png',
+  toolTable:'assets/props/tool_table.png',
+  crates:'assets/props/crates.png',
+  barrels:'assets/props/barrels.png',
+  wagon:'assets/props/wagon.png',
+  well:'assets/props/well.png',
+  campfire:'assets/props/campfire.png',
+  oreIron:'assets/materials/ore_iron.png',
+  crystalBlue:'assets/materials/crystal_blue.png',
+  herbBundle:'assets/materials/herb_bundle.png',
+  fallenLog:'assets/trees/fallen_log.png',
+  tree1:'assets/trees/tree_green_01.png',
+  tree2:'assets/trees/tree_dark_green.png',
+  pine1:'assets/trees/pine_01.png',
+  bush:'assets/trees/bush_flowers.png'
 };
-const modularImages={};
-for(const [id,a] of Object.entries(modularDefs)){
-  const img=new Image(); img.src=MODULAR_ASSET_PATH+a.file+'?v=0.16.00'; modularImages[id]=img;
+for(const [k,path] of Object.entries(MODULAR_PATHS)){
+  const img=new Image();
+  img.src=path+'?v=0.16.00';
+  SPRITES[k]=img;
 }
-function drawModularArt(){
-  for(const [id,a] of Object.entries(modularDefs)){
-    const img=modularImages[id];
-    if(img&&img.complete&&img.naturalWidth)g.drawImage(img,a.x-a.w/2,a.y-a.h,a.w,a.h);
-  }
-}
+function sprReady(k){const i=SPRITES[k];return i&&i.complete&&i.naturalWidth>0}
 
 const base={
   cash:250,rep:20,day:1,legacy:0,
-  iron:14,wood:10,herb:10,gel:0,
-  storageCap:8,outputCap:8,rareStorageCap:8,staffCap:2,contractSlots:1,contractCap:20,
+  iron:14,wood:10,herb:10,gel:0,fang:0,
+  storageCap:8,outputCap:8,rareStorageCap:6,staffCap:2,contractSlots:1,contractCap:20,
   contracts:[],offers:[],
   skills:{quality:0,merchant:0,adventure:0,management:0},
   products:{
     sword:{on:true,unlocked:true,stock:0},
+    axe:{on:false,unlocked:false,stock:0},
+    shield:{on:false,unlocked:false,stock:0},
+    helmet:{on:false,unlocked:false,stock:0},
     potion:{on:true,unlocked:true,stock:0},
-    shield:{on:false,unlocked:false,stock:0}
+    repair:{on:false,unlocked:false,stock:0}
   },
-  output:{sword:0,potion:0,shield:0},
-  outputItems:{sword:[],potion:[],shield:[]},
-  shelfItems:{sword:[],potion:[],shield:[]},
+  output:{sword:0,axe:0,shield:0,helmet:0,potion:0,repair:0},
+  outputItems:{sword:[],axe:[],shield:[],helmet:[],potion:[],repair:[]},
+  shelfItems:{sword:[],axe:[],shield:[],helmet:[],potion:[],repair:[]},
   rareDisplay:[],
+  equipped:{weapon:{name:'Starter Dagger',icon:'🗡️',stat:12},armor:{name:'Cloth Tunic',icon:'🥋',stat:10}},
   poorPolicy:'Honest',
-  employees:[],review:4.2,badReviews:0,served:0,zoom:.65,tutorialStep:0,
+  mapStyle:'modular',
+  employees:[],review:4.3,badReviews:0,served:0,zoom:.66,tutorialStep:0,
   goals:[],event:null,visitorClaimed:false,
   statsDay:{sales:0,tips:0,crafted:0,monsters:0,lost:0},
   discoveries:[],productionPriority:'Balanced',
@@ -67,88 +76,90 @@ const base={
 };
 
 let S=clone(base),
-    player={x:745,y:2080,speed:320,carryKey:null,carryCount:0,carryItems:[],carryCap:3},
-    clients=[],effects=[],monsters=[],cam={x:0,y:0};
+    player={x:745,y:1975,speed:325,hp:100,maxHp:100,carryKey:null,carryCount:0,carryItems:[],carryCap:3},
+    clients=[],effects=[],monsters=[],drops=[],cam={x:0,y:0};
 const keys={};
 
-// Material Yard nodes aligned with top-left Material Yard in forest_outpost_map.jpg
+// Material Yard nodes aligned with Material Yard room (x:60..615, y:310..675)
 const yardNodes=[
-  {id:'wood1',type:'wood',name:'Timber Logs',icon:'🪵',x:135,y:510,ready:true,timer:0,max:9},
-  {id:'iron1',type:'iron',name:'Iron Ore Pile',icon:'🪨',x:235,y:510,ready:true,timer:0,max:9},
-  {id:'herb1',type:'herb',name:'Herb Planters',icon:'🌿',x:455,y:455,ready:true,timer:0,max:9},
-  {id:'herb2',type:'herb',name:'Crimson Herbs',icon:'🌿',x:440,y:585,ready:true,timer:0,max:10},
-  {id:'iron2',type:'iron',name:'Crystal Vein',icon:'💎',x:525,y:585,ready:true,timer:0,max:11}
+  {id:'wood1',type:'wood',name:'Timber Logs',icon:'🪵',spr:'fallenLog',x:145,y:495,ready:true,timer:0,max:9},
+  {id:'iron1',type:'iron',name:'Iron Ore Pile',icon:'🪨',spr:'oreIron',x:255,y:495,ready:true,timer:0,max:9},
+  {id:'herb1',type:'herb',name:'Herb Planters',icon:'🌿',spr:'herbBundle',x:450,y:450,ready:true,timer:0,max:9},
+  {id:'herb2',type:'herb',name:'Crimson Herbs',icon:'🌿',spr:'herbBundle',x:430,y:575,ready:true,timer:0,max:10},
+  {id:'iron2',type:'iron',name:'Crystal Vein',icon:'💎',spr:'crystalBlue',x:525,y:575,ready:true,timer:0,max:11}
 ];
 
-// Aligned room zones on the 1870x2870 Forest Outpost artwork
+// Aligned functional rooms on the 1870x2870 Forest Outpost map
 const R={
-  material:{x:60,y:310,w:555,h:365},
-  staff:{x:660,y:310,w:565,h:370},
-  training:{x:1265,y:325,w:270,h:345},
-  forge:{x:55,y:730,w:580,h:435},
-  alchemy:{x:660,y:730,w:595,h:435},
-  contract:{x:1285,y:660,w:535,h:505},
-  attack:{x:80,y:1190,w:460,h:430},
-  defense:{x:550,y:1190,w:390,h:430},
-  other:{x:950,y:1190,w:315,h:430},
-  rare:{x:70,y:1645,w:315,h:415},
-  counter:{x:420,y:1650,w:720,h:390},
-  management:{x:1280,y:1350,w:425,h:650},
-  visitor:{x:120,y:2160,w:420,h:380},
-  gate:{x:770,y:105,w:350,h:195},
-  forest:{x:120,y:70,w:1620,h:225}
+  material:{x:60,y:310,w:555,h:365,title:'MATERIAL YARD',floor:'#7d6748'},
+  staff:{x:660,y:310,w:565,h:370,title:'STAFF HOUSE',floor:'#b59b74'},
+  training:{x:1265,y:325,w:270,h:345,title:'TRAINING YARD',floor:'#8b7654'},
+  forge:{x:55,y:730,w:580,h:435,title:'FORGE (WEAPONS)',floor:'#876b52'},
+  alchemy:{x:660,y:730,w:595,h:435,title:'ALCHEMY LAB',floor:'#7e6c54'},
+  contract:{x:1285,y:660,w:535,h:505,title:'CONTRACT WAREHOUSE',floor:'#7b6546'},
+  attack:{x:80,y:1190,w:460,h:430,title:'ATTACK PRODUCTS',floor:'#c8ad7f'},
+  defense:{x:550,y:1190,w:390,h:430,title:'DEFENSE PRODUCTS',floor:'#c8ad7f'},
+  other:{x:950,y:1190,w:315,h:430,title:'OTHER PRODUCTS',floor:'#c8ad7f'},
+  rare:{x:70,y:1645,w:315,h:400,title:'RARE STORAGE',floor:'#594563'},
+  counter:{x:400,y:1640,w:865,h:400,title:'CUSTOMER HALL & CHECKOUT',floor:'#ccb285'},
+  management:{x:1285,y:1350,w:425,h:690,title:'MANAGEMENT & UPGRADES',floor:'#a88d67'},
+  visitor:{x:110,y:2150,w:410,h:360,title:'SPECIAL VISITOR PLAZA',floor:'#968463'},
+  gate:{x:770,y:105,w:350,h:195,title:'FOREST ADVENTURE GATE',floor:'#5e7844'},
+  forest:{x:120,y:60,w:1620,h:235,title:'SLIME WOODS & RUINS',floor:'#2d6830'}
 };
 
-// Solid walls & furniture aligned with visible doors and aisles on forest_outpost_map.jpg
+// Physical collision boxes (walls, shelves, counters, rivers) with wide, open doorways
 const SOLIDS=[
-  // World borders
   {x:0,y:0,w:1870,h:24},{x:0,y:2846,w:1870,h:24},{x:0,y:0,w:24,h:2870},{x:1846,y:0,w:24,h:2870},
-  // Material Yard walls (South door at x:280..395, y:666)
-  {x:45,y:305,w:580,h:22},{x:45,y:305,w:22,h:380},{x:603,y:305,w:22,h:380},{x:45,y:665,w:235,h:22},{x:395,y:665,w:230,h:22},
-  // Staff House walls (South door at x:860..975, y:675)
-  {x:655,y:305,w:205,h:22},{x:975,y:305,w:260,h:22},{x:655,y:305,w:22,h:390},{x:1213,y:305,w:22,h:390},{x:655,y:675,w:205,h:22},{x:975,y:675,w:260,h:22},
-  // Training Room walls (Open south entrance x:1330..1475)
+  // Material Yard (South door x:280..405)
+  {x:45,y:305,w:580,h:22},{x:45,y:305,w:22,h:380},{x:603,y:305,w:22,h:380},{x:45,y:665,w:235,h:22},{x:405,y:665,w:220,h:22},
+  // Staff House (South door x:855..985)
+  {x:655,y:305,w:580,h:22},{x:655,y:305,w:22,h:390},{x:1213,y:305,w:22,h:390},{x:655,y:675,w:200,h:22},{x:985,y:675,w:250,h:22},
+  // Training Yard (South open entrance x:1320..1490)
   {x:1255,y:315,w:290,h:22},{x:1255,y:315,w:22,h:355},{x:1523,y:315,w:22,h:355},
-  // Forge walls (South door at x:290..415, y:1155)
-  {x:45,y:720,w:235,h:22},{x:395,y:720,w:245,h:22},{x:45,y:720,w:22,h:455},{x:618,y:720,w:22,h:455},{x:45,y:1155,w:245,h:22},{x:415,y:1155,w:225,h:22},
-  // Alchemy walls (South door at x:900..1020, y:1155)
-  {x:660,y:720,w:240,h:22},{x:1020,y:720,w:240,h:22},{x:660,y:720,w:22,h:455},{x:1238,y:720,w:22,h:455},{x:660,y:1155,w:240,h:22},{x:1020,y:1155,w:240,h:22},
-  // Contract Warehouse walls (West gate at x:1280, y:845..965)
-  {x:1280,y:650,w:50,h:22},{x:1475,y:650,w:355,h:22},{x:1280,y:650,w:22,h:195},{x:1280,y:965,w:22,h:215},{x:1808,y:650,w:22,h:530},{x:1280,y:1158,w:80,h:22},{x:1475,y:1158,w:355,h:22},
-  // Checkout physical counter bar (walkable around left/right ends)
-  {x:495,y:1905,w:465,h:52},
-  // Rare Storage walls (North door at x:185..295, y:1640)
-  {x:60,y:1640,w:125,h:22},{x:295,y:1640,w:95,h:22},{x:60,y:1640,w:22,h:420},{x:368,y:1640,w:22,h:420},{x:60,y:2038,w:330,h:22},
-  // South Shop Main Wall (Main Entrance gap at x:640..855, y:2038)
-  {x:390,y:2038,w:250,h:24},{x:855,y:2038,w:425,h:24},
-  // Management Office & Upgrades walls (West doors at y:1575..1690 and y:1845..1955)
-  {x:1280,y:1340,w:440,h:22},{x:1280,y:1340,w:22,h:235},{x:1280,y:1690,w:22,h:155},{x:1280,y:1955,w:22,h:95},{x:1698,y:1340,w:22,h:710},{x:1280,y:2038,w:440,h:22},
-  // River water blocks (leaving the central stone bridge x:650..845 open!)
+  // Forge (South door x:285..425)
+  {x:45,y:720,w:595,h:22},{x:45,y:720,w:22,h:455},{x:618,y:720,w:22,h:455},{x:45,y:1155,w:240,h:22},{x:425,y:1155,w:215,h:22},
+  // Alchemy Lab (South door x:895..1030)
+  {x:660,y:720,w:600,h:22},{x:660,y:720,w:22,h:455},{x:1238,y:720,w:22,h:455},{x:660,y:1155,w:235,h:22},{x:1030,y:1155,w:230,h:22},
+  // Contract Warehouse (West gate x:1280, y:840..975)
+  {x:1280,y:650,w:550,h:22},{x:1280,y:650,w:22,h:190},{x:1280,y:975,w:22,h:205},{x:1808,y:650,w:22,h:530},{x:1280,y:1158,w:550,h:22},
+  // Checkout Counter Bar (walkable around left x<495 and right x>960)
+  {x:495,y:1905,w:465,h:50},
+  // Rare Storage (North door x:180..305, y:1640)
+  {x:60,y:1640,w:120,h:22},{x:305,y:1640,w:85,h:22},{x:60,y:1640,w:22,h:420},{x:368,y:1640,w:22,h:420},{x:60,y:2038,w:330,h:22},
+  // South Main Compound Wall (Main Entrance gap x:635..860, y:2038)
+  {x:390,y:2038,w:245,h:24},{x:860,y:2038,w:420,h:24},
+  // Management Office (West doors y:1570..1695 & y:1840..1960)
+  {x:1280,y:1340,w:440,h:22},{x:1280,y:1340,w:22,h:230},{x:1280,y:1695,w:22,h:145},{x:1280,y:1960,w:22,h:90},{x:1698,y:1340,w:22,h:710},{x:1280,y:2038,w:440,h:22},
+  // Southern River (Stone Bridge open at x:645..850)
   {x:350,y:2360,w:295,h:190},{x:850,y:2340,w:620,h:210}
 ];
 
 const PTS={
-  swordOut:{x:335,y:1165},
-  shieldOut:{x:415,y:1165},
-  potionOut:{x:960,y:1165},
-  attackShelf:{x:285,y:1365},
-  defenseShelf:{x:695,y:1365},
-  otherShelf:{x:1085,y:1365},
-  coinPile:{x:825,y:1880},
+  swordOut:{x:315,y:1195},
+  shieldOut:{x:415,y:1195},
+  potionOut:{x:960,y:1195},
+  attackShelf:{x:285,y:1385},
+  defenseShelf:{x:735,y:1385},
+  otherShelf:{x:1105,y:1385},
+  coinPile:{x:825,y:1875},
   checkoutWait:{x:745,y:1815},
-  hire:{x:915,y:595},
-  contractDrop:{x:1365,y:910},
-  rare:{x:230,y:1835},
+  hire:{x:915,y:585},
+  contractDrop:{x:1385,y:910},
+  rare:{x:225,y:1845},
   training:{x:1395,y:525},
-  office:{x:1460,y:1640},
-  visitor:{x:315,y:2350},
+  office:{x:1460,y:1635},
+  visitor:{x:315,y:2335},
   gate:{x:945,y:215}
 };
 
 const recipes={
-  sword:{name:'Iron Sword',icon:'⚔️',cat:'Attack',statName:'ATK',baseStat:12,iron:2,wood:1,value:42},
-  potion:{name:'Healing Potion',icon:'🧪',cat:'Other',statName:'HP',baseStat:25,herb:2,value:28},
-  shield:{name:'Wooden Shield',icon:'🛡️',cat:'Defense',statName:'DEF',baseStat:14,iron:1,wood:3,value:38}
+  sword:{name:'Iron Sword',icon:'⚔️',cat:'Attack',station:'forge',statName:'ATK',baseStat:12,iron:2,wood:1,value:42,unlockCost:0},
+  axe:{name:'Battle Axe',icon:'🪓',cat:'Attack',station:'forge',statName:'ATK',baseStat:18,iron:3,wood:2,value:68,unlockCost:200},
+  shield:{name:'Wooden Shield',icon:'🛡️',cat:'Defense',station:'forge',statName:'DEF',baseStat:14,iron:1,wood:3,value:40,unlockCost:150},
+  helmet:{name:'Guard Helmet',icon:'🪖',cat:'Defense',station:'forge',statName:'DEF',baseStat:20,iron:3,wood:1,value:64,unlockCost:220},
+  potion:{name:'Healing Potion',icon:'🧪',cat:'Other',station:'alchemy',statName:'HP',baseStat:25,herb:2,value:28,unlockCost:0},
+  repair:{name:'Repair Kit',icon:'🔧',cat:'Other',station:'alchemy',statName:'FIX',baseStat:15,iron:1,wood:1,herb:1,value:45,unlockCost:160}
 };
 
 const rar=[
@@ -162,18 +173,136 @@ const rar=[
 
 function clone(x){return JSON.parse(JSON.stringify(x))}
 function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
-function collides(x,y,r=17){return SOLIDS.some(a=>x+r>a.x&&x-r<a.x+a.w&&y+r>a.y&&y-r<a.y+a.h)}
-function moveEntity(o,nx,ny,r=17){
+function collides(x,y,r=16){return SOLIDS.some(a=>x+r>a.x&&x-r<a.x+a.w&&y+r>a.y&&y-r<a.y+a.h)}
+function moveEntity(o,nx,ny,r=16){
   if(!collides(nx,o.y,r))o.x=nx;
   if(!collides(o.x,ny,r))o.y=ny;
 }
 
+// ============================================================================
+// COLLISION-AWARE 2D GRID A* PATHFINDING ENGINE (No Diagonal Corner-Cutting)
+// ============================================================================
+const G_CELL=26,GW=Math.ceil(WORLD.w/G_CELL),GH=Math.ceil(WORLD.h/G_CELL);
+const navGrid=new Uint8Array(GW*GH);
+function buildNavGrid(){
+  for(let gy=0;gy<GH;gy++){
+    for(let gx=0;gx<GW;gx++){
+      const wx=gx*G_CELL+G_CELL/2,wy=gy*G_CELL+G_CELL/2;
+      navGrid[gy*GW+gx]=collides(wx,wy,15)?1:0;
+    }
+  }
+}
+buildNavGrid();
+
+function nearestWalkableCell(gx,gy){
+  gx=Math.max(1,Math.min(GW-2,gx));
+  gy=Math.max(1,Math.min(GH-2,gy));
+  if(!navGrid[gy*GW+gx])return {gx,gy};
+  for(let rad=1;rad<=6;rad++){
+    for(let dy=-rad;dy<=rad;dy++){
+      for(let dx=-rad;dx<=rad;dx++){
+        let nx=gx+dx,ny=gy+dy;
+        if(nx>0&&nx<GW-1&&ny>0&&ny<GH-1&&!navGrid[ny*GW+nx])return {gx:nx,gy:ny};
+      }
+    }
+  }
+  return {gx,gy};
+}
+
+function findAStarPath(sx,sy,tx,ty){
+  const sCell=nearestWalkableCell(Math.floor(sx/G_CELL),Math.floor(sy/G_CELL));
+  const gCell=nearestWalkableCell(Math.floor(tx/G_CELL),Math.floor(ty/G_CELL));
+  const startIdx=sCell.gy*GW+sCell.gx,goalIdx=gCell.gy*GW+gCell.gx;
+  if(startIdx===goalIdx)return [{x:tx,y:ty}];
+
+  const total=GW*GH;
+  const gScore=new Float32Array(total);gScore.fill(1e9);
+  const fScore=new Float32Array(total);fScore.fill(1e9);
+  const cameFrom=new Int32Array(total);cameFrom.fill(-1);
+  const closed=new Uint8Array(total);
+  const open=[startIdx];
+  gScore[startIdx]=0;
+  fScore[startIdx]=Math.hypot(gCell.gx-sCell.gx,gCell.gy-sCell.gy);
+
+  const dirs=[[1,0,1],[-1,0,1],[0,1,1],[0,-1,1],[1,1,1.414],[-1,1,1.414],[1,-1,1.414],[-1,-1,1.414]];
+  let steps=0;
+  while(open.length>0&&steps++<3200){
+    let bestPos=0,cur=open[0],bestF=fScore[cur];
+    for(let i=1;i<open.length;i++){
+      const idx=open[i];
+      if(fScore[idx]<bestF){bestF=fScore[idx];cur=idx;bestPos=i}
+    }
+    if(cur===goalIdx){
+      const path=[{x:tx,y:ty}];
+      let curr=cur;
+      while(curr!==startIdx&&cameFrom[curr]!==-1){
+        const cx=(curr%GW)*G_CELL+G_CELL/2,cy=Math.floor(curr/GW)*G_CELL+G_CELL/2;
+        path.push({x:cx,y:cy});
+        curr=cameFrom[curr];
+      }
+      path.reverse();
+      // Light path smoothing (skip intermediate nodes on straight segments)
+      if(path.length>2){
+        const smooth=[path[0]];
+        for(let i=1;i<path.length-1;i+=2)smooth.push(path[i]);
+        smooth.push(path[path.length-1]);
+        return smooth;
+      }
+      return path;
+    }
+    open.splice(bestPos,1);
+    closed[cur]=1;
+    const cx=cur%GW,cy=Math.floor(cur/GW);
+    for(const [dx,dy,cost] of dirs){
+      const nx=cx+dx,ny=cy+dy;
+      if(nx<=0||nx>=GW-1||ny<=0||ny>=GH-1)continue;
+      const nIdx=ny*GW+nx;
+      if(closed[nIdx]||navGrid[nIdx])continue;
+      // Prevent diagonal corner-cutting across wall edges
+      if(dx!==0&&dy!==0){
+        if(navGrid[cy*GW+(cx+dx)]||navGrid[(cy+dy)*GW+cx])continue;
+      }
+      const tentativeG=gScore[cur]+cost;
+      if(tentativeG<gScore[nIdx]){
+        cameFrom[nIdx]=cur;
+        gScore[nIdx]=tentativeG;
+        fScore[nIdx]=tentativeG+Math.hypot(gCell.gx-nx,gCell.gy-ny);
+        if(!open.includes(nIdx))open.push(nIdx);
+      }
+    }
+  }
+  return [{x:tx,y:ty}];
+}
+
+function navigate(o,tx,ty,s,dt){
+  if(Math.hypot(tx-o.x,ty-o.y)<8)return true;
+  const targetKey=`${Math.round(tx/20)},${Math.round(ty/20)}`;
+  const prevX=o.x,prevY=o.y;
+  if(!o.navPath||o.navKey!==targetKey||(o.stuckTime||0)>0.55){
+    o.navPath=findAStarPath(o.x,o.y,tx,ty);
+    o.navKey=targetKey;
+    o.stuckTime=0;
+  }
+  if(!o.navPath||!o.navPath.length)return true;
+  const wp=o.navPath[0];
+  let dx=wp.x-o.x,dy=wp.y-o.y,d=Math.hypot(dx,dy);
+  if(d<8){
+    o.navPath.shift();
+    if(!o.navPath.length)return true;
+  }else{
+    o.moving=true;
+    moveEntity(o,o.x+dx/d*s*dt,o.y+dy/d*s*dt,15);
+    if(Math.hypot(o.x-prevX,o.y-prevY)<s*dt*0.2)o.stuckTime=(o.stuckTime||0)+dt;
+    else o.stuckTime=0;
+  }
+  return Math.hypot(tx-o.x,ty-o.y)<9;
+}
+
+// ============================================================================
+// SAVE SYSTEM & MIGRATION
+// ============================================================================
 function loadForever(){
-  try{
-    let raw=localStorage.getItem(FOREVER_KEY);
-    if(!raw){for(const oldKey of OLD_FOREVER_KEYS){raw=localStorage.getItem(oldKey);if(raw)break}}
-    return JSON.parse(raw||'null');
-  }catch{return null}
+  try{return JSON.parse(localStorage.getItem(FOREVER_KEY)||'null')}catch{return null}
 }
 function saveForever(){
   try{localStorage.setItem(FOREVER_KEY,JSON.stringify({legacy:S.legacy,skills:S.skills}))}catch{}
@@ -192,13 +321,14 @@ function load(n){
   }catch{return null}
 }
 function syncItemArrays(n){
-  ['sword','potion','shield'].forEach(k=>{
+  Object.keys(recipes).forEach(k=>{
+    if(!n.products[k])n.products[k]={...base.products[k]};
     if(!Array.isArray(n.outputItems[k]))n.outputItems[k]=[];
     if(!Array.isArray(n.shelfItems[k]))n.shelfItems[k]=[];
     while(n.outputItems[k].length<(n.output[k]||0))n.outputItems[k].push(makeItemObject(k,1));
     while(n.shelfItems[k].length<(n.products[k]?.stock||0))n.shelfItems[k].push(makeItemObject(k,1));
     n.output[k]=n.outputItems[k].length;
-    if(n.products[k])n.products[k].stock=n.shelfItems[k].length;
+    n.products[k].stock=n.shelfItems[k].length;
   });
 }
 function norm(x){
@@ -207,19 +337,15 @@ function norm(x){
   const f=loadForever();
   n.skills={...base.skills,...(x?.skills||{}),...(f?.skills||{})};
   if(f&&typeof f.legacy==='number')n.legacy=Math.max(n.legacy||0,f.legacy);
-  n.products={
-    sword:{...base.products.sword,...(x?.products?.sword||{})},
-    potion:{...base.products.potion,...(x?.products?.potion||{})},
-    shield:{...base.products.shield,...(x?.products?.shield||{})}
-  };
-  n.output={...base.output,...(x?.output||{})};
+  n.products={...clone(base.products),...(x?.products||{})};
+  n.output={...clone(base.output),...(x?.output||{})};
   n.outputItems={...clone(base.outputItems),...(x?.outputItems||{})};
   n.shelfItems={...clone(base.shelfItems),...(x?.shelfItems||{})};
+  n.equipped={...clone(base.equipped),...(x?.equipped||{})};
   n.rareDisplay=Array.isArray(x?.rareDisplay)?x.rareDisplay:[];
   n.employees=Array.isArray(x?.employees)?x.employees:[];
-  // Migrate any old out-of-bounds employee positions to the Staff House
   n.employees.forEach((e,i)=>{
-    if(!e.x||e.x>1800||e.y>2000){e.x=860+(i%3)*55;e.y=540}
+    if(!e.x||e.x>1800||e.y>2000||collides(e.x,e.y,15)){e.x=860+(i%3)*55;e.y=540}
   });
   n.contracts=Array.isArray(x?.contracts)?x.contracts:[];
   n.offers=Array.isArray(x?.offers)?x.offers:[];
@@ -228,6 +354,7 @@ function norm(x){
   n.discoveries=Array.isArray(x?.discoveries)?x.discoveries:[];
   n.coinsFloor=x?.coinsFloor||0;
   n.poorPolicy=x?.poorPolicy||'Honest';
+  n.mapStyle=x?.mapStyle||'modular';
   syncItemArrays(n);
   return n;
 }
@@ -255,9 +382,12 @@ function toast(t){
   msgTimer=setTimeout(()=>$('toast').classList.remove('show'),2100);
 }
 function addFloat(x,y,text,col='#ffed75'){
-  effects.push({x,y,t:1.15,text,col});
+  effects.push({x,y,t:1.2,text,col});
 }
 
+// ============================================================================
+// INPUT & FLOATING JOYSTICK MOVEMENT
+// ============================================================================
 function screenPoint(ev){
   const r=c.getBoundingClientRect();
   return {x:(ev.clientX-r.left)*vw/r.width,y:(ev.clientY-r.top)*vh/r.height};
@@ -270,7 +400,7 @@ function dragStart(ev){
   $('dragStick').style.left=p.x+'px';
   $('dragStick').style.top=p.y+'px';
   $('dragStick').classList.add('show');
-  target=null;
+  target=null;player.navPath=null;
 }
 function dragUpdate(ev){
   if(!dragMove.active||ev.pointerId!==dragMove.id)return;
@@ -305,79 +435,73 @@ function setZoom(v){
 function inside(p,z,pad=0){
   return p.x>z.x-pad&&p.x<z.x+z.w+pad&&p.y>z.y-pad&&p.y<z.y+z.h+pad;
 }
-function stepToward(o,tx,ty,s,dt){
-  let dx=tx-o.x,dy=ty-o.y,d=Math.hypot(dx,dy);
-  if(d<5)return true;
-  o.moving=true;
-  let nx=o.x+dx/d*s*dt,ny=o.y+dy/d*s*dt;
-  moveEntity(o,nx,ny,16);
-  return Math.hypot(tx-o.x,ty-o.y)<7;
-}
 
-// Room checks for the 1870x2870 Forest Outpost map
-function inMaterialRoom(p){return p.x>45&&p.x<625&&p.y>305&&p.y<675}
-function inStaffRoom(p){return p.x>655&&p.x<1235&&p.y>305&&p.y<685}
-function inTrainingRoom(p){return p.x>1255&&p.x<1545&&p.y>315&&p.y<675}
-function inForgeRoom(p){return p.x>45&&p.x<640&&p.y>720&&p.y<1165}
-function inAlchemyRoom(p){return p.x>660&&p.x<1260&&p.y>720&&p.y<1165}
-function inContractRoom(p){return p.x>1280&&p.x<1830&&p.y>650&&p.y<1175}
-function inRareRoom(p){return p.x>60&&p.x<390&&p.y>1640&&p.y<2050}
-function inOfficeRoom(p){return p.x>1280&&p.x<1720&&p.y>1340&&p.y<2050}
-
-// Collision-aware A* routing. Workers and customers use the same SOLIDS as the player.
-const PATH_CELL=28;
-function gridKey(x,y){return x+','+y}
-function cellOpen(cx,cy,r=18){
-  const x=cx*PATH_CELL+PATH_CELL/2,y=cy*PATH_CELL+PATH_CELL/2;
-  return x>r&&y>r&&x<WORLD.w-r&&y<WORLD.h-r&&!collides(x,y,r);
+// ============================================================================
+// CRAFTING, QUALITY, REPAIR & EQUIPMENT LOGIC
+// ============================================================================
+function qroll(skill=0){
+  let bonus=S.skills.quality*.045+skill*.0025+(S.nextCraftBonus||0)+(S.event?.type==='forge'?.08:0);
+  S.nextCraftBonus=0;
+  let r=Math.random()+bonus;
+  return r<.08?0:r<.54?1:r<.80?2:r<.93?3:r<.985?4:5;
 }
-function nearestOpenCell(x,y,r=18){
-  let sx=Math.floor(x/PATH_CELL),sy=Math.floor(y/PATH_CELL);
-  if(cellOpen(sx,sy,r))return {x:sx,y:sy};
-  for(let ring=1;ring<=8;ring++){
-    for(let dx=-ring;dx<=ring;dx++)for(const dy of [-ring,ring])if(cellOpen(sx+dx,sy+dy,r))return {x:sx+dx,y:sy+dy};
-    for(let dy=-ring+1;dy<ring;dy++)for(const dx of [-ring,ring])if(cellOpen(sx+dx,sy+dy,r))return {x:sx+dx,y:sy+dy};
-  }
-  return null;
+function makeItemObject(k,qIndex,special=false){
+  const r=recipes[k]||recipes.sword,q=typeof qIndex==='number'?qIndex:qroll(0);
+  const stat=Math.round(r.baseStat*rar[q][3])+(special?8:0);
+  const val=Math.round(r.value*rar[q][2]*(S.event?.type==='attack'&&r.cat==='Attack'?1.2:1))+(special?40:0);
+  return {
+    key:k,
+    name:special?'Slime Edge':r.name,
+    icon:special?'🗡️':r.icon,
+    cat:r.cat,
+    q,
+    rarity:rar[q][0],
+    color:rar[q][1],
+    stat,
+    value:val,
+    defect:q===0?'Weak structure':null,
+    special
+  };
 }
-function buildPath(sx,sy,tx,ty,r=18){
-  const begin=nearestOpenCell(sx,sy,r),goal=nearestOpenCell(tx,ty,r);if(!begin||!goal)return [];
-  const open=[{x:begin.x,y:begin.y,g:0,f:0}],came=new Map(),best=new Map([[gridKey(begin.x,begin.y),0]]);
-  const dirs=[[1,0,1],[-1,0,1],[0,1,1],[0,-1,1],[1,1,1.414],[1,-1,1.414],[-1,1,1.414],[-1,-1,1.414]];
-  let found=null,guard=0;
-  while(open.length&&guard++<14000){
-    open.sort((a,b)=>a.f-b.f);const cur=open.shift(),ck=gridKey(cur.x,cur.y);
-    if(cur.x===goal.x&&cur.y===goal.y){found=cur;break}
-    for(const [dx,dy,cost] of dirs){
-      const nx=cur.x+dx,ny=cur.y+dy;if(!cellOpen(nx,ny,r))continue;
-      if(dx&&dy&&(!cellOpen(cur.x+dx,cur.y,r)||!cellOpen(cur.x,cur.y+dy,r)))continue;
-      const nk=gridKey(nx,ny),ng=cur.g+cost;if(ng>=(best.get(nk)??Infinity))continue;
-      best.set(nk,ng);came.set(nk,ck);const h=Math.hypot(goal.x-nx,goal.y-ny);open.push({x:nx,y:ny,g:ng,f:ng+h});
-    }
-  }
-  if(!found)return [];
-  const cells=[];let key=gridKey(goal.x,goal.y);while(key!==gridKey(begin.x,begin.y)){const [x,y]=key.split(',').map(Number);cells.push({x:x*PATH_CELL+PATH_CELL/2,y:y*PATH_CELL+PATH_CELL/2});key=came.get(key);if(!key)return []}
-  cells.reverse();cells.push({x:tx,y:ty});
-  // Remove unnecessary collinear nodes.
-  return cells.filter((p,i,a)=>i===0||i===a.length-1||Math.sign(p.x-a[i-1].x)!==Math.sign(a[i+1].x-p.x)||Math.sign(p.y-a[i-1].y)!==Math.sign(a[i+1].y-p.y));
+function outputGroupKey(k){
+  if(k==='axe')return 'sword';
+  if(k==='helmet')return 'shield';
+  if(k==='repair')return 'potion';
+  return k;
 }
-function navigate(o,tx,ty,speed,dt){
-  const changed=!o._pathGoal||Math.hypot(o._pathGoal.x-tx,o._pathGoal.y-ty)>20;
-  if(changed||!o._path||!o._path.length||o._pathAge>2.5){o._path=buildPath(o.x,o.y,tx,ty,17);o._pathGoal={x:tx,y:ty};o._pathAge=0}
-  o._pathAge=(o._pathAge||0)+dt;
-  if(!o._path.length)return Math.hypot(o.x-tx,o.y-ty)<12;
-  const node=o._path[0];if(stepToward(o,node.x,node.y,speed,dt))o._path.shift();
-  return Math.hypot(o.x-tx,o.y-ty)<12;
-}
-
 function outputPoint(k){
-  return k==='potion'?PTS.potionOut:k==='shield'?PTS.shieldOut:PTS.swordOut;
+  const gk=outputGroupKey(k);
+  return gk==='potion'?PTS.potionOut:gk==='shield'?PTS.shieldOut:PTS.swordOut;
 }
 function shelfPoint(k){
-  return k==='sword'?PTS.attackShelf:k==='shield'?PTS.defenseShelf:PTS.otherShelf;
+  const cat=recipes[k]?.cat||'Attack';
+  return cat==='Attack'?PTS.attackShelf:cat==='Defense'?PTS.defenseShelf:PTS.otherShelf;
+}
+function deptTotalStock(cat){
+  return Object.keys(recipes).filter(k=>recipes[k].cat===cat).reduce((a,k)=>a+(S.shelfItems[k]?.length||0),0);
+}
+function deptItems(cat){
+  const list=[];
+  Object.keys(recipes).filter(k=>recipes[k].cat===cat).forEach(k=>{
+    if(S.shelfItems[k])list.push(...S.shelfItems[k]);
+  });
+  return list;
+}
+function canCraft(k){
+  let r=recipes[k];
+  if(!r||!S.products[k]?.unlocked)return false;
+  if((S.outputItems[k]?.length||0)>=S.outputCap)return false;
+  return (!r.iron||S.iron>=r.iron)&&(!r.wood||S.wood>=r.wood)&&(!r.herb||S.herb>=r.herb);
+}
+function maybeAutoEquip(item){
+  if(item.cat==='Attack'&&item.stat>(S.equipped.weapon?.stat||0)){
+    S.equipped.weapon={name:`${item.rarity} ${item.name}`,icon:item.icon,stat:item.stat};
+  }else if(item.cat==='Defense'&&item.stat>(S.equipped.armor?.stat||0)){
+    S.equipped.armor={name:`${item.rarity} ${item.name}`,icon:item.icon,stat:item.stat};
+  }
 }
 function craft(k,worker,useSlime=false){
-  if((S.output[k]||0)>=S.outputCap){
+  if((S.outputItems[k]?.length||0)>=S.outputCap){
     if(!worker)toast(recipes[k].name+' output table is full (8/8)!');
     return false;
   }
@@ -398,20 +522,34 @@ function craft(k,worker,useSlime=false){
     }
   }
   let item=makeItemObject(k,qroll(worker?.craft||0),special);
+  // If crafting a Repair Kit, automatically fix any Poor item waiting in outputs or shelves
+  if(k==='repair'){
+    for(const pk of Object.keys(recipes)){
+      const poorItem=(S.outputItems[pk]||[]).find(x=>x.q===0)||(S.shelfItems[pk]||[]).find(x=>x.q===0);
+      if(poorItem){
+        poorItem.q=2;poorItem.rarity='Uncommon';poorItem.color=rar[2][1];poorItem.defect=null;
+        poorItem.stat=Math.round(recipes[pk].baseStat*rar[2][3]);
+        poorItem.value=Math.round(recipes[pk].value*rar[2][2]);
+        toast(`🔧 Repair Kit upgraded Poor ${poorItem.name} to Uncommon!`);
+        break;
+      }
+    }
+  }
   if(item.q===0&&S.poorPolicy==='Scrap'){
-    if(k==='potion')S.herb++;else S.iron++;
+    if(r.herb)S.herb++;else S.iron++;
     if(!worker)toast('Poor '+item.name+' auto-scrapped (+1 material)');
     return true;
   }
+  maybeAutoEquip(item);
   S.outputItems[k].push(item);
   S.output[k]=S.outputItems[k].length;
   if(item.q>=3||item.special){
     S.rareDisplay.unshift({name:item.name,icon:item.icon,rarity:item.rarity,color:item.color,stat:item.stat});
-    if(S.rareDisplay.length>6)S.rareDisplay.pop();
+    if(S.rareDisplay.length>S.rareStorageCap)S.rareDisplay.pop();
   }
   S.statsDay.crafted++;
   const op=outputPoint(k);
-  addFloat(op.x,op.y-10,item.icon+' '+item.rarity,item.color);
+  addFloat(op.x,op.y-12,`${item.icon} ${item.rarity}`,item.color);
   if(!worker)toast(`Crafted ${item.rarity} ${item.name} (${r.statName} ${item.stat})`);
   return true;
 }
@@ -425,27 +563,29 @@ function gatherYardNode(n){
   toast(`Gathered +${amt} ${n.name}`);
 }
 
+// ============================================================================
+// CUSTOMERS & PHYSICAL SHOPPING LOOP
+// ============================================================================
 function spawnClient(){
   let on=Object.keys(S.products).filter(k=>S.products[k].on&&S.products[k].unlocked);
   if(!on.length||clients.length>=7)return;
   let k=on[Math.floor(Math.random()*on.length)];
   if(S.event?.type==='potion'&&S.products.potion.on)k='potion';
-  let lv=Math.random(),level=lv>.82?'Knight':lv>.5?'Veteran':'Adventurer';
+  let lv=Math.random(),level=lv>.84?'Knight':lv>.52?'Veteran':'Adventurer';
   let ps=['Impatient','Bargain','Experienced','Collector','Loyal'],personality=ps[Math.floor(Math.random()*ps.length)];
-  let sp=shelfPoint(k),slotIdx=clients.filter(c=>c.want===k).length;
-  // Customers enter from the South Stone Bridge (x:745, y:2480)
+  let sp=shelfPoint(k),slotIdx=clients.filter(c=>recipes[c.want]?.cat===recipes[k]?.cat).length;
   clients.push({
     id:Date.now()+Math.random(),
     x:725+Math.random()*40,
     y:2480+Math.random()*60,
     want:k,
-    shelfX:sp.x+(slotIdx%3-1)*42,
-    shelfY:sp.y+25+Math.floor(slotIdx/3)*30,
-    pat:62+S.skills.merchant*4,
-    max:62+S.skills.merchant*4,
+    shelfX:sp.x+(slotIdx%3-1)*44,
+    shelfY:sp.y+34+Math.floor(slotIdx/3)*28,
+    pat:64+S.skills.merchant*5,
+    max:64+S.skills.merchant*5,
     state:'toShelf',
     level,personality,
-    minStat:level==='Knight'?14:level==='Veteran'?11:0,
+    minStat:level==='Knight'?Math.round(recipes[k].baseStat*1.1):level==='Veteran'?recipes[k].baseStat:0,
     minQ:personality==='Collector'?2:level==='Knight'?1:0,
     minRarity:personality==='Collector'?'Uncommon':level==='Knight'?'Common':'Any',
     carriedItem:null,
@@ -457,13 +597,12 @@ function clientTick(dt){
   for(let i=clients.length-1;i>=0;i--){
     let x=clients[i];x.moving=false;
     if(x.state==='toShelf'){
-      if(navigate(x,x.shelfX,x.shelfY,118,dt))x.state='waitShelf';
+      if(navigate(x,x.shelfX,x.shelfY,120,dt))x.state='waitShelf';
     }else if(x.state==='waitShelf'){
       x.pat-=dt*(x.personality==='Impatient'?1.25:1);
       let arr=S.shelfItems[x.want];
-      let matchIndex=arr?arr.findIndex(item=>item.stat>=(x.minStat||0)&&item.q>=(x.minQ||0)):-1;
-      // Fallback: if any item is on the shelf for normal Adventurers, take it
-      if(matchIndex<0&&arr&&arr.length>0&&x.level==='Adventurer')matchIndex=0;
+      let matchIndex=arr?arr.findIndex(item=>item.stat>=(x.minStat||0)&&(item.q>=(x.minQ||0)||(item.q===0&&S.poorPolicy==='Disguise'))):-1;
+      if(matchIndex<0&&arr&&arr.length>0&&x.level==='Adventurer'&&x.minQ===0)matchIndex=0;
       if(arr&&matchIndex>=0){
         let item=arr.splice(matchIndex,1)[0];
         S.products[x.want].stock=arr.length;
@@ -480,20 +619,20 @@ function clientTick(dt){
         x.state='toCheckout';
       }else if(x.pat<=0){
         S.rep--;S.statsDay.lost++;
-        addFloat(x.x,x.y-25,'EMPTY SHELF -1 REP','#ff857a');
-        toast('Customer left • '+recipes[x.want].name+' shelf needed stock');
+        addFloat(x.x,x.y-25,'UNMET REQUEST -1 REP','#ff857a');
+        toast(`Customer left • needed ${recipes[x.want].name}`);
         x.state='leave';
       }
     }else if(x.state==='toCheckout'){
-      if(navigate(x,PTS.checkoutWait.x,PTS.checkoutWait.y,122,dt)){
+      if(navigate(x,PTS.checkoutWait.x,PTS.checkoutWait.y,124,dt)){
         let item=x.carriedItem;
         let baseVal=item.value;
         if(item.q===0&&S.poorPolicy==='Honest')baseVal=Math.round(recipes[x.want].value*.5);
         if(item.q===0&&S.poorPolicy==='Disguise')baseVal=recipes[x.want].value;
         let mult=x.personality==='Bargain'?.88:x.personality==='Collector'&&item.q>=2?1.45:1;
         let price=Math.max(10,Math.round(baseVal*mult));
-        let tip=x.pat/x.max>.6?Math.round(6*x.tipMult)+(S.rareDisplay.length*2):0;
-        if(item.q>=2&&x.pat/x.max>.5)S.rep=Math.min(99,S.rep+(Math.random()<.35?1:0));
+        let tip=x.pat/x.max>.58?Math.round(6*x.tipMult)+(S.rareDisplay.length*2):0;
+        if(item.q>=2&&x.pat/x.max>.5)S.rep=Math.min(99,S.rep+(Math.random()<.4?1:0));
         S.coinsFloor+=price+tip;
         S.served++;
         S.statsDay.sales+=price;
@@ -505,27 +644,31 @@ function clientTick(dt){
         x.state='leave';
       }
     }else if(x.state==='leave'){
-      if(navigate(x,745,2520,140,dt))clients.splice(i,1);
+      if(navigate(x,745,2520,142,dt))clients.splice(i,1);
     }
   }
 }
 
+// ============================================================================
+// EMPLOYEES & PHYSICAL A* WORKER LOOP
+// ============================================================================
 function matchingContract(k,itemQ=1){
   return S.contracts.find(q=>q.key===k&&q.done<q.qty&&itemQ>=(q.minQ||0));
 }
 function pickNextOutputForSales(){
-  const keys=['sword','shield','potion'].filter(k=>S.outputItems[k].length>0);
+  const keys=Object.keys(recipes).filter(k=>(S.outputItems[k]?.length||0)>0);
   if(!keys.length)return null;
   if(S.productionPriority==='Wholesale'){
     let wk=keys.find(k=>matchingContract(k,S.outputItems[k][0]?.q));
-    if(wk)return {key:wk,dest:'contract'};
+    if(wk&&contractUnits()<S.contractCap)return {key:wk,dest:'contract'};
   }
   for(const k of keys){
-    if(S.productionPriority==='Balanced'&&S.products[k].stock>=2&&matchingContract(k,S.outputItems[k][0]?.q)){
+    const cat=recipes[k].cat;
+    if(S.productionPriority==='Balanced'&&S.products[k].stock>=2&&matchingContract(k,S.outputItems[k][0]?.q)&&contractUnits()<S.contractCap){
       return {key:k,dest:'contract'};
     }
-    if(S.products[k].stock<12)return {key:k,dest:'shelf'};
-    if(matchingContract(k,S.outputItems[k][0]?.q))return {key:k,dest:'contract'};
+    if(deptTotalStock(cat)<12)return {key:k,dest:'shelf'};
+    if(matchingContract(k,S.outputItems[k][0]?.q)&&contractUnits()<S.contractCap)return {key:k,dest:'contract'};
   }
   return null;
 }
@@ -537,12 +680,12 @@ function employeeTick(dt){
       e.statusIcon=e.carryKey?'📦':'🪙';
       if(e.carryKey){
         if(e.carryDest==='contract'){
-          if(navigate(e,PTS.contractDrop.x,PTS.contractDrop.y,118,dt)){
+          if(navigate(e,PTS.contractDrop.x,PTS.contractDrop.y,120,dt)){
             let c=matchingContract(e.carryKey,e.carryItem?.q||1);
             if(c&&contractUnits()<S.contractCap){
               c.done++;
               addFloat(PTS.contractDrop.x,PTS.contractDrop.y-15,`Contract ${c.done}/${c.qty}`,'#ffd86b');
-            }else if(S.products[e.carryKey].stock<12){
+            }else if(deptTotalStock(recipes[e.carryKey].cat)<12){
               S.shelfItems[e.carryKey].push(e.carryItem||makeItemObject(e.carryKey,1));
               S.products[e.carryKey].stock=S.shelfItems[e.carryKey].length;
             }
@@ -550,8 +693,8 @@ function employeeTick(dt){
           }
         }else{
           let sp=shelfPoint(e.carryKey);
-          if(navigate(e,sp.x,sp.y,118,dt)){
-            if(S.products[e.carryKey].stock<12){
+          if(navigate(e,sp.x,sp.y,120,dt)){
+            if(deptTotalStock(recipes[e.carryKey].cat)<12){
               S.shelfItems[e.carryKey].push(e.carryItem||makeItemObject(e.carryKey,1));
               S.products[e.carryKey].stock=S.shelfItems[e.carryKey].length;
             }
@@ -562,20 +705,20 @@ function employeeTick(dt){
         let task=pickNextOutputForSales();
         if(task){
           let op=outputPoint(task.key);
-          if(navigate(e,op.x,op.y+25,118,dt)&&S.outputItems[task.key].length>0){
+          if(navigate(e,op.x,op.y+22,120,dt)&&S.outputItems[task.key].length>0){
             e.carryItem=S.outputItems[task.key].shift();
             S.output[task.key]=S.outputItems[task.key].length;
             e.carryKey=task.key;e.carryCount=1;e.carryDest=task.dest;
           }
         }else if(S.coinsFloor>0){
-          if(navigate(e,PTS.coinPile.x,PTS.coinPile.y-35,118,dt)){
+          if(navigate(e,PTS.coinPile.x,PTS.coinPile.y-35,120,dt)){
             let amt=S.coinsFloor;
             S.cash+=amt;S.coinsFloor=0;
             addFloat(PTS.coinPile.x,PTS.coinPile.y-20,`+$${amt}`,'#7dff9b');
             toast(e.name+' collected $'+amt+' from checkout');
           }
         }else{
-          navigate(e,745,1680,95,dt);
+          navigate(e,745,1685,95,dt);
         }
       }
     }else if(e.job==='Craft'){
@@ -586,20 +729,20 @@ function employeeTick(dt){
         if(ck)candidates=[ck];
       }
       let k=candidates.sort((a,b)=>(S.products[a].stock+S.output[a])-(S.products[b].stock+S.output[b]))[0]||'sword';
-      let z=k==='potion'?{x:960,y:980}:{x:355,y:980};
-      if(navigate(e,z.x,z.y,110,dt)){
+      let z=recipes[k].station==='alchemy'?{x:960,y:960}:{x:355,y:960};
+      if(navigate(e,z.x,z.y,112,dt)){
         if(canCraft(k)){
-          e.work=(e.work||0)+dt*(1+e.craft/90);
-          if(e.work>=6.2){e.work=0;craft(k,e,false)}
+          e.work=(e.work||0)+dt*(1+e.craft/85);
+          if(e.work>=6.0){e.work=0;craft(k,e,false)}
         }
       }
     }else if(e.job==='Expedition'){
       e.statusIcon='⚔️';
-      if(navigate(e,945,180,115,dt)){
+      if(navigate(e,945,175,118,dt)){
         e.work=(e.work||0)+dt;
-        if(e.work>=10.5){
+        if(e.work>=10.0){
           e.work=0;
-          let bonus=1+Math.floor((e.atk*.6+e.def*.4)/32);
+          let bonus=1+Math.floor((e.atk*.6+e.def*.4)/30);
           S.iron+=bonus;S.wood+=1;S.herb+=1;
           if(Math.random()<.45)S.gel++;
           e.hp=Math.max(25,e.hp-Math.max(3,14-e.def*.12));
@@ -611,21 +754,27 @@ function employeeTick(dt){
     }else{
       e.statusIcon='💤';
       let idx=S.employees.indexOf(e);
-      let tx=780+(idx%3)*110,ty=525;
-      navigate(e,tx,ty,90,dt);
-      if(e.hp<100)e.hp=Math.min(100,e.hp+dt*4);
+      let tx=760+(idx%3)*115,ty=520;
+      navigate(e,tx,ty,92,dt);
+      if(e.hp<100)e.hp=Math.min(100,e.hp+dt*4.5);
     }
   }
 }
 
-function tryPickUpOutput(k){
-  if(S.outputItems[k].length<=0||player.carryCount>=player.carryCap)return;
+// ============================================================================
+// PLAYER ACTIONS & CONTEXT BAR
+// ============================================================================
+function tryPickUpGroupOutput(groupKey){
+  if(player.carryCount>=player.carryCap)return;
+  const groupKeys=Object.keys(recipes).filter(k=>outputGroupKey(k)===groupKey&&S.outputItems[k]?.length>0);
+  if(!groupKeys.length)return;
+  const k=player.carryKey&&groupKeys.includes(player.carryKey)?player.carryKey:groupKeys[0];
   if(player.carryKey&&player.carryKey!==k)return;
   player.carryKey=k;
   while(player.carryCount<player.carryCap&&S.outputItems[k].length>0){
     let item=S.outputItems[k].shift();
     if(item.q===0&&S.poorPolicy==='Scrap'){
-      if(k==='potion')S.herb++;else S.iron++;
+      S.iron++;
       toast('Scrapped Poor item (+1 material)');
       continue;
     }
@@ -645,7 +794,7 @@ function deliverToContract(){
   if(!c){toast('No active wholesale contract for '+recipes[player.carryKey].name);return false}
   let added=0;
   for(let i=player.carryItems.length-1;i>=0;i--){
-    if(contractUnits()<S.contractCap&&c.done<q.qty&&player.carryItems[i].q>=(c.minQ||0)){
+    if(contractUnits()<S.contractCap&&c.done<c.qty&&player.carryItems[i].q>=(c.minQ||0)){
       c.done++;added++;
       player.carryItems.splice(i,1);
     }
@@ -666,25 +815,28 @@ function updateContextActions(){
   let btns=[];
   if(inside(player,R.forge,35)){
     btns.push(`<button onclick="window.triggerCraft('sword',false)">🔨 Sword (${S.iron}/2🪨 ${S.wood}/1🪵)</button>`);
-    if(S.products.shield.unlocked){
-      btns.push(`<button onclick="window.triggerCraft('shield',false)">🛡️ Shield (${S.iron}/1🪨 ${S.wood}/3🪵)</button>`);
-    }
+    if(S.products.axe.unlocked)btns.push(`<button onclick="window.triggerCraft('axe',false)">🪓 Axe (${S.iron}/3🪨 ${S.wood}/2🪵)</button>`);
+    if(S.products.shield.unlocked)btns.push(`<button onclick="window.triggerCraft('shield',false)">🛡️ Shield (${S.iron}/1🪨 ${S.wood}/3🪵)</button>`);
+    if(S.products.helmet.unlocked)btns.push(`<button onclick="window.triggerCraft('helmet',false)">🪖 Helmet (${S.iron}/3🪨 ${S.wood}/1🪵)</button>`);
     if(S.gel>0||S.discoveries.includes('Slime Edge')){
       btns.push(`<button onclick="window.triggerCraft('sword',true)">🗡️ Slime Edge (${S.gel}/1💧)</button>`);
     }
   }
   if(inside(player,R.alchemy,35)){
-    btns.push(`<button onclick="window.triggerCraft('potion',false)">⚗️ Brew Potion (${S.herb}/2🌿)</button>`);
+    btns.push(`<button onclick="window.triggerCraft('potion',false)">⚗️ Potion (${S.herb}/2🌿)</button>`);
+    if(S.products.repair.unlocked){
+      btns.push(`<button onclick="window.triggerCraft('repair',false)">🔧 Repair Kit (${S.iron}/1🪨 ${S.wood}/1🪵 ${S.herb}/1🌿)</button>`);
+    }
   }
-  let nearNode=yardNodes.find(n=>n.ready&&dist(player,n)<75);
+  let nearNode=yardNodes.find(n=>n.ready&&dist(player,n)<78);
   if(nearNode){
     btns.push(`<button onclick="window.triggerGather('${nearNode.id}')">${nearNode.icon} Gather ${nearNode.name}</button>`);
   }
-  let nearMob=monsters.find(m=>dist(player,m)<165);
+  let nearMob=monsters.find(m=>dist(player,m)<175);
   if(nearMob||player.y<320){
-    btns.push(`<button onclick="window.triggerAttack()">⚔️ Attack Forest Monster</button>`);
+    btns.push(`<button onclick="window.triggerAttack()">⚔️ Strike Monster (ATK ${S.equipped.weapon.stat})</button>`);
   }
-  if(player.carryKey&&dist(player,PTS.contractDrop)<120){
+  if(player.carryKey&&dist(player,PTS.contractDrop)<125){
     btns.push(`<button onclick="window.triggerContractDrop()">📦 Load Wholesale Crate</button>`);
   }
   if(dist(player,PTS.hire)<85&&S.employees.length<S.staffCap){
@@ -696,8 +848,8 @@ function updateContextActions(){
   if(inside(player,R.management,20)){
     btns.push(`<button onclick="window.openPage('wholesale')">📋 Management & Contracts</button>`);
   }
-  if(inside(player,R.visitor,30)&&!S.visitorClaimed){
-    btns.push(`<button onclick="window.triggerVisitor()">🎁 Special Visitor Gift</button>`);
+  if(inside(player,R.visitor,35)&&!S.visitorClaimed){
+    btns.push(`<button onclick="window.triggerVisitor()">🎁 Claim Visitor Gift</button>`);
   }
   const html=btns.join('');
   if(bar.innerHTML!==html)bar.innerHTML=html;
@@ -720,9 +872,9 @@ window.triggerTrain=()=>{
 window.triggerVisitor=()=>{
   if(S.visitorClaimed)return;
   S.visitorClaimed=true;
-  S.cash+=60;S.iron+=3;S.wood+=2;S.herb+=2;
-  addFloat(PTS.visitor.x,PTS.visitor.y-25,'+$60 +3🪨 +2🪵 +2🌿','#ffd86b');
-  toast('Special Visitor gifted $60 and bonus crafting materials!');
+  S.cash+=65;S.iron+=3;S.wood+=2;S.herb+=2;
+  addFloat(PTS.visitor.x,PTS.visitor.y-25,'+$65 +3🪨 +2🪵 +2🌿','#ffd86b');
+  toast('Special Visitor gifted $65 and bonus crafting materials!');
   updateContextActions();
 };
 
@@ -733,12 +885,12 @@ function hireEmployeeAtPad(){
   let id=Date.now();
   S.employees.push({
     id,name:'Helper '+(S.employees.length+1),
-    sell:22+Math.floor(Math.random()*28),
-    craft:22+Math.floor(Math.random()*28),
+    sell:24+Math.floor(Math.random()*26),
+    craft:24+Math.floor(Math.random()*26),
     atk:18+Math.floor(Math.random()*28),
     def:18+Math.floor(Math.random()*28),
     wage:20,job:'Sales',hp:100,
-    x:915,y:560
+    x:915,y:545
   });
   addFloat(PTS.hire.x,PTS.hire.y-20,'HIRED! (Sales)','#7dff9b');
   toast('Hired Helper! Assigned to Sales (change anytime in STAFF)');
@@ -752,39 +904,46 @@ function playerTick(dt){
   if(keys.d||keys.arrowright)dx++;
   player.moving=false;
   if(dx||dy){
-    target=null;player.moving=true;
+    target=null;player.navPath=null;player.moving=true;
     let d=Math.max(1,Math.hypot(dx,dy)),
         nx=player.x+dx/d*player.speed*dt,
         ny=player.y+dy/d*player.speed*dt;
-    moveEntity(player,nx,ny,17);
+    moveEntity(player,nx,ny,16);
     if(S.tutorialStep===0)advanceTutorial();
   }else if(target){
-    if(stepToward(player,target.x,target.y,player.speed,dt))target=null;
+    if(navigate(player,target.x,target.y,player.speed,dt))target=null;
     if(S.tutorialStep===0)advanceTutorial();
   }
-  player.x=Math.max(45,Math.min(WORLD.w-45,player.x));
-  player.y=Math.max(55,Math.min(WORLD.h-55,player.y));
+  player.x=Math.max(40,Math.min(WORLD.w-40,player.x));
+  player.y=Math.max(50,Math.min(WORLD.h-50,player.y));
 
-  // Auto-gather ready Material Yard nodes when walking over them
   for(const n of yardNodes){
     if(!n.ready){
       n.timer-=dt;
       if(n.timer<=0){n.ready=true;n.timer=0}
-    }else if(dist(player,n)<48){
+    }else if(dist(player,n)<50){
       gatherYardNode(n);
     }
   }
 
-  // Pick up outputs (Sword, Shield, Potion)
-  if(dist(player,PTS.swordOut)<58)tryPickUpOutput('sword');
-  if(dist(player,PTS.shieldOut)<58)tryPickUpOutput('shield');
-  if(dist(player,PTS.potionOut)<58)tryPickUpOutput('potion');
+  for(let i=drops.length-1;i>=0;i--){
+    const dr=drops[i];
+    if(dist(player,dr)<65){
+      S[dr.type]=(S[dr.type]||0)+dr.amt;
+      addFloat(dr.x,dr.y-16,`+${dr.amt} ${dr.icon}`,'#a8ff9e');
+      drops.splice(i,1);
+    }
+  }
 
-  // Stock retail shelf or Contract Warehouse
+  if(dist(player,PTS.swordOut)<58)tryPickUpGroupOutput('sword');
+  if(dist(player,PTS.shieldOut)<58)tryPickUpGroupOutput('shield');
+  if(dist(player,PTS.potionOut)<58)tryPickUpGroupOutput('potion');
+
   if(player.carryKey){
     let sp=shelfPoint(player.carryKey);
-    if(dist(player,sp)<75){
-      let space=12-S.products[player.carryKey].stock;
+    const cat=recipes[player.carryKey].cat;
+    if(dist(player,sp)<76){
+      let space=12-deptTotalStock(cat);
       if(space>0){
         let moveCount=Math.min(space,player.carryItems.length);
         for(let i=0;i<moveCount;i++)S.shelfItems[player.carryKey].push(player.carryItems.shift());
@@ -795,16 +954,15 @@ function playerTick(dt){
         if(!player.carryCount)player.carryKey=null;
         if(S.tutorialStep===2)advanceTutorial();
       }else{
-        toast('Shelf is full (12/12)!');
+        toast(cat+' shelf is full (12/12)!');
       }
     }
-    if(dist(player,PTS.contractDrop)<75){
+    if(dist(player,PTS.contractDrop)<78){
       deliverToContract();
     }
   }
 
-  // Collect checkout coins
-  if(S.coinsFloor>0&&dist(player,PTS.coinPile)<78){
+  if(S.coinsFloor>0&&dist(player,PTS.coinPile)<80){
     let amount=S.coinsFloor;
     S.cash+=amount;S.totalCoinsPicked+=amount;S.coinsFloor=0;
     addFloat(PTS.coinPile.x,PTS.coinPile.y-20,`+$${amount}`,'#ffd95e');
@@ -818,35 +976,45 @@ function playerTick(dt){
 }
 
 function attack(){
-  let best=null,bestD=175;
+  let best=null,bestD=180;
   for(const m of monsters){
     let d=dist(player,m);
     if(d<bestD){best=m;bestD=d}
   }
   if(!best){
-    toast('Walk north to the Forest Adventure gate to fight monsters!');
+    toast('Walk north to the Forest Adventure Gate to fight monsters!');
     return;
   }
-  let dmg=9+S.skills.adventure*3+(S.rareDisplay.length?2:0);
+  let dmg=Math.round((S.equipped.weapon?.stat||10)*0.8)+S.skills.adventure*3+(S.rareDisplay.length?2:0);
   best.hp-=dmg;
-  addFloat(best.x,best.y-20,`-${dmg} HP`,'#ff7a7a');
+  effects.push({x:best.x,y:best.y,t:0.35,slash:true,text:`-${dmg}`,col:'#ff7a7a'});
   if(best.hp<=0){
     monsters.splice(monsters.indexOf(best),1);
-    S.gel++;S.iron++;
-    if(Math.random()<.55)S.herb++;
+    drops.push({x:best.x-14,y:best.y,type:'gel',amt:1,icon:'💧'});
+    drops.push({x:best.x+14,y:best.y,type:best.kind==='wolf'?'wood':'iron',amt:1,icon:best.kind==='wolf'?'🪵':'🪨'});
+    if(Math.random()<.6)S.herb++;
     S.statsDay.monsters++;
     goalProgress('monster',1);
-    addFloat(best.x,best.y-36,'+1💧 +1🪨','#7dff9b');
-    toast('Monster defeated! Collected Slime Gel & Iron');
+    toast(`${best.kind==='wolf'?'Forest Wolf':'Green Slime'} defeated! Drops spawned`);
     if(S.tutorialStep===4)advanceTutorial();
   }
 }
 
+// ============================================================================
+// DAY CYCLE & WHOLESALE CONTRACTS
+// ============================================================================
 function processContractDeadlines(){
   for(let i=S.contracts.length-1;i>=0;i--){
     let q=S.contracts[i];q.days--;
-    if(q.done>=q.qty){S.cash+=q.reward;S.rep+=q.rep;S.legacy++;saveForever();toast(`Wholesale Contract Complete! +$${q.reward} & +1 Legacy`);S.contracts.splice(i,1)}
-    else if(q.days<=0){S.rep-=q.penalty;toast(`Wholesale Contract Failed! -${q.penalty} REP`);S.contracts.splice(i,1)}
+    if(q.done>=q.qty){
+      S.cash+=q.reward;S.rep+=q.rep;S.legacy++;saveForever();
+      toast(`Wholesale Contract Complete! +$${q.reward} & +1 Legacy`);
+      S.contracts.splice(i,1);
+    }else if(q.days<=0){
+      S.rep-=q.penalty;
+      toast(`Wholesale Contract Failed! -${q.penalty} REP`);
+      S.contracts.splice(i,1);
+    }
   }
 }
 function generateContractOffers(){
@@ -861,14 +1029,14 @@ function contractUnits(){return S.contracts.reduce((a,x)=>a+x.done,0)}
 
 function createDayContent(){
   const pool=[
-    {type:'sale',target:4,label:'Sell 4 products'},
-    {type:'craft',target:3,label:'Craft 3 products'},
+    {type:'sale',target:4,label:'Sell 4 products to customers'},
+    {type:'craft',target:3,label:'Craft 3 products at stations'},
     {type:'monster',target:2,label:'Defeat 2 forest monsters'},
     {type:'tip',target:2,label:'Earn 2 fast-service tips'}
   ];
   S.goals=pool.sort(()=>Math.random()-.5).slice(0,3).map(x=>({...x,value:0,done:false}));
   const events=[
-    {name:'Adventurer Festival',desc:'Sword prices are increased +20% today.',type:'attack'},
+    {name:'Adventurer Festival',desc:'Attack weapon prices are increased +20% today.',type:'attack'},
     {name:'Potion Rush',desc:'Customers request Healing Potions more often today.',type:'potion'},
     {name:'Hot Forge',desc:'Crafting quality chances are boosted today.',type:'forge'},
     {name:'Supply Caravan',desc:'A caravan delivered +3 Iron, +3 Wood, and +3 Herb.',type:'merchant'}
@@ -924,13 +1092,12 @@ function update(dt){
   playerTick(dt);
   employeeTick(dt);
   clientTick(dt);
-  // Spawn monsters in the Northern Forest Adventure zone (x:420..1420, y:120..255)
   if(monsters.length<5&&Math.random()<dt*.45){
     monsters.push({
       x:440+Math.random()*960,
-      y:125+Math.random()*135,
-      hp:18,maxHp:18,
-      kind:Math.random()<.35?'wolf':'slime'
+      y:115+Math.random()*140,
+      hp:20,maxHp:20,
+      kind:Math.random()<.38?'wolf':'slime'
     });
   }
   effects.forEach(e=>e.t-=dt);
@@ -941,6 +1108,9 @@ function update(dt){
   }
 }
 
+// ============================================================================
+// 6-LAYER MODULAR RENDERING SYSTEM (No Baked People or Static Stock!)
+// ============================================================================
 function pxRect(x,y,w,h,col){
   g.fillStyle=col;
   g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));
@@ -951,92 +1121,357 @@ function text(t,x,y,z=14,col='#fff'){
   g.textAlign='center';
   g.fillText(t,x,y);
 }
-function labelBadge(t,x,y,col='#fff1c2',bg='#1d1616dd',w=148){
+function labelBadge(t,x,y,col='#fff1c2',bg='#1d1616e6',w=152){
   pxRect(x-w/2,y-12,w,20,bg);
   g.strokeStyle='#9b713f';g.lineWidth=1.5;
   g.strokeRect(Math.round(x-w/2),Math.round(y-12),w,20);
-  text(t,x,y+2,10.5,col);
+  text(t,x,y+3,10.5,col);
 }
 
-function drawShelfOverlay(x,y,items,max,title,col){
-  pxRect(x-68,y-26,136,50,'#1b1618dd');
-  g.strokeStyle=col;g.lineWidth=2;
-  g.strokeRect(x-68,y-26,136,50);
-  text(`${title} ${items.length}/${max}`,x,y-11,10.5,'#ffe8a3');
-  for(let i=0;i<Math.min(items.length,6);i++){
-    let sx=x-50+i*20,sy=y+9;
-    pxRect(sx-8,sy-8,16,16,items[i].color||col);
-    text(items[i].icon,sx,sy+4,11,'#fff');
-  }
-  if(items.length===0){
-    text('EMPTY SHELF',x,y+12,9.5,'#ff9e8a');
-  }
-}
-
-function drawOutputOverlay(x,y,items,max,label){
-  pxRect(x-44,y-20,88,38,'#1d1618e0');
-  g.strokeStyle=items.length>0?'#ffd264':'#7c5b3e';g.lineWidth=2;
-  g.strokeRect(x-44,y-20,88,38);
-  text(`${label} ${items.length}/${max}`,x,y-6,9,'#ffe7a0');
-  for(let i=0;i<Math.min(items.length,4);i++){
-    text(items[i].icon,x-24+i*16,y+12,12,'#fff');
-  }
-}
-
-function drawPixelWorld(){
-  if(mapArt.complete&&mapArt.naturalWidth){
-    g.drawImage(mapArt,0,0,WORLD.w,WORLD.h);
+function drawTiledRoomFloor(x,y,w,h,baseCol,lineCol,sprKey){
+  pxRect(x,y,w,h,baseCol);
+  if(sprReady(sprKey)){
+    for(let yy=y;yy<y+h;yy+=64){
+      for(let xx=x;xx<x+w;xx+=64){
+        g.drawImage(SPRITES[sprKey],xx,yy,Math.min(64,x+w-xx),Math.min(64,y+h-yy));
+      }
+    }
   }else{
-    pxRect(0,0,WORLD.w,WORLD.h,'#397f3d');
-    pxRect(50,300,1770,1750,'#c9ab79');
-    text('Loading Forest Outpost Artwork...',WORLD.w/2,1350,24,'#fff');
+    for(let yy=y+8;yy<y+h;yy+=26){
+      pxRect(x,yy,w,2,lineCol);
+      for(let xx=x+((yy%52)?18:36);xx<x+w;xx+=48)pxRect(xx,yy,3,26,lineCol);
+    }
   }
+}
 
-  // v0.16.00 modular environment props aligned to existing gameplay zones
-  drawModularArt();
+function drawTwelveSlotRack(x,y,items,title,bannerCol,icon){
+  // Banner & 2x6 Shelf Rack (12 visible slots)
+  pxRect(x-92,y-76,184,132,'#5e3c24');
+  pxRect(x-86,y-70,172,120,'#3b2416');
+  // Department Banner
+  pxRect(x-22,y-108,44,34,bannerCol);
+  g.strokeStyle='#ffd064';g.lineWidth=2;g.strokeRect(x-22,y-108,44,34);
+  text(icon,x,y-85,17,'#fff');
+  for(let i=0;i<12;i++){
+    const col=i%4,row=Math.floor(i/4);
+    const sx=x-63+col*42,sy=y-46+row*34;
+    pxRect(sx-17,sy-13,34,26,'#26170e');
+    g.strokeStyle='#754d30';g.lineWidth=1;g.strokeRect(sx-17,sy-13,34,26);
+    if(i<items.length){
+      const it=items[i];
+      pxRect(sx-15,sy-11,30,5,it.color||bannerCol);
+      text(it.icon,sx,sy+7,14,'#fff');
+    }
+  }
+  labelBadge(`${title} ${items.length}/12`,x,y+72,items.length===0?'#ff9e8a':'#ffe8a3','#1b1618ee',148);
+}
 
-  // Material Yard live nodes & regrowth timers
-  for(const n of yardNodes){
-    pxRect(n.x-26,n.y-20,52,36,n.ready?'#1c1816bb':'#1c1816dd');
-    text(n.icon,n.x,n.y+4,18,n.ready?'#fff':'#777');
-    if(!n.ready){
-      pxRect(n.x-22,n.y+10,44,5,'#333');
-      pxRect(n.x-22,n.y+10,44*(1-n.timer/n.max),5,'#67d876');
+function drawEightSlotOutput(x,y,items,max,label){
+  if(sprReady('toolTable'))g.drawImage(SPRITES.toolTable,x-46,y-22,92,46);
+  else{
+    pxRect(x-46,y-20,92,40,'#6b472b');
+    pxRect(x-42,y-16,84,32,'#8c623e');
+  }
+  for(let i=0;i<max;i++){
+    const sx=x-30+(i%4)*20,sy=y-7+Math.floor(i/4)*15;
+    pxRect(sx-8,sy-6,16,12,i<items.length?'#2d1e14':'#4f3624');
+    if(i<items.length){
+      pxRect(sx-8,sy-6,16,3,items[i].color||'#ffd064');
+      text(items[i].icon,sx,sy+4,10.5,'#fff');
+    }
+  }
+  labelBadge(`${label} ${items.length}/${max}`,x,y+32,items.length>=max?'#ff8978':'#ffe7a0','#191516dd',108);
+}
+
+function drawTreeCanopy(x,y,kind=0){
+  if(kind===2&&sprReady('pine1')){g.drawImage(SPRITES.pine1,x-36,y-48,72,84);return}
+  if(kind===1&&sprReady('tree2')){g.drawImage(SPRITES.tree2,x-38,y-48,76,84);return}
+  if(sprReady('tree1')){g.drawImage(SPRITES.tree1,x-38,y-48,76,84);return}
+  pxRect(x-7,y+16,14,26,'#65412c');
+  pxRect(x-30,y-8,60,36,kind===1?'#1c562c':'#236733');
+  pxRect(x-24,y-22,48,28,kind===1?'#2a743d':'#378846');
+  pxRect(x-15,y-32,30,18,'#56ab54');
+}
+
+// LAYER 1 & 2: Modular Ground, Rooms, Walls, Empty Shelves & Workstations
+function drawLayer1And2(){
+  if(S.mapStyle==='concept'&&refMapArt.complete&&refMapArt.naturalWidth){
+    g.drawImage(refMapArt,0,0,WORLD.w,WORLD.h);
+    return;
+  }
+  // 1. Base Grass & Meadow Texture
+  pxRect(0,0,WORLD.w,WORLD.h,'#3b7a38');
+  for(let y=0;y<WORLD.h;y+=64){
+    for(let x=0;x<WORLD.w;x+=64){
+      if((x*5+y*9)%13<3)pxRect(x+14,y+18,8,6,'#549949');
+      if((x*11+y*3)%19===0)pxRect(x+32,y+36,6,6,'#7bc768');
     }
   }
 
-  // Workshop Output Badges
-  drawOutputOverlay(PTS.swordOut.x,PTS.swordOut.y,S.outputItems.sword,S.outputCap,'⚔️ OUT');
-  if(S.products.shield.unlocked||S.outputItems.shield.length>0){
-    drawOutputOverlay(PTS.shieldOut.x,PTS.shieldOut.y,S.outputItems.shield,S.outputCap,'🛡️ OUT');
+  // Outdoor Roads & Corridors
+  drawTiledRoomFloor(625,295,660,425,'#b89d72','#a1865c','pathStone');
+  drawTiledRoomFloor(630,680,655,515,'#b89d72','#a1865c','pathStone');
+  drawTiledRoomFloor(45,1165,1235,880,'#cdb386','#b59a6d','floorWood');
+  drawTiledRoomFloor(655,2040,185,560,'#c2a576','#a6895b','pathStone');
+  drawTiledRoomFloor(1255,660,575,690,'#9d8663','#846e4d','pathMoss');
+  drawTiledRoomFloor(860,110,170,195,'#9c845d','#826b47','pathStone');
+
+  // Southern River & Wooden Bridge
+  pxRect(350,2350,1520,200,'#1b7c9c');
+  for(let xx=360;xx<1840;xx+=55)pxRect(xx,2385+(xx%3)*45,28,5,'#5fd1e3');
+  // Central Stone/Wood Bridge (x:645..850)
+  drawTiledRoomFloor(645,2335,205,225,'#8f6339','#694626','bridge');
+  pxRect(645,2335,12,225,'#54381f');pxRect(838,2335,12,225,'#54381f');
+
+  // Functional Rooms Floors
+  for(const [rk,rm] of Object.entries(R)){
+    if(['counter','attack','defense','other','gate','forest'].includes(rk))continue;
+    drawTiledRoomFloor(rm.x,rm.y,rm.w,rm.h,rm.floor,'#5c4731',rk==='forge'||rk==='alchemy'?'floorWork':'floorWood');
   }
-  drawOutputOverlay(PTS.potionOut.x,PTS.potionOut.y,S.outputItems.potion,S.outputCap,'🧪 OUT');
 
-  // Retail Shelf Stock Overlays
-  drawShelfOverlay(PTS.attackShelf.x,PTS.attackShelf.y,S.shelfItems.sword,12,'⚔️ ATTACK','#d9534f');
-  drawShelfOverlay(PTS.defenseShelf.x,PTS.defenseShelf.y,S.shelfItems.shield,12,'🛡️ DEFENSE','#4a90e2');
-  drawShelfOverlay(PTS.otherShelf.x,PTS.otherShelf.y,S.shelfItems.potion,12,'🧪 OTHER','#9b59b6');
-
-  // Rare Storage live showcase badge
-  labelBadge(`✨ RARE STORAGE (${S.rareDisplay.length}/6)`,PTS.rare.x,PTS.rare.y-42,'#f3c6ff','#291d36dd',156);
-  for(let i=0;i<Math.min(S.rareDisplay.length,4);i++){
-    let it=S.rareDisplay[i];
-    pxRect(PTS.rare.x-54+i*36,PTS.rare.y-16,30,28,it.color);
-    text(it.icon,PTS.rare.x-39+i*36,PTS.rare.y+3,14,'#fff');
+  // Forge Furnaces & Anvils (Inside Forge x:55..635, y:730..1165)
+  for(const fx of [185,435]){
+    pxRect(fx-55,770,110,88,'#4a4c54');
+    pxRect(fx-42,784,84,62,'#2a2a30');
+    pxRect(fx-30,800,60,40,'#ea6227');
+    pxRect(fx-18,808,36,26,'#ffd24c');
+    if(sprReady('anvil'))g.drawImage(SPRITES.anvil,fx-32,915,64,54);
+    else{pxRect(fx-28,925,56,34,'#595d66');pxRect(fx-18,918,36,12,'#828792')}
   }
 
-  // Contract Warehouse status badge
-  labelBadge(`📦 CONTRACTS ${contractUnits()}/${S.contractCap}`,PTS.contractDrop.x+45,PTS.contractDrop.y-32,'#ffe0a0');
+  // Alchemy Cauldrons & Herb Shelves (Inside Alchemy x:660..1255, y:730..1165)
+  for(let i=0;i<4;i++){
+    pxRect(720+i*125,765,86,36,'#5c3b23');
+    pxRect(732+i*125,752,16,18,['#f25c5c','#58b0f7','#b56df2','#5ce07c'][i]);
+    pxRect(764+i*125,752,16,18,['#f5d04c','#5ce07c','#f25c5c','#58b0f7'][i]);
+  }
+  for(const cx of [845,1075]){
+    pxRect(cx-38,910,76,62,'#2d2e33');
+    pxRect(cx-30,902,60,18,cx===845?'#4cd964':'#a959f2');
+  }
 
-  // Special Visitor indicator
+  // Staff House Beds & Hiring Pad (Inside Staff House x:660..1225, y:310..680)
+  for(let i=0;i<3;i++){
+    const bx=725+i*145,by=385;
+    pxRect(bx,by,76,46,'#5c3a24');
+    pxRect(bx+6,by+6,64,34,['#5985b5','#9c68b2','#549e70'][i]);
+    pxRect(bx+8,by+8,20,14,'#f5ebd6');
+  }
+  pxRect(PTS.hire.x-54,PTS.hire.y-26,108,52,'#2c7a3e');
+  g.strokeStyle='#8effc1';g.lineWidth=2;g.strokeRect(PTS.hire.x-54,PTS.hire.y-26,108,52);
+  text('🤝 HIRE $120',PTS.hire.x,PTS.hire.y+5,11,'#fff');
+
+  // Training Room Dummies (x:1265..1535, y:325..670)
+  for(const dx of [1345,1445]){
+    pxRect(dx-6,470,12,46,'#6e472b');
+    pxRect(dx-22,482,44,8,'#8c5c38');
+    pxRect(dx-13,454,26,26,'#d9be93');
+    text('🎯',dx,472,13,'#fff');
+  }
+
+  // Management Desk & Upgrade Blueprint Table (x:1285..1710, y:1350..2040)
+  pxRect(1420,1540,140,64,'#6e4427');
+  pxRect(1430,1548,120,48,'#9c653b');
+  text('📜 CONTRACTS',1490,1577,11,'#fff2c6');
+  pxRect(1420,1820,140,64,'#3c5670');
+  text('🛠️ UPGRADES',1490,1856,11,'#d4ecff');
+
+  // Special Visitor Plaza Well (x:315, y:2335)
+  if(sprReady('well'))g.drawImage(SPRITES.well,PTS.visitor.x-42,PTS.visitor.y-42,84,84);
+  else{
+    pxRect(PTS.visitor.x-36,PTS.visitor.y-36,72,72,'#6d7882');
+    pxRect(PTS.visitor.x-24,PTS.visitor.y-24,48,48,'#288fb0');
+  }
+
+  // Checkout Counter Bar
+  pxRect(495,1905,465,52,'#694024');
+  pxRect(495,1905,465,12,'#b88038');
+  text('🪙 CHECKOUT COUNTER',725,1938,12,'#ffe9b5');
+
+  // Physical Walls & Fences from SOLIDS
+  for(const s of SOLIDS){
+    if(s.y>=2340&&s.h>=180)continue; // river already drawn
+    if(s.x===495&&s.y===1905)continue; // checkout already drawn
+    pxRect(s.x,s.y,s.w,s.h,'#593e2e');
+    pxRect(s.x,s.y,s.w,Math.min(7,s.h),'#8c664b');
+  }
+}
+
+// LAYER 3: Dynamic World (Materials, Outputs, 12-Slot Shelves, Contract Crates, Rare Storage, Coins & Y-Sorted Characters)
+function drawLayer3(){
+  // Material Yard Nodes
+  for(const n of yardNodes){
+    if(n.ready&&sprReady(n.spr)){
+      g.drawImage(SPRITES[n.spr],n.x-28,n.y-24,56,48);
+    }else{
+      pxRect(n.x-26,n.y-20,52,40,n.ready?'#45382b':'#2b241d');
+      text(n.icon,n.x,n.y+6,20,n.ready?'#fff':'#666');
+    }
+    if(!n.ready){
+      pxRect(n.x-22,n.y+16,44,6,'#222');
+      pxRect(n.x-22,n.y+16,44*(1-n.timer/n.max),6,'#67d876');
+    }
+  }
+
+  // Workshop Output Tables (8-slot visible capacity)
+  const forgeSwordOut=[...S.outputItems.sword,...S.outputItems.axe];
+  const forgeShieldOut=[...S.outputItems.shield,...S.outputItems.helmet];
+  const alchOut=[...S.outputItems.potion,...S.outputItems.repair];
+  drawEightSlotOutput(PTS.swordOut.x,PTS.swordOut.y,forgeSwordOut,S.outputCap,'⚔️ OUT');
+  drawEightSlotOutput(PTS.shieldOut.x,PTS.shieldOut.y,forgeShieldOut,S.outputCap,'🛡️ OUT');
+  drawEightSlotOutput(PTS.potionOut.x,PTS.potionOut.y,alchOut,S.outputCap,'🧪 OUT');
+
+  // 12-Slot Retail Shelves (Attack, Defense, Other)
+  drawTwelveSlotRack(PTS.attackShelf.x,PTS.attackShelf.y-25,deptItems('Attack'),'ATTACK','#b83737','⚔️');
+  drawTwelveSlotRack(PTS.defenseShelf.x,PTS.defenseShelf.y-25,deptItems('Defense'),'DEFENSE','#3368a6','🛡️');
+  drawTwelveSlotRack(PTS.otherShelf.x,PTS.otherShelf.y-25,deptItems('Other'),'OTHER','#784aa8','🧪');
+
+  // Rare Storage Showcase (x:70..385, y:1645..2045)
+  pxRect(PTS.rare.x-110,PTS.rare.y-50,220,95,'#261933');
+  g.strokeStyle='#a56de2';g.lineWidth=2;g.strokeRect(PTS.rare.x-110,PTS.rare.y-50,220,95);
+  for(let i=0;i<6;i++){
+    const rx=PTS.rare.x-82+(i%3)*82,ry=PTS.rare.y-22+Math.floor(i/3)*42;
+    const it=S.rareDisplay[i];
+    pxRect(rx-20,ry-15,40,30,it?it.color:'#3b284d');
+    if(it)text(it.icon,rx,ry+6,15,'#fff');
+  }
+  labelBadge(`✨ RARE SHOWCASE (${S.rareDisplay.length}/6)`,PTS.rare.x,PTS.rare.y-62,'#f3c6ff','#291d36ee',168);
+
+  // Contract Warehouse 20-Crate Pallets (visibly filling as wholesale units are delivered)
+  const filledCrates=contractUnits(),activeIcon=S.contracts[0]?recipes[S.contracts[0].key].icon:'📦';
+  for(let i=0;i<20;i++){
+    const cx=1365+(i%5)*80,cy=735+Math.floor(i/5)*88,full=i<filledCrates;
+    pxRect(cx,cy,44,38,full?'#b87c3c':'#4b3b2b');
+    pxRect(cx+4,cy+4,36,30,full?'#dfb06a':'#634e39');
+    if(full)text(activeIcon,cx+22,cy+25,14,'#fff');
+  }
+  pxRect(PTS.contractDrop.x-48,PTS.contractDrop.y-24,96,48,'#3a542c');
+  g.strokeStyle='#ffd064';g.lineWidth=2;g.strokeRect(PTS.contractDrop.x-48,PTS.contractDrop.y-24,96,48);
+  text('DROP ZONE',PTS.contractDrop.x,PTS.contractDrop.y+4,10,'#fff3b8');
+  labelBadge(`📦 CONTRACTS ${filledCrates}/${S.contractCap}`,1535,695,'#ffe0a0');
+
+  // Checkout Coins Pile
+  if(S.coinsFloor>0){
+    pxRect(PTS.coinPile.x-42,PTS.coinPile.y-36,84,22,'#191516e6');
+    for(let i=0;i<Math.min(14,Math.ceil(S.coinsFloor/15));i++){
+      g.fillStyle='#ffd54f';
+      g.beginPath();g.arc(PTS.coinPile.x-24+(i%5)*12,PTS.coinPile.y-2+Math.floor(i/5)*10,6.5,0,7);g.fill();
+    }
+    text('🪙 $'+S.coinsFloor,PTS.coinPile.x,PTS.coinPile.y-21,11.5,'#fff4a3');
+  }
+
+  // Monster Loot Drops
+  for(const dr of drops){
+    pxRect(dr.x-12,dr.y-12,24,24,'#233b24cc');
+    text(dr.icon,dr.x,dr.y+5,14,'#fff');
+  }
+
+  // Y-Sorted Dynamic Entities (Player, Workers, Customers, Monsters)
+  const entities=[];
+  clients.forEach(x=>entities.push({y:x.y,fn:()=>{
+    let col=x.level==='Knight'?'#4a6b9c':x.personality==='Collector'?'#8a4999':'#6f4c92';
+    person(x,col,x.level,x.level==='Knight'?'Knight':x.personality==='Collector'?'Collector':x.level==='Veteran'?'Veteran':'none',x.carriedItem?x.carriedItem.icon:'');
+  }}));
+  S.employees.forEach(e=>entities.push({y:e.y,fn:()=>{
+    let col=e.job==='Sales'?'#c68a2d':e.job==='Craft'?'#c65337':e.job==='Expedition'?'#4b6cb7':'#67825d';
+    person(e,col,`${e.name} (${e.job})`,e.job==='Craft'?'Smith':'none',e.carryKey?recipes[e.carryKey].icon:(e.statusIcon||''));
+  }}));
+  monsters.forEach(m=>entities.push({y:m.y,fn:()=>{
+    let bounce=Math.sin(animClock*8+m.x)*3;
+    if(m.kind==='wolf'){
+      pxRect(m.x-22,m.y-4+bounce,44,24,'#596270');
+      pxRect(m.x-14,m.y-16+bounce,28,16,'#778294');
+    }else{
+      pxRect(m.x-22,m.y-3+bounce,44,28,'#49ad44');
+      pxRect(m.x-15,m.y-15+bounce,30,18,'#78dd62');
+    }
+    pxRect(m.x-8,m.y+2+bounce,4,4,'#222');pxRect(m.x+5,m.y+2+bounce,4,4,'#222');
+    pxRect(m.x-20,m.y-26,40,6,'#222');
+    pxRect(m.x-20,m.y-26,40*(m.hp/m.maxHp),6,'#67e66c');
+  }}));
+  entities.push({y:player.y,fn:()=>{
+    if(player.carryCount>0){
+      for(let i=0;i<player.carryItems.length;i++){
+        let it=player.carryItems[i];
+        pxRect(player.x-14,player.y-76-i*20,28,18,it.color||'#fff');
+        text(it.icon,player.x,player.y-62-i*20,14,'#fff');
+      }
+    }
+    person(player,'#297ea1','YOU','Hero',S.equipped.weapon?.icon||'');
+  }});
+  entities.sort((a,b)=>a.y-b.y);
+  entities.forEach(ent=>ent.fn());
+}
+
+// LAYER 4, 5 & 6: Upper Tree Canopies, Animated Fire/Bubbles, Request Bubbles & Room Signboards
+function drawLayer4To6(){
+  if(S.mapStyle!=='concept'){
+    // Layer 4: Forest Trees & Perimeter Canopies
+    const treeCoords=[
+      [110,140,0],[240,120,1],[370,150,2],[1480,130,1],[1620,150,2],[1740,130,0],
+      [140,2220,0],[490,2220,1],[940,2220,0],[1120,2220,1],[1350,2240,2],
+      [220,2680,1],[480,2680,0],[960,2680,1],[1220,2680,0],[1520,2680,2]
+    ];
+    for(const [tx,ty,tk] of treeCoords)drawTreeCanopy(tx,ty,tk);
+
+    // Forest Adventure Archway Sign
+    pxRect(835,255,220,28,'#593a22');
+    g.strokeStyle='#ffd064';g.lineWidth=2;g.strokeRect(835,255,220,28);
+    text('🌲 FOREST ADVENTURE',945,274,11,'#ffe9b5');
+
+    // Room Header Signboards
+    for(const rm of Object.values(R)){
+      if(rm.title)labelBadge(rm.title,rm.x+rm.w/2,rm.y+18,'#ffe9b5','#241a14e6',Math.min(210,rm.w-20));
+    }
+  }
+
+  // Layer 5: Animated Forge Sparks, Alchemy Bubbles & Combat Slash Effects
+  const flicker=Math.sin(animClock*10)*4;
+  pxRect(180,812+flicker,10,10,'#fff3a1');
+  pxRect(430,812-flicker,10,10,'#fff3a1');
+  g.fillStyle='#7dff9b';
+  g.beginPath();g.arc(845+Math.sin(animClock*5)*10,898-(animClock*20)%18,4,0,7);g.fill();
+  g.fillStyle='#d58cff';
+  g.beginPath();g.arc(1075+Math.cos(animClock*5)*10,898-((animClock*20+9)%18),4,0,7);g.fill();
+
   if(!S.visitorClaimed){
-    labelBadge('🎁 TAP TO CLAIM GIFT!',PTS.visitor.x,PTS.visitor.y-48,'#ffd86b','#3b2818ee',148);
+    labelBadge('🎁 TAP TO CLAIM VISITOR GIFT!',PTS.visitor.x,PTS.visitor.y-52,'#ffd86b','#3b2818f0',188);
   }
+
+  // Layer 6: Customer Request Bubbles, Patience Bars & Floating Numbers
+  clients.forEach(x=>{
+    if(x.state==='toShelf'||x.state==='waitShelf'){
+      let r=recipes[x.want];
+      let label=`${r.icon} ${r.name}`+(x.minStat?`\n${r.statName} ${x.minStat}+`:'')+(x.minRarity!=='Any'?` • ${x.minRarity}+`:'');
+      drawRequest(x,label);
+      pxRect(x.x-30,x.y-64,60,6,'#332a30');
+      pxRect(x.x-30,x.y-64,60*Math.max(0,x.pat/x.max),6,x.pat/x.max>.4?'#5ed177':'#ed6256');
+    }
+  });
+
+  S.employees.forEach(e=>{
+    if(e.job==='Craft'&&e.work>0){
+      pxRect(e.x-24,e.y-66,48,6,'#222');
+      pxRect(e.x-24,e.y-66,48*Math.min(1,e.work/6.0),6,'#ffd257');
+    }
+  });
+
+  if(target){
+    g.strokeStyle='#fff0a3';g.lineWidth=3;
+    g.strokeRect(target.x-12,target.y-12,24,24);
+  }
+  effects.forEach(e=>{
+    if(e.slash){
+      g.strokeStyle='#fff';g.lineWidth=3;
+      g.beginPath();g.arc(e.x,e.y,28,0,Math.PI);g.stroke();
+    }
+    text(e.text,e.x,e.y-(1.2-e.t)*34,14,e.col||'#ffed75');
+  });
 }
 
 function person(o,col='#302831',label='',hatType='none',badge=''){
   g.save();
-  let bob=o.moving?Math.sin(animClock*14)*3:0;
+  let bob=o.moving?Math.sin(animClock*15)*3:0;
   g.translate(Math.round(o.x),Math.round(o.y+bob));
   g.fillStyle='#0006';
   g.beginPath();g.ellipse(0,38-bob,18,7,0,0,Math.PI*2);g.fill();
@@ -1052,6 +1487,8 @@ function person(o,col='#302831',label='',hatType='none',badge=''){
     pxRect(-14,-39,28,10,'#e6b835');pxRect(-7,-43,14,5,'#ffdf6b');
   }else if(hatType==='Veteran'){
     pxRect(-15,-38,30,11,'#3d5a35');
+  }else if(hatType==='Hero'){
+    pxRect(-15,-39,30,11,'#1e5778');pxRect(-9,-42,18,4,'#ffd064');
   }else{
     pxRect(-14,-37,28,10,'#473127');
   }
@@ -1060,13 +1497,13 @@ function person(o,col='#302831',label='',hatType='none',badge=''){
     text(label,0,-44,9.5,'#fff');
   }
   if(badge){
-    text(badge,24,-22,14,'#fff');
+    text(badge,24,-18,14,'#fff');
   }
   g.restore();
 }
 
 function drawRequest(o,label){
-  let lines=label.split('\n'),w=138,h=16+lines.length*14,x=o.x-w/2,y=o.y-70-h;
+  let lines=label.split('\n'),w=142,h=16+lines.length*14,x=o.x-w/2,y=o.y-70-h;
   pxRect(x,y,w,h,'#fff0c9');
   g.strokeStyle='#6d4931';g.lineWidth=3;g.strokeRect(x,y,w,h);
   for(let i=0;i<lines.length;i++)text(lines[i],o.x,y+15+i*14,10,'#352619');
@@ -1078,87 +1515,21 @@ function draw(){
   g.clearRect(0,0,vw,vh);
   g.scale(zoom,zoom);
   g.translate(-cam.x,-cam.y);
-
-  drawPixelWorld();
-
-  // Hire Pad in Staff House
-  g.globalAlpha=.75;g.fillStyle='#3ca84e';
-  g.fillRect(PTS.hire.x-48,PTS.hire.y-22,96,44);
-  g.globalAlpha=1;
-  text('🤝 HIRE $120',PTS.hire.x,PTS.hire.y+4,10.5,'#fff');
-
-  // Checkout Coins on Checkout Counter
-  if(S.coinsFloor>0){
-    pxRect(PTS.coinPile.x-38,PTS.coinPile.y-36,76,22,'#191516dd');
-    for(let i=0;i<Math.min(12,Math.ceil(S.coinsFloor/18));i++){
-      g.fillStyle='#ffd54f';
-      g.beginPath();g.arc(PTS.coinPile.x-22+(i%5)*11,PTS.coinPile.y-4+Math.floor(i/5)*10,6.5,0,7);g.fill();
-    }
-    text('🪙 $'+S.coinsFloor,PTS.coinPile.x,PTS.coinPile.y-21,11.5,'#fff4a3');
-  }
-
-  // Customers
-  clients.forEach(x=>{
-    let col=x.level==='Knight'?'#4a6b9c':x.personality==='Collector'?'#8a4999':'#6f4c92';
-    person(x,col,x.level,x.level==='Knight'?'Knight':x.personality==='Collector'?'Collector':x.level==='Veteran'?'Veteran':'none',x.carriedItem?x.carriedItem.icon:'');
-    if(x.state==='toShelf'||x.state==='waitShelf'){
-      let r=recipes[x.want];
-      let label=`${r.icon} ${r.name}`+(x.minStat?`\n${r.statName} ${x.minStat}+`:'')+(x.minRarity!=='Any'?` • ${x.minRarity}+`:'');
-      drawRequest(x,label);
-      pxRect(x.x-30,x.y-64,60,6,'#332a30');
-      pxRect(x.x-30,x.y-64,60*Math.max(0,x.pat/x.max),6,x.pat/x.max>.4?'#5ed177':'#ed6256');
-    }
-  });
-
-  // Employees
-  S.employees.forEach(e=>{
-    let col=e.job==='Sales'?'#c68a2d':e.job==='Craft'?'#c65337':e.job==='Expedition'?'#4b6cb7':'#67825d';
-    person(e,col,`${e.name} (${e.job})`,'none',e.carryKey?recipes[e.carryKey].icon:(e.statusIcon||''));
-    if(e.job==='Craft'&&e.work>0){
-      pxRect(e.x-24,e.y-66,48,6,'#222');
-      pxRect(e.x-24,e.y-66,48*Math.min(1,e.work/6.2),6,'#ffd257');
-    }
-  });
-
-  // Forest Monsters
-  monsters.forEach(m=>{
-    let bounce=Math.sin(animClock*8+m.x)*3;
-    if(m.kind==='wolf'){
-      pxRect(m.x-22,m.y-4+bounce,44,24,'#596270');
-      pxRect(m.x-14,m.y-16+bounce,28,16,'#778294');
-    }else{
-      pxRect(m.x-22,m.y-3+bounce,44,28,'#49ad44');
-      pxRect(m.x-15,m.y-15+bounce,30,18,'#78dd62');
-    }
-    pxRect(m.x-8,m.y+2+bounce,4,4,'#222');pxRect(m.x+5,m.y+2+bounce,4,4,'#222');
-    pxRect(m.x-20,m.y-26,40,6,'#222');
-    pxRect(m.x-20,m.y-26,40*(m.hp/18),6,'#67e66c');
-  });
-
-  // Player & Carried Stack
-  if(player.carryCount>0){
-    for(let i=0;i<player.carryItems.length;i++){
-      let it=player.carryItems[i];
-      pxRect(player.x-14,player.y-74-i*20,28,18,it.color||'#fff');
-      text(it.icon,player.x,player.y-60-i*20,14,'#fff');
-    }
-  }
-  person(player,'#297ea1','YOU');
-
-  if(target){
-    g.strokeStyle='#fff0a3';g.lineWidth=3;
-    g.strokeRect(target.x-12,target.y-12,24,24);
-  }
-  effects.forEach(e=>text(e.text,e.x,e.y-(1.15-e.t)*34,14,e.col||'#ffed75'));
+  drawLayer1And2();
+  drawLayer3();
+  drawLayer4To6();
   g.restore();
 }
 
+// ============================================================================
+// UI PANELS & SLOTS
+// ============================================================================
 function renderSlots(){
   const box=$('saveSlots');
   if(!box)return;
   box.innerHTML=[1,2,3].map(n=>{
     let d=load(n);
-    return `<div class="slot"><h2>SAVE SLOT ${n}</h2>${d?`<p>Day ${d.day} • Cash $${d.cash}<br>Reputation ${d.rep} • Legacy ${d.legacy||0}<br>Staff ${d.employees?.length||0} • Saved ${d.savedAt||'Recently'}</p>`:'<p>Empty shop record<br>Start at the Forest Outpost with 0 employees and build your empire!</p>'}<div class="actions"><button data-load="${n}">${d?'LOAD SHOP':'START NEW SHOP'}</button>${d?`<button class="danger" data-del="${n}">DELETE</button>`:''}</div></div>`;
+    return `<div class="slot"><h2>SAVE SLOT ${n}</h2>${d?`<p>Day ${d.day} • Cash $${d.cash}<br>Reputation ${d.rep} • Legacy ${d.legacy||0}<br>Staff ${d.employees?.length||0} • Saved ${d.savedAt||'Recently'}</p>`:'<p>Empty shop record<br>Start at the Modular Forest Outpost with 0 employees and build your empire!</p>'}<div class="actions"><button data-load="${n}">${d?'LOAD SHOP':'START NEW SHOP'}</button>${d?`<button class="danger" data-del="${n}">DELETE</button>`:''}</div></div>`;
   }).join('');
   document.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>start(Number(b.dataset.load)));
   document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
@@ -1175,14 +1546,15 @@ function start(n){
   slot=n;
   let existing=load(n);
   S=norm(existing);
-  player={x:745,y:2080,speed:320,carryKey:null,carryCount:0,carryItems:[],carryCap:3+S.skills.management};
-  clients=[];monsters=[];target=null;dayTime=0;zoom=S.zoom||.65;
+  player={x:745,y:1975,speed:325,hp:100,maxHp:100,carryKey:null,carryCount:0,carryItems:[],carryCap:3+S.skills.management};
+  clients=[];monsters=[];drops=[];target=null;dayTime=0;zoom=S.zoom||.66;
   if(!S.goals.length)createDayContent();
   if(!S.offers.length)generateContractOffers();
   playing=true;
-  $('slotScreen').classList.remove('show');$('app').classList.remove('hidden');
+  $('slotScreen').classList.remove('show');
+  $('app').classList.remove('hidden');
   if(!existing)save('Slot created');
-  toast('Hold & drag anywhere to walk around your Forest Outpost!');
+  toast('Hold & drag anywhere to walk around your Modular Forest Outpost!');
   showTutorial();
 }
 
@@ -1195,12 +1567,18 @@ function openPage(p){
     h=`<div class="eventBanner"><b>TODAY'S EVENT • ${S.event?.name||'Market Day'}</b><br>${S.event?.desc||''}</div>
     <h2>DAILY GOALS</h2>
     ${S.goals.map(q=>`<div class="dailyGoal ${q.done?'done':''}">${q.done?'✓':'□'} ${q.label} • <b>${Math.min(q.value,q.target)}/${q.target}</b></div>`).join('')}
-    <h2>SHOP OVERVIEW</h2>
+    <h2>SHOP & HERO OVERVIEW</h2>
     <div class="grid">
       ${card('Business Status',`
-        <div class="row"><span>Day</span><b>${S.day}</b></div> <div class="row"><span>Cash</span><b>$${S.cash}</b></div>
+        <div class="row"><span>Day</span><b>${S.day}</b></div>
+        <div class="row"><span>Cash</span><b>$${S.cash}</b></div>
         <div class="row"><span>Reputation</span><b>${S.rep}</b></div>
         <div class="row"><span>Shop Rating</span><b>${Math.max(1,S.review-S.badReviews*.15).toFixed(1)} ★</b></div>
+      `)}
+      ${card('Equipped Hero Gear',`
+        <div class="row"><span>Weapon</span><b>${S.equipped.weapon.icon} ${S.equipped.weapon.name} (ATK ${S.equipped.weapon.stat})</b></div>
+        <div class="row"><span>Defense</span><b>${S.equipped.armor.icon} ${S.equipped.armor.name} (DEF ${S.equipped.armor.stat})</b></div>
+        <p style="font-size:11px;color:#a8ff9e;margin:6px 0 0">Crafting higher-stat weapons or armor automatically upgrades your equipped gear!</p>
       `)}
       ${card('Raw Materials',`
         <div class="row"><span>🪨 Iron Ore</span><b>${S.iron}</b></div>
@@ -1221,7 +1599,7 @@ function openPage(p){
     </div>
     <div class="card" style="margin-bottom:10px">
       <h3>Poor / Defective Item Policy: <b>${S.poorPolicy}</b></h3>
-      <p style="font-size:12px;margin:4px 0;color:#cbb89d">Choose how Poor-quality items are handled (Workers never auto-disguise defects):</p>
+      <p style="font-size:12px;margin:4px 0;color:#cbb89d">Choose how Poor-quality items are handled (or craft Repair Kits at Alchemy to upgrade Poor items to Uncommon!):</p>
       <div class="presetRow" style="grid-template-columns:repeat(3,1fr);margin:0">
         <button data-poor="Honest" class="${S.poorPolicy==='Honest'?'on':''}">HONEST (50% Price)</button>
         <button data-poor="Scrap" class="${S.poorPolicy==='Scrap'?'on':''}">SCRAP (+1 Mat)</button>
@@ -1231,10 +1609,11 @@ function openPage(p){
     <div class="grid">
       ${Object.entries(recipes).map(([k,r])=>{
         let x=S.products[k];
-        return card(`${r.icon}${r.name}`,`
-          <div class="row"><span>Department</span><b>${r.cat} (${r.statName}${r.baseStat})</b></div>
+        return card(`${r.icon} ${r.name}`,`
+          <div class="row"><span>Department</span><b>${r.cat} (${r.statName} ${r.baseStat})</b></div>
           <div class="row"><span>Recipe Cost</span><b>${r.iron?r.iron+'🪨 ':''}${r.wood?r.wood+'🪵 ':''}${r.herb?r.herb+'🌿':''}</b></div>
-          <div class="row"><span>Shelf Stock</span><b>${x.stock}/12 (Out: ${S.output[k]}/8)</b></div>${x.unlocked?`<button data-toggle="${k}" class="${x.on?'on':''}">${x.on?'SELLING ON':'SELLING OFF'}</button>`:`<button data-unlock="${k}">UNLOCK RECIPE ($180)</button>`}
+          <div class="row"><span>Shelf / Output</span><b>${x.stock} stocked (Out: ${S.output[k]}/8)</b></div>
+          ${x.unlocked?`<button data-toggle="${k}" class="${x.on?'on':''}">${x.on?'SELLING ON':'SELLING OFF'}</button>`:`<button data-unlock="${k}">UNLOCK RECIPE ($${r.unlockCost})</button>`}
         `);
       }).join('')}
     </div>`;
@@ -1243,9 +1622,10 @@ function openPage(p){
     h=`<h2>STAFF & ASSIGNMENTS (${S.employees.length}/${S.staffCap})</h2>
     <button class="action" id="applyRecommended">✨ APPLY ALL RECOMMENDED ROLES</button>
     <div class="grid" style="margin-top:10px">
-      ${S.employees.map(e=>card(`${e.name} •${e.job}`,`
-        <div class="abilities"><span>SELL ${e.sell}</span><span>CRAFT${e.craft}</span><span>ATK ${e.atk}</span><span>DEF${e.def}</span></div>
-        <div class="row"><span>HP ${Math.round(e.hp)}/100</span><span>Wage$${e.wage}/day</span></div>${['Sales','Craft','Expedition','Staff House'].map(j=>`<button data-emp="${e.id}" data-job="${j}" class="${e.job===j?'on':''}">${j}</button>`).join('')}
+      ${S.employees.map(e=>card(`${e.name} • ${e.job}`,`
+        <div class="abilities"><span>SELL ${e.sell}</span><span>CRAFT ${e.craft}</span><span>ATK ${e.atk}</span><span>DEF ${e.def}</span></div>
+        <div class="row"><span>HP ${Math.round(e.hp)}/100</span><span>Wage $${e.wage}/day</span></div>
+        ${['Sales','Craft','Expedition','Staff House'].map(j=>`<button data-emp="${e.id}" data-job="${j}" class="${e.job===j?'on':''}">${j}</button>`).join('')}
       `)).join('')}
       ${card('Staff House Management',`
         <div class="row"><span>Staff Capacity</span><b>${S.employees.length}/${S.staffCap}</b></div>
@@ -1267,9 +1647,10 @@ function openPage(p){
     </div>
     <div class="grid">
       ${S.contracts.map(q=>card(`ACTIVE • ${q.buyer}`,`
-        <div class="row"><span>Order</span><b>${recipes[q.key].icon}${recipes[q.key].name} ${q.done}/${q.qty}</b></div>
+        <div class="row"><span>Order</span><b>${recipes[q.key].icon} ${recipes[q.key].name} ${q.done}/${q.qty}</b></div>
         <div class="bar"><i style="width:${Math.min(100,q.done/q.qty*100)}%"></i></div>
-        <div class="row"><span>Deadline</span><b>${q.days} day(s) left</b></div> <div class="row"><span>Reward</span><b>$${q.reward} & +1 Legacy</b></div>
+        <div class="row"><span>Deadline</span><b>${q.days} day(s) left</b></div>
+        <div class="row"><span>Reward</span><b>$${q.reward} & +1 Legacy</b></div>
         <p style="font-size:11px;color:#ffd88a;margin:6px 0 0">Carry ${recipes[q.key].name} to the Contract Warehouse drop zone (or set worker priority to Wholesale)!</p>
       `)).join('')}
       ${S.offers.map(q=>card(`OFFER • ${q.buyer}`,`
@@ -1301,13 +1682,15 @@ function openPage(p){
     </div>`;
   }
   if(p==='visual'){
-    h=`<h2>FOREST OUTPOST • MAP & PROGRESSION</h2>
-    <div class="visualNote">Your Forest Outpost artwork is active as the live scrolling world! All rooms, doorways, shelves, outputs, and paths are aligned with the map below.</div>
-    <img class="visualHero" src="assets/first_shop_art.png?v=0.16.00" onerror="this.src='assets/forest_outpost_map.jpg?v=0.16.00'">
-    <h2>SHOP TIER PROGRESSION</h2>
-    <div class="tierCard"><b>TIER 1 • FOREST OUTPOST (Active)</b><p>Includes Material Yard, Staff House, Training Room, Forge, Alchemy Lab, Contract Warehouse, Attack/Defense/Other Display Hall, Rare Storage, Checkout, Management Office, Special Visitor Plaza, and Forest Adventure Gate.</p></div>
-    <div class="tierCard locked"><b>TIER 2 • TOWN WORKSHOP (Coming Soon)</b><p>3× larger town compound with expanded shelves, multi-wagon wholesale bays, and Crystal Mine access.</p></div>
-    <div class="tierCard locked"><b>TIER 3 • GUILD EMPORIUM (Coming Soon)</b><p>Grand royal weapon emporium with specialist master smiths and Ancient Ruins expeditions.</p></div>`;
+    h=`<h2>MODULAR WORLD & ART GALLERY (v0.16.00)</h2>
+    <div class="visualNote">
+      <b>6-Layer Modular Rendering Active:</b> Ground, walls, empty 12-slot shelves, workstations, dynamic stock, and characters render in separate layers with <b>zero baked-in static people</b>.
+      <div class="presetRow" style="grid-template-columns:repeat(2,1fr);margin-top:8px">
+        <button data-mapstyle="modular" class="${S.mapStyle==='modular'?'on':''}">🧱 CLEAN MODULAR WORLD (DEFAULT)</button>
+        <button data-mapstyle="concept" class="${S.mapStyle==='concept'?'on':''}">🖼️ CONCEPT ART BACKGROUND</button>
+      </div>
+    </div>
+    <iframe src="assets/art_preview.html?v=0.16.00" style="width:100%;height:56vh;border:2px solid #8c653d;border-radius:12px;background:#1a1e18"></iframe>`;
   }
   if(p==='save'){
     h=`<h2>SAVE & EXIT</h2>
@@ -1322,15 +1705,20 @@ function openPage(p){
 function bindPanel(){
   document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{
     let p=b.dataset.preset;
-    if(p==='Safe'){S.products.sword.on=true;S.products.potion.on=true;if(S.products.shield.unlocked)S.products.shield.on=false}
+    if(p==='Safe'){S.products.sword.on=true;S.products.potion.on=true;['axe','shield','helmet','repair'].forEach(k=>S.products[k].on=false)}
     else if(p==='Profit'||p==='Custom')Object.values(S.products).forEach(x=>x.on=x.unlocked);
-    else if(p==='Quality'){S.products.sword.on=true;S.products.potion.on=false;if(S.products.shield.unlocked)S.products.shield.on=true}
+    else if(p==='Quality'){S.products.sword.on=true;S.products.potion.on=false;['axe','shield','helmet'].forEach(k=>{if(S.products[k].unlocked)S.products[k].on=true})}
     toast(p+' preset applied');openPage('products');
   });
   document.querySelectorAll('[data-poor]').forEach(b=>b.onclick=()=>{
     S.poorPolicy=b.dataset.poor;
     toast('Poor item policy: '+S.poorPolicy);
     openPage('products');
+  });
+  document.querySelectorAll('[data-mapstyle]').forEach(b=>b.onclick=()=>{
+    S.mapStyle=b.dataset.mapstyle;
+    toast('Map style: '+(S.mapStyle==='modular'?'Clean Modular World':'Concept Overlay'));
+    openPage('visual');
   });
   document.querySelectorAll('[data-priority]').forEach(b=>b.onclick=()=>{
     S.productionPriority=b.dataset.priority;
@@ -1350,13 +1738,14 @@ function bindPanel(){
     openPage('products');
   });
   document.querySelectorAll('[data-unlock]').forEach(b=>b.onclick=()=>{
-    if(S.cash>=180){
-      S.cash-=180;
-      S.products[b.dataset.unlock].unlocked=true;
-      S.products[b.dataset.unlock].on=true;
-      toast('Unlocked Wooden Shield! Craft it at the Forge.');
+    const k=b.dataset.unlock,cost=recipes[k].unlockCost||180;
+    if(S.cash>=cost){
+      S.cash-=cost;
+      S.products[k].unlocked=true;
+      S.products[k].on=true;
+      toast(`Unlocked ${recipes[k].name}!`);
       openPage('products');
-    }else toast('Need $180 to unlock');
+    }else toast(`Need $${cost} to unlock`);
   });
   document.querySelectorAll('[data-emp]').forEach(b=>b.onclick=()=>{
     let emp=S.employees.find(e=>e.id==b.dataset.emp);
@@ -1395,7 +1784,6 @@ function bindPanel(){
   if($('noSave'))$('noSave').onclick=exitSlots;
 }
 
-// All recommendation coordinates matched to the 1870x2870 Forest Outpost map
 function recommendation(){
   if(S.coinsFloor>0)return {t:'Collect $'+S.coinsFloor+' at Checkout',x:PTS.coinPile.x,y:PTS.coinPile.y-30};
   if(player.carryCount>0){
@@ -1405,29 +1793,30 @@ function recommendation(){
     let p=shelfPoint(player.carryKey);
     return {t:'Stock carried items on shelf',x:p.x,y:p.y};
   }
-  if(S.output.sword>0)return {t:'Pick up Swords at Forge Output',x:PTS.swordOut.x,y:PTS.swordOut.y+20};
-  if(S.output.shield>0)return {t:'Pick up Shields at Forge Output',x:PTS.shieldOut.x,y:PTS.shieldOut.y+20};
-  if(S.output.potion>0)return {t:'Pick up Potions at Alchemy Output',x:PTS.potionOut.x,y:PTS.potionOut.y+20};
+  if(S.output.sword>0||S.output.axe>0)return {t:'Pick up Weapons at Forge Output',x:PTS.swordOut.x,y:PTS.swordOut.y+20};
+  if(S.output.shield>0||S.output.helmet>0)return {t:'Pick up Armor at Forge Output',x:PTS.shieldOut.x,y:PTS.shieldOut.y+20};
+  if(S.output.potion>0||S.output.repair>0)return {t:'Pick up Potions at Alchemy Output',x:PTS.potionOut.x,y:PTS.potionOut.y+20};
   if(!S.visitorClaimed)return {t:'Claim Special Visitor Gift (South Plaza)',x:PTS.visitor.x,y:PTS.visitor.y};
-  if(S.iron<2||S.wood<1||S.herb<2)return {t:'Gather materials in Material Yard',x:335,y:520};
-  if(S.products.sword.stock<2)return {t:'Craft Swords in the Forge',x:355,y:980};
-  if(S.products.potion.stock<2)return {t:'Brew Potions in Alchemy Lab',x:960,y:980};
+  if(S.iron<2||S.wood<1||S.herb<2)return {t:'Gather materials in Material Yard',x:335,y:515};
+  if(S.products.sword.stock<2)return {t:'Craft Swords in the Forge',x:355,y:960};
+  if(S.products.potion.stock<2)return {t:'Brew Potions in Alchemy Lab',x:960,y:960};
   if(S.employees.length===0&&S.cash>=120)return {t:'Hire 1st Helper in Staff House ($120)',x:PTS.hire.x,y:PTS.hire.y};
-  return {t:'Fight Monsters at Forest Gate',x:945,y:215};
+  return {t:'Fight Monsters at Forest Gate',x:945,y:200};
 }
 
 function showTutorial(){
   let st=S.tutorialStep||0;
   if(st>=5){$('tutorial').classList.remove('show');return}
   const steps=[
-    ['1/5 • Drag to Move','Hold & slide your finger anywhere like a joystick to walk around the Forest Outpost. Tap 💡 Next Task anytime to auto-walk!'],
-    ['2/5 • Craft at the Forge','Walk north into the FORGE (left workshop) and tap 🔨 Sword on the bottom action bar.'],
-    ['3/5 • Pick Up & Stock Shelf','Walk over the Sword at ⚔️ OUT, then carry it to the red ATTACK shelf.'],
-    ['4/5 • Customer & Checkout Coins','Watch a customer walk in from the South Bridge, take the Sword, and leave coins at CHECKOUT. Walk over the coins!'],
+    ['1/5 • Drag to Move','Hold & slide your finger anywhere like a joystick to walk around the Modular Forest Outpost. Tap 💡 Next Task anytime to auto-walk!'],
+    ['2/5 • Craft at the Forge','Walk into the FORGE (left workshop) and tap 🔨 Sword on the bottom action bar.'],
+    ['3/5 • Pick Up & Stock Shelf','Walk over the Sword at ⚔️ OUT, then carry it to the 12-slot ATTACK shelf.'],
+    ['4/5 • Customer & Checkout Coins','Watch a customer walk in from the South Bridge, inspect your shelf, and leave coins at CHECKOUT. Walk over the coins!'],
     ['5/5 • Material Yard & Forest Gate','Gather free materials in the top-left Material Yard or fight monsters above the top Forest Gate!']
   ];
   $('tutorialTitle').textContent=steps[st][0];
-  $('tutorialText').textContent=steps[st][1];$('tutorial').classList.add('show');
+  $('tutorialText').textContent=steps[st][1];
+  $('tutorial').classList.add('show');
 }
 function advanceTutorial(){
   S.tutorialStep=Math.min(5,(S.tutorialStep||0)+1);
@@ -1437,7 +1826,7 @@ function advanceTutorial(){
 let craftUseSlime=false;
 function startCraftGame(k,useSlime=false){
   if($('craftGame').classList.contains('show'))return;
-  if((S.output[k]||0)>=S.outputCap)return toast(recipes[k].name+' output is full!');
+  if((S.outputItems[k]?.length||0)>=S.outputCap)return toast(recipes[k].name+' output is full!');
   if(!canCraft(k))return toast('Missing raw materials • Visit the Material Yard!');
   craftKey=k;craftUseSlime=useSlime;craftAnim=0;
   $('craftTitle').textContent='CRAFTING • '+(useSlime?'SLIME EDGE':recipes[k].name.toUpperCase());
@@ -1467,19 +1856,23 @@ function finishCraft(){
 function exitSlots(){
   playing=false;
   $('app').classList.add('hidden');
-  $('panel').classList.remove('show');$('slotScreen').classList.add('show');
+  $('panel').classList.remove('show');
+  $('slotScreen').classList.add('show');
   renderSlots();
 }
 
-$('zoomIn').onclick=()=>setZoom(zoom+.1);$('zoomOut').onclick=()=>setZoom(zoom-.1);
-$('overview').onclick=()=>setZoom(.46);$('suggest').onclick=()=>{
+$('zoomIn').onclick=()=>setZoom(zoom+.1);
+$('zoomOut').onclick=()=>setZoom(zoom-.1);
+$('overview').onclick=()=>setZoom(.46);
+$('suggest').onclick=()=>{
   let r=recommendation();
   toast(r.t);
   if(r.page)openPage(r.page);
-  else target={x:r.x,y:r.y};
+  else{target={x:r.x,y:r.y};player.navPath=null}
 };
 $('tutorialSkip').onclick=()=>{S.tutorialStep=5;$('tutorial').classList.remove('show')};
-$('summaryNext').onclick=()=>{$('daySummary').classList.remove('show');
+$('summaryNext').onclick=()=>{
+  $('daySummary').classList.remove('show');
   createDayContent();playing=true;
   save('Day '+S.day+' started');
 };
@@ -1496,7 +1889,9 @@ function loop(t){
     $('cash').textContent='$'+S.cash;
     $('rep').textContent='REP '+S.rep;
     $('day').textContent='DAY '+S.day;
-    $('clock').textContent=Math.max(0,Math.ceil(120-dayTime))+'s';$('carryHud').textContent=`🤲 ${player.carryKey?recipes[player.carryKey].icon+' '+player.carryCount+'/'+player.carryCap:'Empty (0/'+player.carryCap+')'} | 🪙 $${S.coinsFloor} | 🪨${S.iron} 🪵${S.wood} 🌿${S.herb}`;
+    $('clock').textContent=Math.max(0,Math.ceil(120-dayTime))+'s';
+    $('heroHud').textContent=`${S.equipped.weapon.icon}${S.equipped.weapon.stat} ${S.equipped.armor.icon}${S.equipped.armor.stat}`;
+    $('carryHud').textContent=`🤲 ${player.carryKey?recipes[player.carryKey].icon+' '+player.carryCount+'/'+player.carryCap:'Empty (0/'+player.carryCap+')'} | 🪙 $${S.coinsFloor} | 🪨${S.iron} 🪵${S.wood} 🌿${S.herb} 💧${S.gel}`;
     let rec=recommendation();
     $('suggest').textContent='💡 '+rec.t;
   }
