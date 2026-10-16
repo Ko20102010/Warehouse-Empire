@@ -1,10 +1,10 @@
-// Weapon Shop Empire v0.12.01
+// Weapon Shop Empire v0.12.02
 // Waypoint pathfinding, Material Yard, Shield crafting, physical customer shelf shopping, working Wholesale delivery, quality/inspection system & mobile context bar.
 'use strict';
-const VERSION='v0.12.01';
+const VERSION='v0.12.02';
 const c=document.getElementById('game'),g=c.getContext('2d'),$=id=>document.getElementById(id);
 let vw=1280,vh=720;
-const WORLD={w:3072,h:2048},PREFIX='wse_v01201_slot_',OLD_PREFIX='wse_v01100_slot_',FOREVER_KEY='wse_forever_v01201';
+const WORLD={w:3072,h:2048},PREFIX='wse_v01202_slot_',OLD_PREFIX='wse_v01100_slot_',FOREVER_KEY='wse_forever_v01202';
 let slot=0,playing=false,last=performance.now(),target=null,msgTimer=0,dayTime=0,spawnTimer=2.5,zoom=.68,pinchStart=0,craftAnim=0,craftKey='sword',dragMove={active:false,id:null,sx:0,sy:0,dx:0,dy:0},animClock=0;
 
 const base={
@@ -1345,7 +1345,7 @@ function openPage(p){
   }
   if(p==='art'){
     h=`<h2>ART & SPRITE PREVIEW</h2>
-    <iframe src="assets/art_preview.html?v=0.12.01" style="width:100%;height:68vh;border:0;border-radius:12px"></iframe>`;
+    <iframe src="assets/art_preview.html?v=0.12.02" style="width:100%;height:68vh;border:0;border-radius:12px"></iframe>`;
   }
   if(p==='save'){
     h=`<h2>SAVE & EXIT</h2>

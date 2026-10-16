@@ -1,13 +1,13 @@
 # Weapon Shop Empire
 
-## Current Version: v0.12.01
+## Current Version: v0.12.02
 
-Corrected release based on the uploaded v0.12.01 candidate.
+Corrected release based on the uploaded v0.12.02 candidate.
 
 
-## v0.12.01 Patch Note
+## v0.12.02 Patch Note
 
-- Renumbered the reviewed corrected package from v0.12.00 to v0.12.01.
+- Renumbered the reviewed corrected package from v0.12.00 to v0.12.02.
 - No major artwork replacement is included in this patch.
 - The visual presentation remains the existing code-rendered pixel prototype plus the separate art-preview page.
 - This patch focuses on customer requirement matching, tip calculation, wholesale deadline processing, contract capacity, storage-capacity separation, and package completeness.
