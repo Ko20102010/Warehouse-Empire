@@ -8,3 +8,5 @@
 
 .dragStick{display:none;position:fixed;width:94px;height:94px;margin:-47px 0 0 -47px;border-radius:50%;background:#17171a77;border:3px solid #fff8;z-index:9;pointer-events:none}.dragStick.show{display:block}.dragStick i{position:absolute;width:38px;height:38px;left:28px;top:28px;border-radius:50%;background:#ffd064dd;border:2px solid #fff9;transform:translate(0,0)}
 .collisionNote{color:#9fd5ff;font-size:12px}
+
+.loopGuide{position:fixed;left:50%;top:56px;transform:translateX(-50%);z-index:4;background:#17171ad9;border:1px solid #e1ad4b;border-radius:10px;padding:7px 12px;color:#ffe9b1;font-size:11px;pointer-events:none}.carryHud{position:fixed;left:10px;top:114px;z-index:4;background:#17171ad9;border:1px solid #6f9ed4;border-radius:9px;padding:7px 10px;color:#dbeeff;font-size:11px}

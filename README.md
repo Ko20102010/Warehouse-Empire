@@ -1,80 +1,69 @@
 # Weapon Shop Empire
 
-## Current Version: v0.9.00
+## Current Version: v0.10.00
 
-This release rebuilds the map around gameplay meaning. The pixel-art style is original and only takes broad inspiration from colorful top-down RPG management games. No supplied reference map is copied.
+This version rebuilds the core game loop to feel like a playable mobile advertisement mini-game: the player crafts products, visibly picks them up, carries them, fills shelves, watches customers take them, and physically collects the money left at checkout.
 
-## Map Design Logic
+## Core Loop
 
-The map no longer uses decorative houses that cannot be understood. Every operational room is shown as an open-top floor with walls, furniture, a room label and a visible door gap.
+```text
+Craft at Forge/Alchemy
+→ Product appears at workshop OUTPUT
+→ Walk over the output to pick up up to 3 products
+→ Products visibly stack above the player
+→ Carry products to the matching shelf
+→ Shelf visibly fills
+→ Customer walks in and takes one product
+→ Customer leaves coins at checkout
+→ Player walks over the coins to collect money
+→ Hire helpers later to automate steps
+```
 
-### Main Shop
-- Large shared retail floor.
-- Attack, Defense and Other counters have wide aisles.
-- Customer Hall connects directly to the east entrance.
-- South entrance connects the retail shop to Staff and Contract areas.
+## Major Changes
 
-### Forge
-- Walkable interior room.
-- Visible furnace and anvil.
-- South door is open.
-- Orange interaction area is reachable inside the room.
-
-### Alchemy
-- Walkable interior room.
-- Visible potion bottles and workbench.
-- South door is open.
-- Green interaction area is reachable inside the room.
-
-### Staff Room
-- Open-top interior with beds and table.
-- North door is open.
-- Employees physically return there to recover.
-
-### Contract Warehouse
-- Fenced outdoor storage yard.
-- Visible product crates.
-- West-side gate is open.
-- Contract storage interaction area is reachable.
-
-### Monster Forest
-- Outside the shop through the east opening.
-- Trees and rocks visually distinguish the adventure area.
-
-## Movement
-- Hold and drag anywhere for floating-joystick movement.
-- Release to stop.
-- Quick tap keeps destination movement.
-- Buildings, counters, walls and fences block movement.
-- Door gaps are physically open and traversable.
-- Characters slide along walls.
+- New games start with **zero employees**.
+- Removed the confusing decorative objects along the upper edge.
+- Crafted products no longer jump directly into invisible stock.
+- Sword and potion products physically wait at workshop output doors.
+- Player automatically picks up nearby products, up to a carrying capacity of 3.
+- Carried products visibly stack above the player.
+- Player stocks Attack, Defense and Other shelves by walking to them.
+- Shelf stock appears visually and missing stock is immediately visible.
+- Customers take products directly from visible shelf stock.
+- Customers leave coins at the checkout.
+- Money is not added until the player or Sales employee collects the coin pile.
+- The top guide continuously explains the five-stage loop.
+- The HUD shows what the player is carrying and how much money is waiting at checkout.
+- A physical Staff Room hire pad lets the player hire the first helper for $120.
+- Sales employees move workshop output to shelves and collect checkout money.
+- Craft employees create items but leave them at physical outputs.
 
 ## Three Reviews Completed
 
-### Review 1: Player-view design review
-- Every room has a visible purpose.
-- Every operational room has a visible entrance.
-- Important stations are located inside reachable spaces.
-- Wide aisles support phone movement.
-- Decorative roofs no longer hide playable rooms.
+### Review 1: Player Experience
+- New player starts alone.
+- First task is visible and explained.
+- Crafted output has a visible location.
+- Carrying has visible feedback.
+- Shelf fullness is visible.
+- Sales have visible product removal and coin creation.
+- Money requires a physical collection action.
 
-### Review 2: Map and collision review
-- Spawn point is outside obstacles.
-- Forge interaction point is reachable.
-- Alchemy interaction point is reachable.
-- All three retail zones are reachable.
-- Customer area, Staff Room, Contract Warehouse and Monster Forest are reachable.
-- Door gaps are wider than the player collision diameter.
-- Player, clients and employees use the same collision system.
+### Review 2: Design Logic
+- Products move through consistent states: output, hands, shelf, customer, money.
+- Employees automate the same actions the player performs manually.
+- No unexplained passive money.
+- Hiring happens after the player understands manual work.
+- Product shortages are visible rather than hidden in tables.
 
-### Review 3: Gameplay regression review
-- Three save slots remain available.
-- Drag movement and zoom remain available.
-- Tutorial, daily goals, events and crafting mini-game remain available.
-- Employees, clients, wholesale and monster combat remain available.
-- README version history and cache-busting version updated.
+### Review 3: Playability and Regression
+- Room entrances and collision retained.
+- Drag movement and zoom retained.
+- Three save slots retained.
+- Customers, employees, wholesale, combat, tutorial, goals and crafting retained.
+- JavaScript syntax and ZIP integrity checked.
 
-## Upload to GitHub
+## Upload
 
 Extract and replace:
 
@@ -86,28 +75,26 @@ README.md
 assets/
 ```
 
-The lower-left marker must show `Weapon Shop Empire v0.9.00`.
+The lower-left marker must show `Weapon Shop Empire v0.10.00`.
 
 ## Version History
 
+### v0.10.00 - 2026-10-16
+- Added physical workshop output piles.
+- Added player carrying and shelf stocking.
+- Added visible shelf inventory.
+- Added checkout coin piles and physical collection.
+- Changed new game to start with no employees.
+- Added physical hiring pad.
+- Removed confusing upper-edge decorative objects.
+- Reworked Sales employees to automate carrying and coin collection.
+- Added three-pass player/design/playability review.
+
 ### v0.9.00 - 2026-10-16
-- Rebuilt the full map around meaningful shop functions.
-- Removed decorative inaccessible building logic.
-- Added open-top walkable Forge, Alchemy and Staff rooms.
-- Added a gated walk-in Contract Warehouse.
-- Added visible doors and wide navigation aisles.
-- Rebuilt wall collision to match displayed walls.
-- Repositioned clients, workers, player and monster routes.
-- Completed player-view, map/collision and regression reviews.
+- Rebuilt the map into meaningful open-top rooms with visible doors.
 
-### v0.8.00 - 2026-10-16
-- Added drag movement and physical collision.
-
-### v0.7.00 - 2026-10-16
-- Added original top-down pixel-art presentation.
-
-### v0.6.00 and earlier
-- Added zoom, tutorials, daily variety, active workers/clients, wholesale, save slots and core game systems.
+### v0.8.00 and earlier
+- Added drag movement, collisions, pixel art, zoom, daily variety, wholesale and save slots.
 
 ## Version Policy
-Continue with v0.x by default. Ask before moving to v1.0.00, v2.0.00 or another major version.
+Continue with v0.x by default. Ask before changing to v1.0.00, v2.0.00 or another major version.
