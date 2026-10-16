@@ -1,19 +1,17 @@
-# Weapon Shop Empire v0.17.00 Stage 2 Update
+# Weapon Shop Empire v0.17.01 Update
 
-Lightweight real-asset integration update. It uses the artwork already installed in the repository and includes no unchanged PNG files.
+Lightweight readability, wall-continuity, navigation, and mobile-menu fix based on v0.17.00 Stage 2. No unchanged PNG assets are included.
 
-## Completed in Stage 2
+## Fixes
 
-- Integrated or assigned all 81 existing environment PNG assets.
-- Added the remaining 37 assets to `data/world_map.json`.
-- Added river corners, cliffs, additional walls, decorative doors, fences, signs, trees, plants, flowers, rocks, ore, and boulders.
-- Preserved independent collision data in `data/collisions.json`.
-- Updated the exact JSON, CSV, Markdown, and in-game HTML audits.
-- Preserved the playable v0.16.02 fixes and v0.17.00 Stage 1 JSON renderer.
-
-## Honest remaining gap
-
-The existing environment library is fully assigned, but 14 functional furniture and product assets still do not exist. They remain listed as `missing-not-created`; procedural furniture and product icons remain temporary until new transparent PNGs are produced.
+- Reduced floor texture opacity and tile frequency to avoid the overly busy/checkered appearance.
+- Added three wide, calmer navigation spines through the main compound.
+- Expanded several visible road sections.
+- Added continuous wall backing strips and overlapped wall sprites so wall sections visually connect.
+- Reduced player collision radius slightly for better clearance through doors and corridors.
+- Rebuilt the bottom menu for iPhone safe-area handling and reliable touch input.
+- Added delegated click/touch handling so SHOP, PRODUCTS, STAFF, WHOLESALE, FOREVER, MAP ART, and SAVE remain functional.
+- Preserved all v0.16.02 critical playability fixes and v0.17.00 JSON map data.
 
 ## Upload
 

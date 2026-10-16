@@ -1,11 +1,11 @@
-// Weapon Shop Empire v0.17.00
+// Weapon Shop Empire v0.17.01
 // 6-Layer Modular Forest Outpost Renderer (zero baked people/stock), Grid A* Pathfinding with anti-corner-cutting, 6 Recipes, Repair Kit, and Player Equipment.
 'use strict';
-const VERSION='v0.17.00';
+const VERSION='v0.17.01';
 const c=document.getElementById('game'),g=c.getContext('2d'),$=id=>document.getElementById(id);
 let vw=1280,vh=720;
 const WORLD={w:1870,h:2870};
-const PREFIX='wse_v01700_slot_',OLD_PREFIXES=['wse_v01602_slot_','wse_v01601_slot_','wse_v01600_slot_','wse_v01501_slot_','wse_v01500_slot_','wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01700',OLD_FOREVER_KEYS=['wse_forever_v01602','wse_forever_v01601','wse_forever_v01600','wse_forever_v01501','wse_forever_v01500'];
+const PREFIX='wse_v01701_slot_',OLD_PREFIXES=['wse_v01700_slot_','wse_v01602_slot_','wse_v01601_slot_','wse_v01600_slot_','wse_v01501_slot_','wse_v01500_slot_','wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01701',OLD_FOREVER_KEYS=['wse_forever_v01700','wse_forever_v01602','wse_forever_v01601','wse_forever_v01600','wse_forever_v01501','wse_forever_v01500'];
 let slot=0,playing=false,last=performance.now(),target=null,msgTimer=0,dayTime=0,spawnTimer=2.5,zoom=.66,pinchStart=0,craftAnim=0,craftKey='sword',dragMove={active:false,id:null,sx:0,sy:0,dx:0,dy:0},animClock=0;
 
 // v0.16.02 always uses the live modular renderer. Concept artwork is preview-only.
@@ -59,16 +59,35 @@ const MODULAR_PATHS={
 };
 for(const [k,path] of Object.entries(MODULAR_PATHS)){
   const img=new Image();
-  img.src=path+'?v=0.17.00';
+  img.src=path+'?v=0.17.01';
   SPRITES[k]=img;
 }
 
 let MAP_DATA=null;
-if(typeof fetch==='function'){fetch('data/world_map.json?v=0.17.00').then(r=>r.ok?r.json():Promise.reject(new Error('map data unavailable'))).then(data=>{MAP_DATA=data}).catch(()=>{})}
-function ensureMapAsset(path){const key='map:'+path;if(!SPRITES[key]){const img=new Image();img.src=path+'?v=0.17.00';SPRITES[key]=img}return SPRITES[key]}
+if(typeof fetch==='function'){fetch('data/world_map.json?v=0.17.01').then(r=>r.ok?r.json():Promise.reject(new Error('map data unavailable'))).then(data=>{MAP_DATA=data}).catch(()=>{})}
+function ensureMapAsset(path){const key='map:'+path;if(!SPRITES[key]){const img=new Image();img.src=path+'?v=0.17.01';SPRITES[key]=img}return SPRITES[key]}
 function drawMapObjects(layer){if(!MAP_DATA?.objects)return;for(const o of MAP_DATA.objects){if(o.layer!==layer)continue;const img=ensureMapAsset(o.asset);if(img.complete&&img.naturalWidth){const ax=o.anchor?.[0]??.5,ay=o.anchor?.[1]??1;g.drawImage(img,o.x-o.w*ax,o.y-o.h*ay,o.w,o.h)}}}
-function drawWallAssetSegment(seg){const horizontal=seg.w>=seg.h,img=SPRITES.wallStraight;if(!(img&&img.complete&&img.naturalWidth)){pxRect(seg.x,seg.y,seg.w,seg.h,'#593e2e');return}const step=horizontal?72:54;if(horizontal){for(let x=seg.x;x<seg.x+seg.w;x+=step)g.drawImage(img,x,seg.y-20,Math.min(step,seg.x+seg.w-x),48)}else{for(let y=seg.y;y<seg.y+seg.h;y+=step)g.drawImage(img,seg.x-18,y,54,Math.min(step,seg.y+seg.h-y))}}
-function sprReady(k){const i=SPRITES[k];return i&&i.complete&&i.naturalWidth>0}
+function drawWallAssetSegment(seg){
+  const horizontal=seg.w>=seg.h,img=SPRITES.wallStraight;
+  // A continuous backing strip removes visible gaps between repeated wall sprites.
+  pxRect(seg.x-3,seg.y-3,seg.w+6,seg.h+6,'#5f4432');
+  pxRect(seg.x-1,seg.y-1,seg.w+2,Math.min(7,seg.h+2),'#9a7658');
+  if(!(img&&img.complete&&img.naturalWidth))return;
+  g.save();
+  const step=horizontal?64:46,overlap=8;
+  if(horizontal){
+    for(let x=seg.x-overlap;x<seg.x+seg.w;x+=step-overlap){
+      const dw=Math.min(step+overlap,seg.x+seg.w+overlap-x);
+      g.drawImage(img,x,seg.y-20,dw,48);
+    }
+  }else{
+    for(let y=seg.y-overlap;y<seg.y+seg.h;y+=step-overlap){
+      const dh=Math.min(step+overlap,seg.y+seg.h+overlap-y);
+      g.drawImage(img,seg.x-18,y,54,dh);
+    }
+  }
+  g.restore();
+}function sprReady(k){const i=SPRITES[k];return i&&i.complete&&i.naturalWidth>0}
 
 const base={
   cash:250,rep:20,day:1,legacy:0,
@@ -1159,19 +1178,21 @@ function labelBadge(t,x,y,col='#fff1c2',bg='#1d1616e6',w=152){
 }
 
 function drawTiledRoomFloor(x,y,w,h,baseCol,lineCol,sprKey){
+  // Calm base first. A sparse, translucent texture keeps rooms readable without visual noise.
   pxRect(x,y,w,h,baseCol);
   if(sprReady(sprKey)){
-    for(let yy=y;yy<y+h;yy+=64){
-      for(let xx=x;xx<x+w;xx+=64){
-        g.drawImage(SPRITES[sprKey],xx,yy,Math.min(64,x+w-xx),Math.min(64,y+h-yy));
+    g.save();g.globalAlpha=.20;
+    const tile=128;
+    for(let yy=y;yy<y+h;yy+=tile){
+      for(let xx=x;xx<x+w;xx+=tile){
+        g.drawImage(SPRITES[sprKey],xx,yy,Math.min(tile,x+w-xx),Math.min(tile,y+h-yy));
       }
     }
-  }else{
-    for(let yy=y+8;yy<y+h;yy+=26){
-      pxRect(x,yy,w,2,lineCol);
-      for(let xx=x+((yy%52)?18:36);xx<x+w;xx+=48)pxRect(xx,yy,3,26,lineCol);
-    }
+    g.restore();
   }
+  g.save();g.globalAlpha=.18;g.strokeStyle=lineCol;g.lineWidth=2;
+  for(let yy=y+96;yy<y+h;yy+=128){g.beginPath();g.moveTo(x+10,yy);g.lineTo(x+w-10,yy);g.stroke()}
+  g.restore();
 }
 
 function drawTwelveSlotRack(x,y,items,title,bannerCol,icon){
@@ -1235,12 +1256,19 @@ function drawLayer1And2(){
   }
 
   // Outdoor Roads & Corridors
-  drawTiledRoomFloor(625,295,660,425,'#b89d72','#a1865c','pathStone');
-  drawTiledRoomFloor(630,680,655,515,'#b89d72','#a1865c','pathStone');
+  drawTiledRoomFloor(585,295,740,425,'#b89d72','#a1865c','pathStone');
+  drawTiledRoomFloor(585,680,740,515,'#b89d72','#a1865c','pathStone');
   drawTiledRoomFloor(45,1165,1235,880,'#cdb386','#b59a6d','floorWood');
-  drawTiledRoomFloor(655,2040,185,560,'#c2a576','#a6895b','pathStone');
+  drawTiledRoomFloor(615,2040,265,560,'#c2a576','#a6895b','pathStone');
   drawTiledRoomFloor(1255,660,575,690,'#9d8663','#846e4d','pathMoss');
-  drawTiledRoomFloor(860,110,170,195,'#9c845d','#826b47','pathStone');
+  drawTiledRoomFloor(830,110,230,195,'#9c845d','#826b47','pathStone');
+
+  // Wide, quiet navigation spines. These intentionally cover busy floor texture.
+  pxRect(685,300,150,2040,'#bfa679');
+  pxRect(250,1115,1370,130,'#bfa679');
+  pxRect(250,1980,1370,150,'#bfa679');
+  g.save();g.globalAlpha=.22;g.strokeStyle='#8d7652';g.lineWidth=3;
+  g.strokeRect(685,300,150,2040);g.strokeRect(250,1115,1370,130);g.strokeRect(250,1980,1370,150);g.restore();
 
   // Southern River & Wooden Bridge
   pxRect(350,2350,1520,200,'#1b7c9c');
@@ -1733,7 +1761,7 @@ function openPage(p){
     <div class="visualNote">
       <b>Live Modular Rendering Only:</b> Ground, walls, shelves, workstations, dynamic stock, and characters render in separate layers. Concept artwork is not available as a playable map background.
     </div>
-    <iframe src="assets/art_preview.html?v=0.17.00" style="width:100%;height:56vh;border:2px solid #8c653d;border-radius:12px;background:#1a1e18"></iframe>`;
+    <iframe src="assets/art_preview.html?v=0.17.01" style="width:100%;height:56vh;border:2px solid #8c653d;border-radius:12px;background:#1a1e18"></iframe>`;
   }
   if(p==='save'){
     h=`<h2>SAVE & EXIT</h2>
@@ -1915,7 +1943,14 @@ $('summaryNext').onclick=()=>{
   save('Day '+S.day+' started');
 };
 $('craftTap').onclick=finishCraft;
-document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>openPage(b.dataset.page));
+function handleMenuPage(ev){
+  const b=ev.target.closest?.('[data-page]');
+  if(!b)return;
+  ev.preventDefault();ev.stopPropagation();
+  openPage(b.dataset.page);
+}
+$('mainMenu').addEventListener('click',handleMenuPage);
+$('mainMenu').addEventListener('pointerup',ev=>{if(ev.pointerType==='touch'){ev.preventDefault();handleMenuPage(ev)}});
 $('closePanel').onclick=()=>$('panel').classList.remove('show');
 
 function loop(t){

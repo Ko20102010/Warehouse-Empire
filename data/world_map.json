@@ -868,5 +868,28 @@
     "effects",
     "ui"
   ],
-  "stage": "Stage 2 - all existing environment PNG assets assigned"
+  "stage": "v0.17.01 readability and navigation patch",
+  "navigationCorridors": [
+    {
+      "id": "north-south-main",
+      "x": 685,
+      "y": 300,
+      "w": 150,
+      "h": 2040
+    },
+    {
+      "id": "workshop-crossing",
+      "x": 250,
+      "y": 1115,
+      "w": 1370,
+      "h": 130
+    },
+    {
+      "id": "retail-crossing",
+      "x": 250,
+      "y": 1980,
+      "w": 1370,
+      "h": 150
+    }
+  ]
 }
