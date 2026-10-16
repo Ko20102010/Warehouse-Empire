@@ -3,7 +3,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#141214;col
 button{font:inherit;cursor:pointer}
 #app{width:100%;height:100%;position:relative}
 .hidden{display:none!important}
-canvas{display:block;width:100%;height:100%;touch-action:none;background:#18351f;image-rendering:pixelated;image-rendering:crisp-edges}
+canvas{display:block;width:100%;height:100%;touch-action:none;background:#18351f;image-rendering:auto}
 .hudWrap{position:fixed;top:8px;left:8px;right:58px;z-index:4;display:flex;flex-direction:column;gap:5px;pointer-events:none}
 .topHud{display:flex;flex-wrap:wrap;gap:5px}
 .topHud>*{background:#211b1cee;border:1px solid #8c653d;border-radius:10px;padding:6px 10px;font-size:12px;white-space:nowrap;box-shadow:0 3px 8px #0006}
@@ -13,7 +13,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#18351f
 .taskBtn{pointer-events:auto;background:#3a2c1fee;border:1px solid #e1ad4b;border-radius:9px;padding:5px 10px;color:#ffe28a;font-size:11px;font-weight:bold}
 .cameraButtons{position:fixed;right:8px;top:8px;display:flex;flex-direction:column;gap:5px;z-index:4}
 .cameraButtons button{width:40px;height:38px;border:1px solid #90683c;border-radius:10px;background:#2e2523ee;color:#ffe7b2;font-weight:bold;font-size:16px;box-shadow:0 4px 10px #0006}
-.actionBar{position:fixed;left:50%;bottom:68px;transform:translateX(-50%);z-index:5;display:flex;gap:7px;flex-wrap:wrap;justify-content:center;width:min(94%,520px);pointer-events:none}
+.actionBar{position:fixed;left:50%;bottom:68px;transform:translateX(-50%);z-index:5;display:flex;gap:7px;flex-wrap:wrap;justify-content:center;width:min(94%,540px);pointer-events:none}
 .actionBar button{pointer-events:auto;padding:10px 14px;border:2px solid #ffd264;border-radius:13px;background:linear-gradient(180deg,#4c3726,#2b1f18);color:#fff2c6;font-weight:bold;font-size:13px;box-shadow:0 6px 18px #000b;animation:pulse 1.5s infinite}
 @keyframes pulse{50%{box-shadow:0 0 0 6px #ffd06433}}
 .menuButtons{position:fixed;left:6px;right:6px;bottom:18px;display:grid;grid-template-columns:repeat(7,1fr);gap:4px;z-index:4}
@@ -70,6 +70,12 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#18351f
 .dragStick{display:none;position:fixed;width:88px;height:88px;margin:-44px 0 0 -44px;border-radius:50%;background:#17171a66;border:2px solid #fff7;z-index:8;pointer-events:none}
 .dragStick.show{display:block}
 .dragStick i{position:absolute;width:34px;height:34px;left:25px;top:25px;border-radius:50%;background:#ffd064dd;border:2px solid #fff9}
+.firstShopLanding{background:linear-gradient(#10101588,#101015dd),url('assets/first_shop_art.jpg?v=0.15.00') center 18%/cover no-repeat fixed,url('assets/forest_outpost_map.jpg?v=0.15.00') center 18%/cover no-repeat fixed,radial-gradient(circle at top,#55351f,#171416 70%)}
+.firstShopLanding .slotbox{background:#201a1ce8;backdrop-filter:blur(8px)}
+.visualHero{width:min(760px,100%);display:block;margin:10px auto;border:2px solid #a87a43;border-radius:14px;image-rendering:auto}
+.visualNote{background:#3b2a1f;border-left:4px solid #ffd064;padding:12px;border-radius:8px;color:#ffe9c0;font-size:13px;line-height:1.45}
+.tierCard{background:#1b1a1d;border:1px solid #66503c;padding:12px;border-radius:11px;margin:8px 0}
+.tierCard.locked{opacity:.65}
 @media(max-width:720px){
   .topHud>*{padding:5px 7px;font-size:11px}
   .menuButtons{bottom:16px;gap:3px}
@@ -80,4 +86,3 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#18351f
   .slots{grid-template-columns:1fr}
   .slot{min-height:145px}
 }
-.firstShopLanding{background:linear-gradient(#10101588,#101015dd),url('assets/first_shop_art.png?v=0.13.00') center 18%/cover no-repeat fixed}.firstShopLanding .slotbox{background:#201a1ce8;backdrop-filter:blur(8px)}.visualHero{width:min(760px,100%);display:block;margin:auto;border:2px solid #a87a43;border-radius:14px;image-rendering:auto}.visualNote{background:#3b2a1f;border-left:4px solid #ffd064;padding:12px;border-radius:8px;color:#ffe9c0}.tierCard{background:#1b1a1d;border:1px solid #66503c;padding:12px;border-radius:11px;margin:8px 0}.tierCard.locked{opacity:.6}

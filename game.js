@@ -1,11 +1,19 @@
-// Weapon Shop Empire v0.14.00
-// Waypoint pathfinding, Material Yard, Shield crafting, physical customer shelf shopping, working Wholesale delivery, quality/inspection system & mobile context bar.
+// Weapon Shop Empire v0.15.00
+// Forest Outpost 1870x2870 full artwork integration, aligned collision & corridor pathfinding, visible stock/output overlays, Special Visitor & Training Room.
 'use strict';
-const VERSION='v0.14.00';
+const VERSION='v0.15.00';
 const c=document.getElementById('game'),g=c.getContext('2d'),$=id=>document.getElementById(id);
 let vw=1280,vh=720;
-const WORLD={w:1870,h:2870},PREFIX='wse_v01400_slot_',OLD_PREFIX='wse_v01100_slot_',FOREVER_KEY='wse_forever_v01400';
-let slot=0,playing=false,last=performance.now(),target=null,msgTimer=0,dayTime=0,spawnTimer=2.5,zoom=.68,pinchStart=0,craftAnim=0,craftKey='sword',dragMove={active:false,id:null,sx:0,sy:0,dx:0,dy:0},animClock=0;
+const WORLD={w:1870,h:2870};
+const PREFIX='wse_v01500_slot_',OLD_PREFIXES=['wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01500';
+let slot=0,playing=false,last=performance.now(),target=null,msgTimer=0,dayTime=0,spawnTimer=2.5,zoom=.65,pinchStart=0,craftAnim=0,craftKey='sword',dragMove={active:false,id:null,sx:0,sy:0,dx:0,dy:0},animClock=0;
+
+// Load Forest Outpost Map Artwork with automatic fallback between forest_outpost_map.jpg, first_shop_art.jpg, and first_shop_art.png
+const mapArt=new Image();
+let mapTry=0;
+const mapSources=['assets/forest_outpost_map.jpg?v=0.15.00','assets/first_shop_art.jpg?v=0.15.00','assets/first_shop_art.png?v=0.15.00','shop_world.png'];
+mapArt.onerror=()=>{mapTry++;if(mapTry<mapSources.length)mapArt.src=mapSources[mapTry]};
+mapArt.src=mapSources[0];
 
 const base={
   cash:250,rep:20,day:1,legacy:0,
@@ -23,25 +31,92 @@ const base={
   shelfItems:{sword:[],potion:[],shield:[]},
   rareDisplay:[],
   poorPolicy:'Honest',
-  employees:[],review:4.2,badReviews:0,served:0,zoom:.68,tutorialStep:0,
-  goals:[],event:null,
+  employees:[],review:4.2,badReviews:0,served:0,zoom:.65,tutorialStep:0,
+  goals:[],event:null,visitorClaimed:false,
   statsDay:{sales:0,tips:0,crafted:0,monsters:0,lost:0},
   discoveries:[],productionPriority:'Balanced',
   coinsFloor:0,totalCoinsPicked:0
 };
 
 let S=clone(base),
-    player={x:820,y:2110,speed:315,carryKey:null,carryCount:0,carryItems:[],carryCap:3},
+    player={x:745,y:2080,speed:320,carryKey:null,carryCount:0,carryItems:[],carryCap:3},
     clients=[],effects=[],monsters=[],cam={x:0,y:0};
 const keys={};
 
-const yardNodes=[{id:'iron1',type:'iron',name:'Iron Vein',icon:'🪨',x:200,y:470,ready:true,timer:0,max:10},{id:'wood1',type:'wood',name:'Timber Log',icon:'🪵',x:110,y:520,ready:true,timer:0,max:10},{id:'herb1',type:'herb',name:'Herb Patch',icon:'🌿',x:470,y:470,ready:true,timer:0,max:10},{id:'iron2',type:'iron',name:'Crystal Ore',icon:'💎',x:360,y:570,ready:true,timer:0,max:12},{id:'herb2',type:'herb',name:'Rich Herb',icon:'🌿',x:500,y:590,ready:true,timer:0,max:12}];
+// Material Yard nodes aligned with top-left Material Yard in forest_outpost_map.jpg
+const yardNodes=[
+  {id:'wood1',type:'wood',name:'Timber Logs',icon:'🪵',x:135,y:510,ready:true,timer:0,max:9},
+  {id:'iron1',type:'iron',name:'Iron Ore Pile',icon:'🪨',x:235,y:510,ready:true,timer:0,max:9},
+  {id:'herb1',type:'herb',name:'Herb Planters',icon:'🌿',x:455,y:455,ready:true,timer:0,max:9},
+  {id:'herb2',type:'herb',name:'Crimson Herbs',icon:'🌿',x:440,y:585,ready:true,timer:0,max:10},
+  {id:'iron2',type:'iron',name:'Crystal Vein',icon:'💎',x:525,y:585,ready:true,timer:0,max:11}
+];
 
-const R={material:{x:60,y:300,w:570,h:390},staff:{x:660,y:310,w:570,h:390},training:{x:1260,y:325,w:270,h:350},forge:{x:55,y:725,w:590,h:440},alchemy:{x:660,y:725,w:600,h:440},contract:{x:1280,y:660,w:540,h:510},attack:{x:80,y:1180,w:480,h:460},defense:{x:555,y:1180,w:400,h:460},other:{x:950,y:1180,w:330,h:460},counter:{x:420,y:1650,w:780,h:400},rare:{x:70,y:1650,w:330,h:450},management:{x:1280,y:1350,w:430,h:650},gate:{x:770,y:105,w:350,h:200},forest:{x:120,y:70,w:1600,h:2100}};
-const SOLIDS=[{x:0,y:0,w:1870,h:24},{x:0,y:2846,w:1870,h:24},{x:0,y:0,w:24,h:2870},{x:1846,y:0,w:24,h:2870},{x:40,y:300,w:590,h:24},{x:40,y:300,w:24,h:390},{x:606,y:300,w:24,h:390},{x:40,y:666,w:240,h:24},{x:390,y:666,w:240,h:24},{x:650,y:300,w:590,h:24},{x:650,y:300,w:24,h:400},{x:1216,y:300,w:24,h:400},{x:650,y:676,w:210,h:24},{x:970,y:676,w:270,h:24},{x:1250,y:315,w:300,h:22},{x:1250,y:315,w:22,h:385},{x:1528,y:315,w:22,h:385},{x:45,y:715,w:610,h:24},{x:45,y:715,w:24,h:465},{x:631,y:715,w:24,h:465},{x:45,y:1156,w:245,h:24},{x:405,y:1156,w:250,h:24},{x:650,y:715,w:620,h:24},{x:650,y:715,w:24,h:465},{x:1246,y:715,w:24,h:465},{x:650,y:1156,w:250,h:24},{x:1015,y:1156,w:255,h:24},{x:1275,y:650,w:565,h:24},{x:1275,y:650,w:24,h:195},{x:1275,y:965,w:24,h:220},{x:1816,y:650,w:24,h:535},{x:1275,y:1161,w:565,h:24},{x:140,y:1250,w:330,h:70},{x:140,y:1410,w:330,h:70},{x:600,y:1250,w:300,h:70},{x:600,y:1410,w:300,h:70},{x:980,y:1250,w:260,h:70},{x:980,y:1410,w:260,h:70},{x:420,y:1930,w:720,h:75},{x:60,y:1640,w:340,h:24},{x:60,y:1640,w:24,h:440},{x:376,y:1640,w:24,h:440},{x:1270,y:1340,w:460,h:24},{x:1270,y:1340,w:24,h:700},{x:1706,y:1340,w:24,h:700},{x:620,y:2360,w:850,h:450},{x:1480,y:2240,w:390,h:600}];
-function collides(x,y,r=22){return SOLIDS.some(a=>x+r>a.x&&x-r<a.x+a.w&&y+r>a.y&&y-r<a.y+a.h)}
-function moveEntity(o,nx,ny,r=22){if(!collides(nx,o.y,r))o.x=nx;if(!collides(o.x,ny,r))o.y=ny}
-const mapArt=new Image();mapArt.src='assets/forest_outpost_map.jpg?v=0.14.00';
+// Aligned room zones on the 1870x2870 Forest Outpost artwork
+const R={
+  material:{x:60,y:310,w:555,h:365},
+  staff:{x:660,y:310,w:565,h:370},
+  training:{x:1265,y:325,w:270,h:345},
+  forge:{x:55,y:730,w:580,h:435},
+  alchemy:{x:660,y:730,w:595,h:435},
+  contract:{x:1285,y:660,w:535,h:505},
+  attack:{x:80,y:1190,w:460,h:430},
+  defense:{x:550,y:1190,w:390,h:430},
+  other:{x:950,y:1190,w:315,h:430},
+  rare:{x:70,y:1645,w:315,h:415},
+  counter:{x:420,y:1650,w:720,h:390},
+  management:{x:1280,y:1350,w:425,h:650},
+  visitor:{x:120,y:2160,w:420,h:380},
+  gate:{x:770,y:105,w:350,h:195},
+  forest:{x:120,y:70,w:1620,h:225}
+};
+
+// Solid walls & furniture aligned with visible doors and aisles on forest_outpost_map.jpg
+const SOLIDS=[
+  // World borders
+  {x:0,y:0,w:1870,h:24},{x:0,y:2846,w:1870,h:24},{x:0,y:0,w:24,h:2870},{x:1846,y:0,w:24,h:2870},
+  // Material Yard walls (South door at x:280..395, y:666)
+  {x:45,y:305,w:580,h:22},{x:45,y:305,w:22,h:380},{x:603,y:305,w:22,h:380},{x:45,y:665,w:235,h:22},{x:395,y:665,w:230,h:22},
+  // Staff House walls (South door at x:860..975, y:675)
+  {x:655,y:305,w:580,h:22},{x:655,y:305,w:22,h:390},{x:1213,y:305,w:22,h:390},{x:655,y:675,w:205,h:22},{x:975,y:675,w:260,h:22},
+  // Training Room walls (Open south entrance x:1330..1475)
+  {x:1255,y:315,w:290,h:22},{x:1255,y:315,w:22,h:355},{x:1523,y:315,w:22,h:355},
+  // Forge walls (South door at x:290..415, y:1155)
+  {x:45,y:720,w:595,h:22},{x:45,y:720,w:22,h:455},{x:618,y:720,w:22,h:455},{x:45,y:1155,w:245,h:22},{x:415,y:1155,w:225,h:22},
+  // Alchemy walls (South door at x:900..1020, y:1155)
+  {x:660,y:720,w:600,h:22},{x:660,y:720,w:22,h:455},{x:1238,y:720,w:22,h:455},{x:660,y:1155,w:240,h:22},{x:1020,y:1155,w:240,h:22},
+  // Contract Warehouse walls (West gate at x:1280, y:845..965)
+  {x:1280,y:650,w:550,h:22},{x:1280,y:650,w:22,h:195},{x:1280,y:965,w:22,h:215},{x:1808,y:650,w:22,h:530},{x:1280,y:1158,w:550,h:22},
+  // Checkout physical counter bar (walkable around left/right ends)
+  {x:495,y:1905,w:465,h:52},
+  // Rare Storage walls (North door at x:185..295, y:1640)
+  {x:60,y:1640,w:125,h:22},{x:295,y:1640,w:95,h:22},{x:60,y:1640,w:22,h:420},{x:368,y:1640,w:22,h:420},{x:60,y:2038,w:330,h:22},
+  // South Shop Main Wall (Main Entrance gap at x:640..855, y:2038)
+  {x:390,y:2038,w:250,h:24},{x:855,y:2038,w:425,h:24},
+  // Management Office & Upgrades walls (West doors at y:1575..1690 and y:1845..1955)
+  {x:1280,y:1340,w:440,h:22},{x:1280,y:1340,w:22,h:235},{x:1280,y:1690,w:22,h:155},{x:1280,y:1955,w:22,h:95},{x:1698,y:1340,w:22,h:710},{x:1280,y:2038,w:440,h:22},
+  // River water blocks (leaving the central stone bridge x:650..845 open!)
+  {x:350,y:2360,w:295,h:190},{x:850,y:2340,w:620,h:210}
+];
+
+const PTS={
+  swordOut:{x:335,y:1165},
+  shieldOut:{x:415,y:1165},
+  potionOut:{x:960,y:1165},
+  attackShelf:{x:285,y:1365},
+  defenseShelf:{x:695,y:1365},
+  otherShelf:{x:1085,y:1365},
+  coinPile:{x:825,y:1880},
+  checkoutWait:{x:745,y:1815},
+  hire:{x:915,y:595},
+  contractDrop:{x:1365,y:910},
+  rare:{x:230,y:1835},
+  training:{x:1395,y:525},
+  office:{x:1460,y:1640},
+  visitor:{x:315,y:2350},
+  gate:{x:945,y:215}
+};
+
 const recipes={
   sword:{name:'Iron Sword',icon:'⚔️',cat:'Attack',statName:'ATK',baseStat:12,iron:2,wood:1,value:42},
   potion:{name:'Healing Potion',icon:'🧪',cat:'Other',statName:'HP',baseStat:25,herb:2,value:28},
@@ -57,10 +132,10 @@ const rar=[
   ['Legendary','#ff9a3d',6,2.8]
 ];
 
-const PTS={swordOut:{x:350,y:1160},shieldOut:{x:440,y:1160},potionOut:{x:960,y:1160},attackShelf:{x:300,y:1340},defenseShelf:{x:750,y:1340},otherShelf:{x:1110,y:1340},coinPile:{x:780,y:1885},checkoutWait:{x:780,y:1810},hire:{x:950,y:620},contractDrop:{x:1325,y:910},rare:{x:230,y:1830}};
+function clone(x){return JSON.parse(JSON.stringify(x))}
 function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
-function collides(x,y,r=19){return SOLIDS.some(a=>x+r>a.x&&x-r<a.x+a.w&&y+r>a.y&&y-r<a.y+a.h)}
-function moveEntity(o,nx,ny,r=19){
+function collides(x,y,r=17){return SOLIDS.some(a=>x+r>a.x&&x-r<a.x+a.w&&y+r>a.y&&y-r<a.y+a.h)}
+function moveEntity(o,nx,ny,r=17){
   if(!collides(nx,o.y,r))o.x=nx;
   if(!collides(o.x,ny,r))o.y=ny;
 }
@@ -69,12 +144,18 @@ function loadForever(){
   try{return JSON.parse(localStorage.getItem(FOREVER_KEY)||'null')}catch{return null}
 }
 function saveForever(){
-  localStorage.setItem(FOREVER_KEY,JSON.stringify({legacy:S.legacy,skills:S.skills}));
+  try{localStorage.setItem(FOREVER_KEY,JSON.stringify({legacy:S.legacy,skills:S.skills}))}catch{}
 }
 function key(n){return PREFIX+n}
 function load(n){
   try{
-    let raw=localStorage.getItem(key(n))||localStorage.getItem(OLD_PREFIX+n);
+    let raw=localStorage.getItem(key(n));
+    if(!raw){
+      for(const oldP of OLD_PREFIXES){
+        raw=localStorage.getItem(oldP+n);
+        if(raw)break;
+      }
+    }
     return JSON.parse(raw||'null');
   }catch{return null}
 }
@@ -104,6 +185,10 @@ function norm(x){
   n.shelfItems={...clone(base.shelfItems),...(x?.shelfItems||{})};
   n.rareDisplay=Array.isArray(x?.rareDisplay)?x.rareDisplay:[];
   n.employees=Array.isArray(x?.employees)?x.employees:[];
+  // Migrate any old out-of-bounds employee positions to the Staff House
+  n.employees.forEach((e,i)=>{
+    if(!e.x||e.x>1800||e.y>2000){e.x=860+(i%3)*55;e.y=540}
+  });
   n.contracts=Array.isArray(x?.contracts)?x.contracts:[];
   n.offers=Array.isArray(x?.offers)?x.offers:[];
   n.goals=Array.isArray(x?.goals)?x.goals:[];
@@ -119,7 +204,7 @@ function save(reason){
   S.savedAt=new Date().toLocaleString();
   S.reason=reason;
   saveForever();
-  localStorage.setItem(key(slot),JSON.stringify(S));
+  try{localStorage.setItem(key(slot),JSON.stringify(S))}catch{}
   toast(reason+' • saved');
 }
 
@@ -182,7 +267,7 @@ addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.key===' ')att
 addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
 
 function setZoom(v){
-  zoom=Math.max(.46,Math.min(1.2,v));
+  zoom=Math.max(.42,Math.min(1.15,v));
   S.zoom=zoom;
 }
 function inside(p,z,pad=0){
@@ -190,79 +275,120 @@ function inside(p,z,pad=0){
 }
 function stepToward(o,tx,ty,s,dt){
   let dx=tx-o.x,dy=ty-o.y,d=Math.hypot(dx,dy);
-  if(d<4)return true;
+  if(d<5)return true;
   o.moving=true;
   let nx=o.x+dx/d*s*dt,ny=o.y+dy/d*s*dt;
-  moveEntity(o,nx,ny,17);
-  return Math.hypot(tx-o.x,ty-o.y)<6;
+  moveEntity(o,nx,ny,16);
+  return Math.hypot(tx-o.x,ty-o.y)<7;
 }
 
-// Smart doorway & aisle waypoint router so workers and clients never get stuck on walls
-function inStaffRoom(p){return p.x>425&&p.x<945&&p.y>1355&&p.y<1715}
-function inContractYard(p){return p.x>2045&&p.x<2605&&p.y>1315&&p.y<1815}
-function inForgeRoom(p){return p.x>615&&p.x<1015&&p.y>295&&p.y<715}
-function inAlchemyRoom(p){return p.x>1675&&p.x<2075&&p.y>295&&p.y<715}
-function inMainShop(p){return p.x>505&&p.x<2195&&p.y>185&&p.y<1285}
-function inMaterialYard(p){return p.x<505&&p.y>380&&p.y<900}
+// Room checks for the 1870x2870 Forest Outpost map
+function inMaterialRoom(p){return p.x>45&&p.x<625&&p.y>305&&p.y<675}
+function inStaffRoom(p){return p.x>655&&p.x<1235&&p.y>305&&p.y<685}
+function inTrainingRoom(p){return p.x>1255&&p.x<1545&&p.y>315&&p.y<675}
+function inForgeRoom(p){return p.x>45&&p.x<640&&p.y>720&&p.y<1165}
+function inAlchemyRoom(p){return p.x>660&&p.x<1260&&p.y>720&&p.y<1165}
+function inContractRoom(p){return p.x>1280&&p.x<1830&&p.y>650&&p.y<1175}
+function inRareRoom(p){return p.x>60&&p.x<390&&p.y>1640&&p.y<2050}
+function inOfficeRoom(p){return p.x>1280&&p.x<1720&&p.y>1340&&p.y<2050}
 
+// Corridor-aware waypoint router built specifically for the 1870x2870 Forest Outpost map
 function navigate(o,tx,ty,s,dt){
   const goal={x:tx,y:ty};
-  // 1. Exiting or entering Staff Room
-  if(inStaffRoom(o)!==inStaffRoom(goal)){
-    const door={x:645,y:inStaffRoom(o)?1330:1395};
-    if(dist(o,door)>18)return stepToward(o,door.x,door.y,s,dt),false;
+
+  // 1. Exit enclosed rooms through their doorway first
+  if(inMaterialRoom(o)&&!inMaterialRoom(goal))return stepToward(o,340,702,s,dt),false;
+  if(inStaffRoom(o)&&!inStaffRoom(goal))return stepToward(o,915,702,s,dt),false;
+  if(inTrainingRoom(o)&&!inTrainingRoom(goal))return stepToward(o,1400,702,s,dt),false;
+  if(inForgeRoom(o)&&!inForgeRoom(goal))return stepToward(o,355,1195,s,dt),false;
+  if(inAlchemyRoom(o)&&!inAlchemyRoom(goal))return stepToward(o,960,1195,s,dt),false;
+  if(inContractRoom(o)&&!inContractRoom(goal))return stepToward(o,1262,910,s,dt),false;
+  if(inRareRoom(o)&&!inRareRoom(goal))return stepToward(o,235,1615,s,dt),false;
+  if(inOfficeRoom(o)&&!inOfficeRoom(goal))return stepToward(o,1255,1635,s,dt),false;
+
+  // 2. Moving between South Town (y > 2055) and Main Shop (y <= 2055) via Main Entrance (x:745, y:2040)
+  if(o.y>2055&&goal.y<=2055){
+    if(Math.abs(o.x-745)>45)return stepToward(o,745,2110,s,dt),false;
+    return stepToward(o,745,1995,s,dt),false;
   }
-  // 2. Exiting or entering Contract Warehouse
-  if(inContractYard(o)!==inContractYard(goal)){
-    const gate={x:inContractYard(o)?2015:2085,y:1525};
-    if(dist(o,gate)>18)return stepToward(o,gate.x,gate.y,s,dt),false;
+  if(o.y<=2055&&goal.y>2055){
+    if(o.y<1960&&Math.abs(o.x-745)>60)return stepToward(o,745,1980,s,dt),false;
+    if(Math.abs(o.x-745)>45)return stepToward(o,745,2000,s,dt),false;
+    return stepToward(o,745,2120,s,dt),false;
   }
-  // 3. Exiting or entering Forge
-  if(inForgeRoom(o)!==inForgeRoom(goal)){
-    const door={x:825,y:inForgeRoom(o)?745:675};
-    if(dist(o,door)>18)return stepToward(o,door.x,door.y,s,dt),false;
-  }
-  // 4. Exiting or entering Alchemy
-  if(inAlchemyRoom(o)!==inAlchemyRoom(goal)){
-    const door={x:1875,y:inAlchemyRoom(o)?745:675};
-    if(dist(o,door)>18)return stepToward(o,door.x,door.y,s,dt),false;
-  }
-  // 5. Material Yard West Doorway (x=500, y=600..740)
-  if(inMaterialYard(o)!==inMaterialYard(goal)){
-    const wdoor={x:inMaterialYard(o)?545:465,y:670};
-    if(dist(o,wdoor)>18)return stepToward(o,wdoor.x,wdoor.y,s,dt),false;
-  }
-  // 6. Moving between Main Shop interior and Outdoor South / East
-  if(inMainShop(o)&&!inMainShop(goal)){
-    if(goal.x>2195){
-      const edoor={x:2220,y:845};
-      if(dist(o,edoor)>22){
-        if(o.y<820&&o.x>1560)return stepToward(o,1535,845,s,dt),false;
-        return stepToward(o,edoor.x,edoor.y,s,dt),false;
-      }
-    }else if(goal.y>=1285){
-      const sdoor={x:1350,y:1320};
-      if(dist(o,sdoor)>22)return stepToward(o,sdoor.x,sdoor.y,s,dt),false;
+
+  // 3. Moving between North Forest (y < 305) and Upper Corridor (y >= 305) via Forest Gate (x:945 or x:648)
+  if(o.y>=305&&goal.y<305){
+    if(o.y>715){
+      const colX=Math.abs(o.x-648)<Math.abs(o.x-1265)?648:1265;
+      if(Math.abs(o.x-colX)>24)return stepToward(o,colX,1200,s,dt),false;
+      return stepToward(o,colX,700,s,dt),false;
     }
+    if(Math.abs(o.x-648)>30&&o.y>295)return stepToward(o,648,700,s,dt),false;
+    return stepToward(o,648,270,s,dt),false;
   }
-  if(!inMainShop(o)&&inMainShop(goal)){
-    if(o.x>2195&&o.y<1270){
-      const edoor={x:2125,y:845};
-      if(dist(o,edoor)>22)return stepToward(o,edoor.x,edoor.y,s,dt),false;
-    }else if(o.y>=1270){
-      const sdoor={x:1350,y:1220};
-      if(dist(o,sdoor)>22)return stepToward(o,sdoor.x,sdoor.y,s,dt),false;
+  if(o.y<305&&goal.y>=305){
+    if(Math.abs(o.x-648)>35)return stepToward(o,648,265,s,dt),false;
+    return stepToward(o,648,700,s,dt),false;
+  }
+
+  // 4. Moving between Upper Corridor (y <= 715) and Retail Floor (y >= 1175) via vertical avenues (x:648 or x:1265)
+  if(o.y<=715&&goal.y>=1175){
+    const aveX=goal.x>1050?1265:648;
+    if(Math.abs(o.x-aveX)>24)return stepToward(o,aveX,702,s,dt),false;
+    return stepToward(o,aveX,1205,s,dt),false;
+  }
+  if(o.y>=1175&&goal.y<=715){
+    const aveX=goal.x>1050?1265:648;
+    if(Math.abs(o.x-aveX)>28)return stepToward(o,aveX,1205,s,dt),false;
+    return stepToward(o,aveX,702,s,dt),false;
+  }
+
+  // 5. Entering Contract Warehouse (x:1280, y:910)
+  if(!inContractRoom(o)&&inContractRoom(goal)){
+    if(Math.abs(o.y-910)>35){
+      if(Math.abs(o.x-1265)>25)return stepToward(o,1265,o.y<910?702:1205,s,dt),false;
+      return stepToward(o,1265,910,s,dt),false;
     }
+    return stepToward(o,1345,910,s,dt),false;
   }
-  // 7. Inside Main Shop: avoid Checkout Counter (x:1600..2030, y:860..915) & Retail Counters (y:450..505)
-  if(inMainShop(o)&&inMainShop(goal)){
-    const crossCheckout=(o.y<855&&goal.y>915)||(o.y>915&&goal.y<855);
-    if(crossCheckout&&(o.x>1560||goal.x>1560)){
-      const aisle={x:1535,y:o.y<885?930:835};
-      if(o.x>1560)return stepToward(o,1535,o.y,s,dt),false;
-      return stepToward(o,aisle.x,aisle.y,s,dt),false;
-    }
+
+  // 6. Entering Upper Rooms from Upper Corridor (y ~ 702)
+  if(!inMaterialRoom(o)&&inMaterialRoom(goal)){
+    if(Math.abs(o.x-340)>28)return stepToward(o,340,702,s,dt),false;
+    return stepToward(o,tx,ty,s,dt);
   }
+  if(!inStaffRoom(o)&&inStaffRoom(goal)){
+    if(Math.abs(o.x-915)>28)return stepToward(o,915,702,s,dt),false;
+    return stepToward(o,tx,ty,s,dt);
+  }
+  if(!inTrainingRoom(o)&&inTrainingRoom(goal)){
+    if(Math.abs(o.x-1400)>28)return stepToward(o,1400,702,s,dt),false;
+    return stepToward(o,tx,ty,s,dt);
+  }
+
+  // 7. Entering Workshops from Retail Floor (y ~ 1195)
+  if(!inForgeRoom(o)&&inForgeRoom(goal)){
+    if(o.y<1170)return stepToward(o,648,1205,s,dt),false;
+    if(Math.abs(o.x-355)>32)return stepToward(o,355,1205,s,dt),false;
+    return stepToward(o,tx,ty,s,dt);
+  }
+  if(!inAlchemyRoom(o)&&inAlchemyRoom(goal)){
+    if(o.y<1170)return stepToward(o,648,1205,s,dt),false;
+    if(Math.abs(o.x-960)>32)return stepToward(o,960,1205,s,dt),false;
+    return stepToward(o,tx,ty,s,dt);
+  }
+
+  // 8. Entering Rare Storage or Management Office
+  if(!inRareRoom(o)&&inRareRoom(goal)){
+    if(Math.abs(o.x-235)>28||o.y<1590)return stepToward(o,235,1615,s,dt),false;
+    return stepToward(o,tx,ty,s,dt);
+  }
+  if(!inOfficeRoom(o)&&inOfficeRoom(goal)){
+    if(Math.abs(o.y-1635)>35)return stepToward(o,1250,1635,s,dt),false;
+    return stepToward(o,tx,ty,s,dt);
+  }
+
   return stepToward(o,tx,ty,s,dt);
 }
 
@@ -323,7 +449,6 @@ function craft(k,worker,useSlime=false){
     }
   }
   let item=makeItemObject(k,qroll(worker?.craft||0),special);
-  // Check Poor policy if set to Scrap
   if(item.q===0&&S.poorPolicy==='Scrap'){
     if(k==='potion')S.herb++;else S.iron++;
     if(!worker)toast('Poor '+item.name+' auto-scrapped (+1 material)');
@@ -331,9 +456,9 @@ function craft(k,worker,useSlime=false){
   }
   S.outputItems[k].push(item);
   S.output[k]=S.outputItems[k].length;
-  if(item.q>=3){
+  if(item.q>=3||item.special){
     S.rareDisplay.unshift({name:item.name,icon:item.icon,rarity:item.rarity,color:item.color,stat:item.stat});
-    if(S.rareDisplay.length>4)S.rareDisplay.pop();
+    if(S.rareDisplay.length>6)S.rareDisplay.pop();
   }
   S.statsDay.crafted++;
   const op=outputPoint(k);
@@ -359,17 +484,19 @@ function spawnClient(){
   let lv=Math.random(),level=lv>.82?'Knight':lv>.5?'Veteran':'Adventurer';
   let ps=['Impatient','Bargain','Experienced','Collector','Loyal'],personality=ps[Math.floor(Math.random()*ps.length)];
   let sp=shelfPoint(k),slotIdx=clients.filter(c=>c.want===k).length;
+  // Customers enter from the South Stone Bridge (x:745, y:2480)
   clients.push({
     id:Date.now()+Math.random(),
-    x:2460,y:835+(Math.random()*40-20),
+    x:725+Math.random()*40,
+    y:2480+Math.random()*60,
     want:k,
-    shelfX:sp.x+(slotIdx%3-1)*38,
-    shelfY:sp.y+18+Math.floor(slotIdx/3)*28,
-    pat:58+S.skills.merchant*4,
-    max:58+S.skills.merchant*4,
+    shelfX:sp.x+(slotIdx%3-1)*42,
+    shelfY:sp.y+25+Math.floor(slotIdx/3)*30,
+    pat:62+S.skills.merchant*4,
+    max:62+S.skills.merchant*4,
     state:'toShelf',
     level,personality,
-    minStat:level==='Knight'?15:level==='Veteran'?11:0,
+    minStat:level==='Knight'?14:level==='Veteran'?11:0,
     minQ:personality==='Collector'?2:level==='Knight'?1:0,
     minRarity:personality==='Collector'?'Uncommon':level==='Knight'?'Common':'Any',
     carriedItem:null,
@@ -381,15 +508,16 @@ function clientTick(dt){
   for(let i=clients.length-1;i>=0;i--){
     let x=clients[i];x.moving=false;
     if(x.state==='toShelf'){
-      if(navigate(x,x.shelfX,x.shelfY,115,dt))x.state='waitShelf';
+      if(navigate(x,x.shelfX,x.shelfY,118,dt))x.state='waitShelf';
     }else if(x.state==='waitShelf'){
-      x.pat-=dt*(x.personality==='Impatient'?1.3:1);
+      x.pat-=dt*(x.personality==='Impatient'?1.25:1);
       let arr=S.shelfItems[x.want];
       let matchIndex=arr?arr.findIndex(item=>item.stat>=(x.minStat||0)&&item.q>=(x.minQ||0)):-1;
+      // Fallback: if any item is on the shelf for normal Adventurers, take it
+      if(matchIndex<0&&arr&&arr.length>0&&x.level==='Adventurer')matchIndex=0;
       if(arr&&matchIndex>=0){
         let item=arr.splice(matchIndex,1)[0];
         S.products[x.want].stock=arr.length;
-        // Inspection check for Poor items disguised as Common
         if(item.q===0&&S.poorPolicy==='Disguise'){
           let inspectChance=x.level==='Knight'?.75:x.personality==='Experienced'?.7:.35;
           if(Math.random()<inspectChance){
@@ -404,18 +532,18 @@ function clientTick(dt){
       }else if(x.pat<=0){
         S.rep--;S.statsDay.lost++;
         addFloat(x.x,x.y-25,'EMPTY SHELF -1 REP','#ff857a');
-        toast('Customer left • no suitable '+recipes[x.want].name+' met the request');
+        toast('Customer left • '+recipes[x.want].name+' shelf needed stock');
         x.state='leave';
       }
     }else if(x.state==='toCheckout'){
-      if(navigate(x,PTS.checkoutWait.x,PTS.checkoutWait.y,120,dt)){
+      if(navigate(x,PTS.checkoutWait.x,PTS.checkoutWait.y,122,dt)){
         let item=x.carriedItem;
         let baseVal=item.value;
         if(item.q===0&&S.poorPolicy==='Honest')baseVal=Math.round(recipes[x.want].value*.5);
         if(item.q===0&&S.poorPolicy==='Disguise')baseVal=recipes[x.want].value;
         let mult=x.personality==='Bargain'?.88:x.personality==='Collector'&&item.q>=2?1.45:1;
         let price=Math.max(10,Math.round(baseVal*mult));
-        let tip=x.pat/x.max>.6?Math.round((6+(S.RareBonus||0))*x.tipMult)+(S.rareDisplay.length*2):0;
+        let tip=x.pat/x.max>.6?Math.round(6*x.tipMult)+(S.rareDisplay.length*2):0;
         if(item.q>=2&&x.pat/x.max>.5)S.rep=Math.min(99,S.rep+(Math.random()<.35?1:0));
         S.coinsFloor+=price+tip;
         S.served++;
@@ -428,7 +556,7 @@ function clientTick(dt){
         x.state='leave';
       }
     }else if(x.state==='leave'){
-      if(navigate(x,950,2110,140,dt))clients.splice(i,1);
+      if(navigate(x,745,2520,140,dt))clients.splice(i,1);
     }
   }
 }
@@ -460,7 +588,7 @@ function employeeTick(dt){
       e.statusIcon=e.carryKey?'📦':'🪙';
       if(e.carryKey){
         if(e.carryDest==='contract'){
-          if(navigate(e,PTS.contractDrop.x,PTS.contractDrop.y,115,dt)){
+          if(navigate(e,PTS.contractDrop.x,PTS.contractDrop.y,118,dt)){
             let c=matchingContract(e.carryKey,e.carryItem?.q||1);
             if(c&&contractUnits()<S.contractCap){
               c.done++;
@@ -473,7 +601,7 @@ function employeeTick(dt){
           }
         }else{
           let sp=shelfPoint(e.carryKey);
-          if(navigate(e,sp.x,sp.y,115,dt)){
+          if(navigate(e,sp.x,sp.y,118,dt)){
             if(S.products[e.carryKey].stock<12){
               S.shelfItems[e.carryKey].push(e.carryItem||makeItemObject(e.carryKey,1));
               S.products[e.carryKey].stock=S.shelfItems[e.carryKey].length;
@@ -485,20 +613,20 @@ function employeeTick(dt){
         let task=pickNextOutputForSales();
         if(task){
           let op=outputPoint(task.key);
-          if(navigate(e,op.x,op.y,115,dt)&&S.outputItems[task.key].length>0){
+          if(navigate(e,op.x,op.y+25,118,dt)&&S.outputItems[task.key].length>0){
             e.carryItem=S.outputItems[task.key].shift();
             S.output[task.key]=S.outputItems[task.key].length;
             e.carryKey=task.key;e.carryCount=1;e.carryDest=task.dest;
           }
         }else if(S.coinsFloor>0){
-          if(navigate(e,PTS.coinPile.x,PTS.coinPile.y,115,dt)){
+          if(navigate(e,PTS.coinPile.x,PTS.coinPile.y-35,118,dt)){
             let amt=S.coinsFloor;
             S.cash+=amt;S.coinsFloor=0;
             addFloat(PTS.coinPile.x,PTS.coinPile.y-20,`+$${amt}`,'#7dff9b');
             toast(e.name+' collected $'+amt+' from checkout');
           }
         }else{
-          navigate(e,1480,780,90,dt);
+          navigate(e,745,1680,95,dt);
         }
       }
     }else if(e.job==='Craft'){
@@ -509,34 +637,34 @@ function employeeTick(dt){
         if(ck)candidates=[ck];
       }
       let k=candidates.sort((a,b)=>(S.products[a].stock+S.output[a])-(S.products[b].stock+S.output[b]))[0]||'sword';
-      let z=k==='potion'?R.alchemy:R.forge;
-      if(navigate(e,z.x+z.w/2,z.y+z.h/2,105,dt)){
+      let z=k==='potion'?{x:960,y:980}:{x:355,y:980};
+      if(navigate(e,z.x,z.y,110,dt)){
         if(canCraft(k)){
           e.work=(e.work||0)+dt*(1+e.craft/90);
-          if(e.work>=6.5){e.work=0;craft(k,e,false)}
+          if(e.work>=6.2){e.work=0;craft(k,e,false)}
         }
       }
     }else if(e.job==='Expedition'){
       e.statusIcon='⚔️';
-      if(navigate(e,945,170,115,dt)){
+      if(navigate(e,945,180,115,dt)){
         e.work=(e.work||0)+dt;
-        if(e.work>=11){
+        if(e.work>=10.5){
           e.work=0;
           let bonus=1+Math.floor((e.atk*.6+e.def*.4)/32);
           S.iron+=bonus;S.wood+=1;S.herb+=1;
           if(Math.random()<.45)S.gel++;
           e.hp=Math.max(25,e.hp-Math.max(3,14-e.def*.12));
           addFloat(e.x,e.y-25,`+${bonus}🪨 +1🪵 +1🌿`,'#9ef8ff');
-          if(e.hp<40){e.job='Staff House';toast(e.name+' is resting in Staff Room')}
-          else toast(e.name+' returned with expedition materials');
+          if(e.hp<40){e.job='Staff House';toast(e.name+' is resting in Staff House')}
+          else toast(e.name+' returned from Slime Woods with materials');
         }
       }
     }else{
       e.statusIcon='💤';
       let idx=S.employees.indexOf(e);
-      let tx=530+(idx%3)*120,ty=1500;
-      navigate(e,tx,ty,85,dt);
-      if(e.hp<100)e.hp=Math.min(100,e.hp+dt*3.5);
+      let tx=780+(idx%3)*110,ty=525;
+      navigate(e,tx,ty,90,dt);
+      if(e.hp<100)e.hp=Math.min(100,e.hp+dt*4);
     }
   }
 }
@@ -568,7 +696,7 @@ function deliverToContract(){
   if(!c){toast('No active wholesale contract for '+recipes[player.carryKey].name);return false}
   let added=0;
   for(let i=player.carryItems.length-1;i>=0;i--){
-    if(contractUnits()<S.contractCap&&c.done<c.qty&&player.carryItems[i].q>=(c.minQ||0)){
+    if(contractUnits()<S.contractCap&&c.done<q.qty&&player.carryItems[i].q>=(c.minQ||0)){
       c.done++;added++;
       player.carryItems.splice(i,1);
     }
@@ -587,7 +715,7 @@ function deliverToContract(){
 function updateContextActions(){
   const bar=$('actionBar');
   let btns=[];
-  if(inside(player,R.forge,30)){
+  if(inside(player,R.forge,35)){
     btns.push(`<button onclick="window.triggerCraft('sword',false)">🔨 Sword (${S.iron}/2🪨 ${S.wood}/1🪵)</button>`);
     if(S.products.shield.unlocked){
       btns.push(`<button onclick="window.triggerCraft('shield',false)">🛡️ Shield (${S.iron}/1🪨 ${S.wood}/3🪵)</button>`);
@@ -596,22 +724,31 @@ function updateContextActions(){
       btns.push(`<button onclick="window.triggerCraft('sword',true)">🗡️ Slime Edge (${S.gel}/1💧)</button>`);
     }
   }
-  if(inside(player,R.alchemy,30)){
+  if(inside(player,R.alchemy,35)){
     btns.push(`<button onclick="window.triggerCraft('potion',false)">⚗️ Brew Potion (${S.herb}/2🌿)</button>`);
   }
-  let nearNode=yardNodes.find(n=>n.ready&&dist(player,n)<72);
+  let nearNode=yardNodes.find(n=>n.ready&&dist(player,n)<75);
   if(nearNode){
     btns.push(`<button onclick="window.triggerGather('${nearNode.id}')">${nearNode.icon} Gather ${nearNode.name}</button>`);
   }
-  let nearMob=monsters.find(m=>dist(player,m)<155);
-  if(nearMob||player.x>2320){
-    btns.push(`<button onclick="window.triggerAttack()">⚔️ Attack Monster</button>`);
+  let nearMob=monsters.find(m=>dist(player,m)<165);
+  if(nearMob||player.y<320){
+    btns.push(`<button onclick="window.triggerAttack()">⚔️ Attack Forest Monster</button>`);
   }
-  if(player.carryKey&&dist(player,PTS.contractDrop)<110){
+  if(player.carryKey&&dist(player,PTS.contractDrop)<120){
     btns.push(`<button onclick="window.triggerContractDrop()">📦 Load Wholesale Crate</button>`);
   }
-  if(dist(player,PTS.hire)<75&&S.employees.length<S.staffCap){
+  if(dist(player,PTS.hire)<85&&S.employees.length<S.staffCap){
     btns.push(`<button onclick="window.triggerHire()">🤝 Hire Helper ($120)</button>`);
+  }
+  if(inside(player,R.training,20)){
+    btns.push(`<button onclick="window.triggerTrain()">🎯 Train Staff (+Stats $80)</button>`);
+  }
+  if(inside(player,R.management,20)){
+    btns.push(`<button onclick="window.openPage('wholesale')">📋 Management & Contracts</button>`);
+  }
+  if(inside(player,R.visitor,30)&&!S.visitorClaimed){
+    btns.push(`<button onclick="window.triggerVisitor()">🎁 Special Visitor Gift</button>`);
   }
   const html=btns.join('');
   if(bar.innerHTML!==html)bar.innerHTML=html;
@@ -622,9 +759,26 @@ window.triggerGather=id=>{const n=yardNodes.find(x=>x.id===id);if(n)gatherYardNo
 window.triggerAttack=()=>attack();
 window.triggerContractDrop=()=>deliverToContract();
 window.triggerHire=()=>hireEmployeeAtPad();
+window.openPage=p=>openPage(p);
+window.triggerTrain=()=>{
+  if(!S.employees.length)return toast('Hire a helper in the Staff House first!');
+  if(S.cash<80)return toast('Need $80 to run a training session');
+  S.cash-=80;
+  S.employees.forEach(e=>{e.sell+=3;e.craft+=3;e.atk+=3;e.def+=3});
+  addFloat(PTS.training.x,PTS.training.y-20,'ALL STAFF +3 STATS!','#7dff9b');
+  toast('Training complete! All staff gained +3 SELL/CRAFT/ATK/DEF');
+};
+window.triggerVisitor=()=>{
+  if(S.visitorClaimed)return;
+  S.visitorClaimed=true;
+  S.cash+=60;S.iron+=3;S.wood+=2;S.herb+=2;
+  addFloat(PTS.visitor.x,PTS.visitor.y-25,'+$60 +3🪨 +2🪵 +2🌿','#ffd86b');
+  toast('Special Visitor gifted $60 and bonus crafting materials!');
+  updateContextActions();
+};
 
 function hireEmployeeAtPad(){
-  if(S.employees.length>=S.staffCap)return toast('Staff Room is at capacity • Upgrade House');
+  if(S.employees.length>=S.staffCap)return toast('Staff House is full • Upgrade in STAFF menu');
   if(S.cash<120)return toast('Need $120 to hire a helper');
   S.cash-=120;
   let id=Date.now();
@@ -635,7 +789,7 @@ function hireEmployeeAtPad(){
     atk:18+Math.floor(Math.random()*28),
     def:18+Math.floor(Math.random()*28),
     wage:20,job:'Sales',hp:100,
-    x:645,y:1510
+    x:915,y:560
   });
   addFloat(PTS.hire.x,PTS.hire.y-20,'HIRED! (Sales)','#7dff9b');
   toast('Hired Helper! Assigned to Sales (change anytime in STAFF)');
@@ -653,34 +807,34 @@ function playerTick(dt){
     let d=Math.max(1,Math.hypot(dx,dy)),
         nx=player.x+dx/d*player.speed*dt,
         ny=player.y+dy/d*player.speed*dt;
-    moveEntity(player,nx,ny,19);
+    moveEntity(player,nx,ny,17);
     if(S.tutorialStep===0)advanceTutorial();
   }else if(target){
     if(stepToward(player,target.x,target.y,player.speed,dt))target=null;
     if(S.tutorialStep===0)advanceTutorial();
   }
-  player.x=Math.max(55,Math.min(WORLD.w-55,player.x));
-  player.y=Math.max(80,Math.min(WORLD.h-65,player.y));
+  player.x=Math.max(45,Math.min(WORLD.w-45,player.x));
+  player.y=Math.max(55,Math.min(WORLD.h-55,player.y));
 
-  // Auto-gather ready Material Yard nodes when walking right over them
+  // Auto-gather ready Material Yard nodes when walking over them
   for(const n of yardNodes){
     if(!n.ready){
       n.timer-=dt;
       if(n.timer<=0){n.ready=true;n.timer=0}
-    }else if(dist(player,n)<46){
+    }else if(dist(player,n)<48){
       gatherYardNode(n);
     }
   }
 
   // Pick up outputs (Sword, Shield, Potion)
-  if(dist(player,PTS.swordOut)<56)tryPickUpOutput('sword');
-  if(dist(player,PTS.shieldOut)<56)tryPickUpOutput('shield');
-  if(dist(player,PTS.potionOut)<56)tryPickUpOutput('potion');
+  if(dist(player,PTS.swordOut)<58)tryPickUpOutput('sword');
+  if(dist(player,PTS.shieldOut)<58)tryPickUpOutput('shield');
+  if(dist(player,PTS.potionOut)<58)tryPickUpOutput('potion');
 
   // Stock retail shelf or Contract Warehouse
   if(player.carryKey){
     let sp=shelfPoint(player.carryKey);
-    if(dist(player,sp)<66){
+    if(dist(player,sp)<75){
       let space=12-S.products[player.carryKey].stock;
       if(space>0){
         let moveCount=Math.min(space,player.carryItems.length);
@@ -695,13 +849,13 @@ function playerTick(dt){
         toast('Shelf is full (12/12)!');
       }
     }
-    if(dist(player,PTS.contractDrop)<66){
+    if(dist(player,PTS.contractDrop)<75){
       deliverToContract();
     }
   }
 
   // Collect checkout coins
-  if(S.coinsFloor>0&&dist(player,PTS.coinPile)<68){
+  if(S.coinsFloor>0&&dist(player,PTS.coinPile)<78){
     let amount=S.coinsFloor;
     S.cash+=amount;S.totalCoinsPicked+=amount;S.coinsFloor=0;
     addFloat(PTS.coinPile.x,PTS.coinPile.y-20,`+$${amount}`,'#ffd95e');
@@ -715,13 +869,13 @@ function playerTick(dt){
 }
 
 function attack(){
-  let best=null,bestD=160;
+  let best=null,bestD=175;
   for(const m of monsters){
     let d=dist(player,m);
     if(d<bestD){best=m;bestD=d}
   }
   if(!best){
-    toast('Walk closer to a monster in the East Forest to attack!');
+    toast('Walk north to the Forest Adventure gate to fight monsters!');
     return;
   }
   let dmg=9+S.skills.adventure*3+(S.rareDisplay.length?2:0);
@@ -747,7 +901,10 @@ function processContractDeadlines(){
   }
 }
 function generateContractOffers(){
-  S.offers=[{id:Date.now()+1,buyer:'Town Guard',key:'sword',qty:4,days:2,minQ:1,reward:260,rep:2,penalty:2},{id:Date.now()+2,buyer:'Explorer Guild',key:'potion',qty:5,days:2,minQ:1,reward:220,rep:2,penalty:2}];
+  S.offers=[
+    {id:Date.now()+1,buyer:'Town Guard',key:'sword',qty:4,days:2,minQ:1,reward:260,rep:2,penalty:2},
+    {id:Date.now()+2,buyer:'Explorer Guild',key:'potion',qty:5,days:2,minQ:1,reward:220,rep:2,penalty:2}
+  ];
   if(S.products.shield.unlocked)S.offers.push({id:Date.now()+3,buyer:'Royal Garrison',key:'shield',qty:4,days:2,minQ:1,reward:250,rep:3,penalty:2});
 }
 function contractsEnd(){processContractDeadlines();generateContractOffers()}
@@ -757,7 +914,7 @@ function createDayContent(){
   const pool=[
     {type:'sale',target:4,label:'Sell 4 products'},
     {type:'craft',target:3,label:'Craft 3 products'},
-    {type:'monster',target:2,label:'Defeat 2 forest slimes'},
+    {type:'monster',target:2,label:'Defeat 2 forest monsters'},
     {type:'tip',target:2,label:'Earn 2 fast-service tips'}
   ];
   S.goals=pool.sort(()=>Math.random()-.5).slice(0,3).map(x=>({...x,value:0,done:false}));
@@ -769,6 +926,7 @@ function createDayContent(){
   ];
   S.event=events[Math.floor(Math.random()*events.length)];
   if(S.event.type==='merchant'){S.iron+=3;S.wood+=3;S.herb+=3}
+  S.visitorClaimed=false;
   if(!S.offers.length)generateContractOffers();
   S.statsDay={sales:0,tips:0,crafted:0,monsters:0,lost:0};
 }
@@ -813,12 +971,18 @@ function update(dt){
   dayTime+=dt;
   if(dayTime>=120)return endDay();
   spawnTimer-=dt;
-  if(spawnTimer<=0){spawnClient();spawnTimer=5.5+Math.random()*4}
+  if(spawnTimer<=0){spawnClient();spawnTimer=5+Math.random()*4}
   playerTick(dt);
   employeeTick(dt);
   clientTick(dt);
-  if(monsters.length<6&&Math.random()<dt*.4){
-    monsters.push({x:2520+Math.random()*360,y:920+Math.random()*750,hp:18,maxHp:18});
+  // Spawn monsters in the Northern Forest Adventure zone (x:420..1420, y:120..255)
+  if(monsters.length<5&&Math.random()<dt*.45){
+    monsters.push({
+      x:440+Math.random()*960,
+      y:125+Math.random()*135,
+      hp:18,maxHp:18,
+      kind:Math.random()<.35?'wolf':'slime'
+    });
   }
   effects.forEach(e=>e.t-=dt);
   effects=effects.filter(e=>e.t>0);
@@ -838,120 +1002,119 @@ function text(t,x,y,z=14,col='#fff'){
   g.textAlign='center';
   g.fillText(t,x,y);
 }
-function tree(x,y,v=0){
-  const dark=['#174f2a','#1c5b31','#224b28'][v%3],mid=['#27743a','#2c7f42','#326b37'][v%3],light=['#4b9a45','#5fae4a','#60a441'][v%3];
-  pxRect(x-7,y+20,14,34,'#70442d');pxRect(x-31,y-6,62,48,dark);pxRect(x-24,y-21,48,31,mid);pxRect(x-14,y-33,28,21,light);
-}
-function pine(x,y){
-  pxRect(x-5,y+18,10,28,'#65412c');pxRect(x-27,y+4,54,25,'#164d30');pxRect(x-22,y-12,44,24,'#1f6840');pxRect(x-16,y-27,32,23,'#33814b');
-}
-function rock(x,y){pxRect(x-20,y-9,40,21,'#65706e');pxRect(x-14,y-16,28,11,'#89928d')}
-function water(x,y,w,h){
-  pxRect(x,y,w,h,'#187e9e');
-  for(let yy=y+8;yy<y+h;yy+=18)for(let xx=x+8;xx<x+w;xx+=42)pxRect(xx,yy,22,4,'#4fc3d4');
-  pxRect(x,y,w,5,'#7fe1dc');
-}
-function floorTile(x,y,w,h,col='#ccb07e'){
-  pxRect(x,y,w,h,col);
-  for(let yy=y+8;yy<y+h;yy+=28)for(let xx=x+8+(yy%56);xx<x+w;xx+=42)pxRect(xx,yy,28,4,'#b79869');
-}
-function wallH(x,y,w){
-  pxRect(x,y,w,24,'#5c4335');pxRect(x,y,w,8,'#9c7556');
-  for(let xx=x+12;xx<x+w;xx+=34)pxRect(xx,y+8,4,16,'#3e3028');
-}
-function wallV(x,y,h){
-  pxRect(x,y,24,h,'#5c4335');pxRect(x,y,8,h,'#9c7556');
-  for(let yy=y+12;yy<y+h;yy+=34)pxRect(x+8,yy,16,4,'#3e3028');
-}
-function doorMat(x,y,w=70,h=28){
-  pxRect(x,y,w,h,'#7d392e');
-  for(let xx=x+8;xx<x+w-6;xx+=16)pxRect(xx,y+5,8,h-10,'#bb6848');
-}
-function counter(x,y,w,col,icon){
-  pxRect(x,y,w,52,'#714427');pxRect(x,y,w,12,col);pxRect(x+10,y+19,w-20,7,'#c49857');
-  text(icon,x+w/2,y+41,20,'#fff1c5');
-}
-function crate(x,y,filled=false,icon=''){
-  pxRect(x,y,38,34,filled?'#b87c3c':'#6d4c2d');
-  pxRect(x+4,y+4,30,26,filled?'#dfb06a':'#8c6239');
-  pxRect(x+17,y,4,34,'#593a1e');
-  if(filled&&icon)text(icon,x+19,y+23,14,'#fff');
-}
-function bed(x,y,col){
-  pxRect(x,y,78,38,'#6e4832');pxRect(x+7,y+5,64,28,col);pxRect(x+8,y+7,20,11,'#eee3c8');
-}
-function labelRoom(t,x,y,col='#fff1c2'){
-  pxRect(x-82,y-13,164,22,'#201919cc');
-  text(t,x,y+3,11,col);
+function labelBadge(t,x,y,col='#fff1c2',bg='#1d1616dd',w=148){
+  pxRect(x-w/2,y-12,w,20,bg);
+  g.strokeStyle='#9b713f';g.lineWidth=1.5;
+  g.strokeRect(Math.round(x-w/2),Math.round(y-12),w,20);
+  text(t,x,y+2,10.5,col);
 }
 
-function drawShelfSlots(x,y,items,max,col){
-  for(let i=0;i<max;i++){
-    let sx=x+(i%4)*52,sy=y+Math.floor(i/4)*26;
-    pxRect(sx-18,sy-10,36,20,'#2b221ecc');
-    pxRect(sx-16,sy-8,32,16,i<items.length?col:'#42352f');
-    if(i<items.length){
-      let it=items[i];
-      pxRect(sx-16,sy-8,32,4,it.color||'#fff');
-      text(it.icon,sx,sy+5,12,'#fff');
-    }
+function drawShelfOverlay(x,y,items,max,title,col){
+  pxRect(x-68,y-26,136,50,'#1b1618dd');
+  g.strokeStyle=col;g.lineWidth=2;
+  g.strokeRect(x-68,y-26,136,50);
+  text(`${title} ${items.length}/${max}`,x,y-11,10.5,'#ffe8a3');
+  for(let i=0;i<Math.min(items.length,6);i++){
+    let sx=x-50+i*20,sy=y+9;
+    pxRect(sx-8,sy-8,16,16,items[i].color||col);
+    text(items[i].icon,sx,sy+4,11,'#fff');
+  }
+  if(items.length===0){
+    text('EMPTY SHELF',x,y+12,9.5,'#ff9e8a');
   }
 }
 
-function drawOutputTable(x,y,items,max,label){
-  pxRect(x-52,y-22,104,48,'#6b472b');
-  pxRect(x-48,y-18,96,40,'#8c623e');
-  for(let i=0;i<max;i++){
-    let sx=x-36+(i%4)*24,sy=y-7+Math.floor(i/4)*18;
-    pxRect(sx-9,sy-7,18,14,i<items.length?'#3b2b20':'#593e29');
-    if(i<items.length){
-      text(items[i].icon,sx,sy+4,11,'#fff');
-    }
+function drawOutputOverlay(x,y,items,max,label){
+  pxRect(x-44,y-20,88,38,'#1d1618e0');
+  g.strokeStyle=items.length>0?'#ffd264':'#7c5b3e';g.lineWidth=2;
+  g.strokeRect(x-44,y-20,88,38);
+  text(`${label} ${items.length}/${max}`,x,y-6,9,'#ffe7a0');
+  for(let i=0;i<Math.min(items.length,4);i++){
+    text(items[i].icon,x-24+i*16,y+12,12,'#fff');
   }
-  pxRect(x-50,y+28,100,17,'#191618cc');
-  text(`${label} ${items.length}/${max}`,x,y+40,9.5,items.length>=max?'#ff8978':'#ffe7a0');
 }
 
-function drawPixelWorld(){if(mapArt.complete&&mapArt.naturalWidth)g.drawImage(mapArt,0,0,WORLD.w,WORLD.h);else{pxRect(0,0,WORLD.w,WORLD.h,'#397f3d');text('Loading Forest Outpost...',WORLD.w/2,WORLD.h/2,28,'#fff')}labelRoom('MATERIAL YARD',345,690,'#fff1b7');labelRoom('FORGE',350,1185,'#ffd18b');labelRoom('ALCHEMY',960,1185,'#b8f3bb');labelRoom('ATTACK STOCK',300,1530,'#ffb3a8');labelRoom('DEFENSE STOCK',750,1530,'#b7dcff');labelRoom('OTHER STOCK',1110,1530,'#e4c0ff');labelRoom('CHECKOUT COINS',780,2025,'#ffe57d');labelRoom('CONTRACT DROP',1400,1205,'#ffe0a0');labelRoom('ADVENTURE GATE',945,285,'#b9ffca')}
+function drawPixelWorld(){
+  if(mapArt.complete&&mapArt.naturalWidth){
+    g.drawImage(mapArt,0,0,WORLD.w,WORLD.h);
+  }else{
+    pxRect(0,0,WORLD.w,WORLD.h,'#397f3d');
+    pxRect(50,300,1770,1750,'#c9ab79');
+    text('Loading Forest Outpost Artwork...',WORLD.w/2,1350,24,'#fff');
+  }
+
+  // Material Yard live nodes & regrowth timers
+  for(const n of yardNodes){
+    pxRect(n.x-26,n.y-20,52,36,n.ready?'#1c1816bb':'#1c1816dd');
+    text(n.icon,n.x,n.y+4,18,n.ready?'#fff':'#777');
+    if(!n.ready){
+      pxRect(n.x-22,n.y+10,44,5,'#333');
+      pxRect(n.x-22,n.y+10,44*(1-n.timer/n.max),5,'#67d876');
+    }
+  }
+
+  // Workshop Output Badges
+  drawOutputOverlay(PTS.swordOut.x,PTS.swordOut.y,S.outputItems.sword,S.outputCap,'⚔️ OUT');
+  if(S.products.shield.unlocked||S.outputItems.shield.length>0){
+    drawOutputOverlay(PTS.shieldOut.x,PTS.shieldOut.y,S.outputItems.shield,S.outputCap,'🛡️ OUT');
+  }
+  drawOutputOverlay(PTS.potionOut.x,PTS.potionOut.y,S.outputItems.potion,S.outputCap,'🧪 OUT');
+
+  // Retail Shelf Stock Overlays
+  drawShelfOverlay(PTS.attackShelf.x,PTS.attackShelf.y,S.shelfItems.sword,12,'⚔️ ATTACK','#d9534f');
+  drawShelfOverlay(PTS.defenseShelf.x,PTS.defenseShelf.y,S.shelfItems.shield,12,'🛡️ DEFENSE','#4a90e2');
+  drawShelfOverlay(PTS.otherShelf.x,PTS.otherShelf.y,S.shelfItems.potion,12,'🧪 OTHER','#9b59b6');
+
+  // Rare Storage live showcase badge
+  labelBadge(`✨ RARE STORAGE (${S.rareDisplay.length}/6)`,PTS.rare.x,PTS.rare.y-42,'#f3c6ff','#291d36dd',156);
+  for(let i=0;i<Math.min(S.rareDisplay.length,4);i++){
+    let it=S.rareDisplay[i];
+    pxRect(PTS.rare.x-54+i*36,PTS.rare.y-16,30,28,it.color);
+    text(it.icon,PTS.rare.x-39+i*36,PTS.rare.y+3,14,'#fff');
+  }
+
+  // Contract Warehouse status badge
+  labelBadge(`📦 CONTRACTS ${contractUnits()}/${S.contractCap}`,PTS.contractDrop.x+45,PTS.contractDrop.y-32,'#ffe0a0');
+
+  // Special Visitor indicator
+  if(!S.visitorClaimed){
+    labelBadge('🎁 TAP TO CLAIM GIFT!',PTS.visitor.x,PTS.visitor.y-48,'#ffd86b','#3b2818ee',148);
+  }
+}
 
 function person(o,col='#302831',label='',hatType='none',badge=''){
   g.save();
   let bob=o.moving?Math.sin(animClock*14)*3:0;
   g.translate(Math.round(o.x),Math.round(o.y+bob));
-  // Ground shadow
-  g.fillStyle='#0005';
-  g.beginPath();g.ellipse(0,41-bob,18,7,0,0,Math.PI*2);g.fill();
-  // Legs & Boots
-  pxRect(-13,16,10,22,'#372b2e');pxRect(4,16,10,22,'#372b2e');
-  pxRect(-16,36,13,7,'#241c1f');pxRect(3,36,13,7,'#241c1f');
-  // Torso & Arms
-  pxRect(-18,-12,36,32,col);
-  pxRect(-26,-8,9,22,col);pxRect(17,-8,9,22,col);
-  // Head & Eyes
-  pxRect(-14,-32,28,23,'#efc694');
-  pxRect(-8,-23,4,4,'#222');pxRect(5,-23,4,4,'#222');
-  // Role Headgear
+  g.fillStyle='#0006';
+  g.beginPath();g.ellipse(0,38-bob,18,7,0,0,Math.PI*2);g.fill();
+  pxRect(-12,14,9,20,'#372b2e');pxRect(3,14,9,20,'#372b2e');
+  pxRect(-15,32,12,6,'#241c1f');pxRect(3,32,12,6,'#241c1f');
+  pxRect(-17,-12,34,29,col);
+  pxRect(-24,-8,8,20,col);pxRect(16,-8,8,20,col);
+  pxRect(-13,-30,26,21,'#efc694');
+  pxRect(-7,-22,4,4,'#222');pxRect(4,-22,4,4,'#222');
   if(hatType==='Knight'){
-    pxRect(-16,-41,32,14,'#8c9aa6');pxRect(-12,-35,24,5,'#d4dee8');
+    pxRect(-15,-39,30,13,'#8c9aa6');pxRect(-11,-33,22,5,'#d4dee8');
   }else if(hatType==='Collector'){
-    pxRect(-15,-41,30,11,'#e6b835');pxRect(-8,-45,16,5,'#ffdf6b');
+    pxRect(-14,-39,28,10,'#e6b835');pxRect(-7,-43,14,5,'#ffdf6b');
   }else if(hatType==='Veteran'){
-    pxRect(-16,-40,32,12,'#3d5a35');
+    pxRect(-15,-38,30,11,'#3d5a35');
   }else{
-    pxRect(-15,-39,30,11,'#473127');
+    pxRect(-14,-37,28,10,'#473127');
   }
   if(label){
-    pxRect(-58,-58,116,17,'#171719dd');
-    text(label,0,-46,9.5,'#fff');
+    pxRect(-56,-56,112,16,'#171719e0');
+    text(label,0,-44,9.5,'#fff');
   }
   if(badge){
-    text(badge,26,-24,14,'#fff');
+    text(badge,24,-22,14,'#fff');
   }
   g.restore();
 }
 
 function drawRequest(o,label){
-  let lines=label.split('\n'),w=138,h=16+lines.length*14,x=o.x-w/2,y=o.y-72-h;
+  let lines=label.split('\n'),w=138,h=16+lines.length*14,x=o.x-w/2,y=o.y-70-h;
   pxRect(x,y,w,h,'#fff0c9');
   g.strokeStyle='#6d4931';g.lineWidth=3;g.strokeRect(x,y,w,h);
   for(let i=0;i<lines.length;i++)text(lines[i],o.x,y+15+i*14,10,'#352619');
@@ -961,25 +1124,25 @@ function draw(){
   g.save();
   g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
   g.clearRect(0,0,vw,vh);
-  g.imageSmoothingEnabled=false;
   g.scale(zoom,zoom);
   g.translate(-cam.x,-cam.y);
 
   drawPixelWorld();
 
-  // Hire Pad
-  g.globalAlpha=.65;g.fillStyle='#52c465';
-  g.fillRect(PTS.hire.x-48,PTS.hire.y-28,96,56);
+  // Hire Pad in Staff House
+  g.globalAlpha=.75;g.fillStyle='#3ca84e';
+  g.fillRect(PTS.hire.x-48,PTS.hire.y-22,96,44);
   g.globalAlpha=1;
-  text('🤝 HIRE $120',PTS.hire.x,PTS.hire.y+5,10.5,'#fff');
+  text('🤝 HIRE $120',PTS.hire.x,PTS.hire.y+4,10.5,'#fff');
 
-  // Checkout Coins
+  // Checkout Coins on Checkout Counter
   if(S.coinsFloor>0){
+    pxRect(PTS.coinPile.x-38,PTS.coinPile.y-36,76,22,'#191516dd');
     for(let i=0;i<Math.min(12,Math.ceil(S.coinsFloor/18));i++){
       g.fillStyle='#ffd54f';
-      g.beginPath();g.arc(PTS.coinPile.x-25+(i%5)*14,PTS.coinPile.y-10+Math.floor(i/5)*13,7,0,7);g.fill();
+      g.beginPath();g.arc(PTS.coinPile.x-22+(i%5)*11,PTS.coinPile.y-4+Math.floor(i/5)*10,6.5,0,7);g.fill();
     }
-    text('$'+S.coinsFloor,PTS.coinPile.x,PTS.coinPile.y-26,13,'#fff4a3');
+    text('🪙 $'+S.coinsFloor,PTS.coinPile.x,PTS.coinPile.y-21,11.5,'#fff4a3');
   }
 
   // Customers
@@ -990,8 +1153,8 @@ function draw(){
       let r=recipes[x.want];
       let label=`${r.icon} ${r.name}`+(x.minStat?`\n${r.statName} ${x.minStat}+`:'')+(x.minRarity!=='Any'?` • ${x.minRarity}+`:'');
       drawRequest(x,label);
-      pxRect(x.x-30,x.y-66,60,7,'#332a30');
-      pxRect(x.x-30,x.y-66,60*Math.max(0,x.pat/x.max),7,x.pat/x.max>.4?'#5ed177':'#ed6256');
+      pxRect(x.x-30,x.y-64,60,6,'#332a30');
+      pxRect(x.x-30,x.y-64,60*Math.max(0,x.pat/x.max),6,x.pat/x.max>.4?'#5ed177':'#ed6256');
     }
   });
 
@@ -1000,16 +1163,21 @@ function draw(){
     let col=e.job==='Sales'?'#c68a2d':e.job==='Craft'?'#c65337':e.job==='Expedition'?'#4b6cb7':'#67825d';
     person(e,col,`${e.name} (${e.job})`,'none',e.carryKey?recipes[e.carryKey].icon:(e.statusIcon||''));
     if(e.job==='Craft'&&e.work>0){
-      pxRect(e.x-24,e.y-68,48,6,'#222');
-      pxRect(e.x-24,e.y-68,48*Math.min(1,e.work/6.5),6,'#ffd257');
+      pxRect(e.x-24,e.y-66,48,6,'#222');
+      pxRect(e.x-24,e.y-66,48*Math.min(1,e.work/6.2),6,'#ffd257');
     }
   });
 
-  // Monsters
+  // Forest Monsters
   monsters.forEach(m=>{
     let bounce=Math.sin(animClock*8+m.x)*3;
-    pxRect(m.x-22,m.y-3+bounce,44,28,'#49ad44');
-    pxRect(m.x-15,m.y-15+bounce,30,18,'#78dd62');
+    if(m.kind==='wolf'){
+      pxRect(m.x-22,m.y-4+bounce,44,24,'#596270');
+      pxRect(m.x-14,m.y-16+bounce,28,16,'#778294');
+    }else{
+      pxRect(m.x-22,m.y-3+bounce,44,28,'#49ad44');
+      pxRect(m.x-15,m.y-15+bounce,30,18,'#78dd62');
+    }
     pxRect(m.x-8,m.y+2+bounce,4,4,'#222');pxRect(m.x+5,m.y+2+bounce,4,4,'#222');
     pxRect(m.x-20,m.y-26,40,6,'#222');
     pxRect(m.x-20,m.y-26,40*(m.hp/18),6,'#67e66c');
@@ -1019,8 +1187,8 @@ function draw(){
   if(player.carryCount>0){
     for(let i=0;i<player.carryItems.length;i++){
       let it=player.carryItems[i];
-      pxRect(player.x-14,player.y-76-i*20,28,18,it.color||'#fff');
-      text(it.icon,player.x,player.y-62-i*20,14,'#fff');
+      pxRect(player.x-14,player.y-74-i*20,28,18,it.color||'#fff');
+      text(it.icon,player.x,player.y-60-i*20,14,'#fff');
     }
   }
   person(player,'#297ea1','YOU');
@@ -1034,15 +1202,18 @@ function draw(){
 }
 
 function renderSlots(){
-  $('saveSlots').innerHTML=[1,2,3].map(n=>{
+  const box=$('saveSlots');
+  if(!box)return;
+  box.innerHTML=[1,2,3].map(n=>{
     let d=load(n);
-    return `<div class="slot"><h2>SAVE SLOT ${n}</h2>${d?`<p>Day ${d.day} • Cash $${d.cash}<br>Reputation ${d.rep} • Legacy ${d.legacy||0}<br>Staff ${d.employees?.length||0} • Saved ${d.savedAt||'Recently'}</p>`:'<p>Empty shop record<br>Start with 0 employees and build your empire!</p>'}<div class="actions"><button data-load="${n}">${d?'LOAD SHOP':'START NEW SHOP'}</button>${d?`<button class="danger" data-del="${n}">DELETE</button>`:''}</div></div>`;
+    return `<div class="slot"><h2>SAVE SLOT ${n}</h2>${d?`<p>Day ${d.day} • Cash $${d.cash}<br>Reputation ${d.rep} • Legacy ${d.legacy||0}<br>Staff ${d.employees?.length\vert{}\vert{}0} • Saved ${d.savedAt||'Recently'}</p>`:'<p>Empty shop record<br>Start at the Forest Outpost with 0 employees and build your empire!</p>'}<div class="actions"><button data-load="${n}">${d?'LOAD SHOP':'START NEW SHOP'}</button>${d?`<button class="danger" data-del="${n}">DELETE</button>`:''}</div></div>`;
   }).join('');
   document.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>start(Number(b.dataset.load)));
   document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
     if(confirm('Delete this save slot? (Forever Skills & Legacy are kept)')){
-      localStorage.removeItem(key(Number(b.dataset.del)));
-      localStorage.removeItem(OLD_PREFIX+Number(b.dataset.del));
+      const num=Number(b.dataset.del);
+      localStorage.removeItem(key(num));
+      OLD_PREFIXES.forEach(p=>localStorage.removeItem(p+num));
       renderSlots();
     }
   });
@@ -1052,15 +1223,14 @@ function start(n){
   slot=n;
   let existing=load(n);
   S=norm(existing);
-  player={x:820,y:2110,speed:315,carryKey:null,carryCount:0,carryItems:[],carryCap:3+S.skills.management};
-  clients=[];monsters=[];target=null;dayTime=0;zoom=S.zoom||.68;
+  player={x:745,y:2080,speed:320,carryKey:null,carryCount:0,carryItems:[],carryCap:3+S.skills.management};
+  clients=[];monsters=[];target=null;dayTime=0;zoom=S.zoom||.65;
   if(!S.goals.length)createDayContent();
   if(!S.offers.length)generateContractOffers();
   playing=true;
-  $('slotScreen').classList.remove('show');
-  $('app').classList.remove('hidden');
+  $('slotScreen').classList.remove('show');$('app').classList.remove('hidden');
   if(!existing)save('Slot created');
-  toast('Hold & drag anywhere to walk!');
+  toast('Hold & drag anywhere to walk around your Forest Outpost!');
   showTutorial();
 }
 
@@ -1076,8 +1246,7 @@ function openPage(p){
     <h2>SHOP OVERVIEW</h2>
     <div class="grid">
       ${card('Business Status',`
-        <div class="row"><span>Day</span><b>${S.day}</b></div>
-        <div class="row"><span>Cash</span><b>$${S.cash}</b></div>
+        <div class="row"><span>Day</span><b>${S.day}</b></div> <div class="row"><span>Cash</span><b>$${S.cash}</b></div>
         <div class="row"><span>Reputation</span><b>${S.rep}</b></div>
         <div class="row"><span>Shop Rating</span><b>${Math.max(1,S.review-S.badReviews*.15).toFixed(1)} ★</b></div>
       `)}
@@ -1087,7 +1256,7 @@ function openPage(p){
         <div class="row"><span>🌿 Healing Herb</span><b>${S.herb}</b></div>
         <div class="row"><span>💧 Slime Gel</span><b>${S.gel}</b></div>
       `)}
-      ${card('Rare Showcase (`+Tip Bonus`)',S.rareDisplay.length?S.rareDisplay.map(r=>`<div>${r.icon} <b style="color:${r.color}">${r.rarity} ${r.name}</b> (${r.stat})</div>`).join(''):'Craft Rare+ items or Slime Edge to fill the showcase!')}
+      ${card('Rare Storage (+Tip Bonus)',S.rareDisplay.length?S.rareDisplay.map(r=>`<div>${r.icon} <b style="color:${r.color}">${r.rarity} ${r.name}</b> (${r.stat})</div>`).join(''):'Craft Rare+ items or Slime Edge to fill Rare Storage!')}
     </div>`;
   }
   if(p==='products'){
@@ -1110,11 +1279,10 @@ function openPage(p){
     <div class="grid">
       ${Object.entries(recipes).map(([k,r])=>{
         let x=S.products[k];
-        return card(`${r.icon} ${r.name}`,`
-          <div class="row"><span>Department</span><b>${r.cat} (${r.statName} ${r.baseStat})</b></div>
+        return card(`${r.icon}${r.name}`,`
+          <div class="row"><span>Department</span><b>${r.cat} (${r.statName}${r.baseStat})</b></div>
           <div class="row"><span>Recipe Cost</span><b>${r.iron?r.iron+'🪨 ':''}${r.wood?r.wood+'🪵 ':''}${r.herb?r.herb+'🌿':''}</b></div>
-          <div class="row"><span>Shelf Stock</span><b>${x.stock}/12 (Out: ${S.output[k]}/8)</b></div>
-          ${x.unlocked?`<button data-toggle="${k}" class="${x.on?'on':''}">${x.on?'SELLING ON':'SELLING OFF'}</button>`:`<button data-unlock="${k}">UNLOCK RECIPE ($180)</button>`}
+          <div class="row"><span>Shelf Stock</span><b>${x.stock}/12 (Out: ${S.output[k]}/8)</b></div>${x.unlocked?`<button data-toggle="${k}" class="${x.on?'on':''}">${x.on?'SELLING ON':'SELLING OFF'}</button>`:`<button data-unlock="${k}">UNLOCK RECIPE ($180)</button>`}
         `);
       }).join('')}
     </div>`;
@@ -1123,15 +1291,14 @@ function openPage(p){
     h=`<h2>STAFF & ASSIGNMENTS (${S.employees.length}/${S.staffCap})</h2>
     <button class="action" id="applyRecommended">✨ APPLY ALL RECOMMENDED ROLES</button>
     <div class="grid" style="margin-top:10px">
-      ${S.employees.map(e=>card(`${e.name} • ${e.job}`,`
-        <div class="abilities"><span>SELL ${e.sell}</span><span>CRAFT ${e.craft}</span><span>ATK ${e.atk}</span><span>DEF ${e.def}</span></div>
-        <div class="row"><span>HP ${Math.round(e.hp)}/100</span><span>Wage $${e.wage}/day</span></div>
-        ${['Sales','Craft','Expedition','Staff House'].map(j=>`<button data-emp="${e.id}" data-job="${j}" class="${e.job===j?'on':''}">${j}</button>`).join('')}
+      ${S.employees.map(e=>card(`${e.name} •${e.job}`,`
+        <div class="abilities"><span>SELL ${e.sell}</span><span>CRAFT${e.craft}</span><span>ATK ${e.atk}</span><span>DEF${e.def}</span></div>
+        <div class="row"><span>HP ${Math.round(e.hp)}/100</span><span>Wage$${e.wage}/day</span></div>${['Sales','Craft','Expedition','Staff House'].map(j=>`<button data-emp="${e.id}" data-job="${j}" class="${e.job===j?'on':''}">${j}</button>`).join('')}
       `)).join('')}
-      ${card('Staff Room Management',`
+      ${card('Staff House Management',`
         <div class="row"><span>Staff Capacity</span><b>${S.employees.length}/${S.staffCap}</b></div>
         <button id="hire">🤝 HIRE NEW HELPER ($120)</button>
-        <button id="house">🏠 UPGRADE STAFF ROOM ($300)</button>
+        <button id="house">🏠 UPGRADE STAFF HOUSE ($300)</button>
       `)}
     </div>`;
   }
@@ -1148,10 +1315,9 @@ function openPage(p){
     </div>
     <div class="grid">
       ${S.contracts.map(q=>card(`ACTIVE • ${q.buyer}`,`
-        <div class="row"><span>Order</span><b>${recipes[q.key].icon} ${recipes[q.key].name} ${q.done}/${q.qty}</b></div>
+        <div class="row"><span>Order</span><b>${recipes[q.key].icon}${recipes[q.key].name} ${q.done}/${q.qty}</b></div>
         <div class="bar"><i style="width:${Math.min(100,q.done/q.qty*100)}%"></i></div>
-        <div class="row"><span>Deadline</span><b>${q.days} day(s) left</b></div>
-        <div class="row"><span>Reward</span><b>$${q.reward} & +1 Legacy</b></div>
+        <div class="row"><span>Deadline</span><b>${q.days} day(s) left</b></div> <div class="row"><span>Reward</span><b>$${q.reward} & +1 Legacy</b></div>
         <p style="font-size:11px;color:#ffd88a;margin:6px 0 0">Carry ${recipes[q.key].name} to the Contract Warehouse drop zone (or set worker priority to Wholesale)!</p>
       `)).join('')}
       ${S.offers.map(q=>card(`OFFER • ${q.buyer}`,`
@@ -1183,17 +1349,13 @@ function openPage(p){
     </div>`;
   }
   if(p==='visual'){
-    h=`<h2>FIRST SHOP • ART DIRECTION</h2>
-    <div class="visualNote">This original concept is the approved visual target for the first shop. The current playable collision map remains code-rendered until the modular sprite conversion is complete.</div>
-    <img class="visualHero" src="assets/first_shop_art.png?v=0.14.00">
-    <h2>SHOP PROGRESSION</h2>
-    <div class="tierCard"><b>TIER 1 • FOREST OUTPOST</b><p>Current first shop: Forge, Alchemy, retail hall, Staff House, Contract Warehouse, Material Yard and Forest Gate.</p></div>
-    <div class="tierCard locked"><b>TIER 2 • TOWN WORKSHOP</b><p>Future purchase: around 3× larger with expanded shelves, contract bays and visitor market.</p></div>
-    <div class="tierCard locked"><b>TIER 3 • GUILD EMPORIUM</b><p>Future purchase: much larger multi-building compound with specialist workshops and adventure routes.</p></div>`;
-  }
-  if(p==='art'){
-    h=`<h2>ART & SPRITE PREVIEW</h2>
-    <iframe src="assets/art_preview.html?v=0.14.00" style="width:100%;height:68vh;border:0;border-radius:12px"></iframe>`;
+    h=`<h2>FOREST OUTPOST • MAP & PROGRESSION</h2>
+    <div class="visualNote">Your Forest Outpost artwork is active as the live scrolling world! All rooms, doorways, shelves, outputs, and paths are aligned with the map below.</div>
+    <img class="visualHero" src="assets/first_shop_art.jpg?v=0.15.00" onerror="this.src='assets/forest_outpost_map.jpg?v=0.15.00'">
+    <h2>SHOP TIER PROGRESSION</h2>
+    <div class="tierCard"><b>TIER 1 • FOREST OUTPOST (Active)</b><p>Includes Material Yard, Staff House, Training Room, Forge, Alchemy Lab, Contract Warehouse, Attack/Defense/Other Display Hall, Rare Storage, Checkout, Management Office, Special Visitor Plaza, and Forest Adventure Gate.</p></div>
+    <div class="tierCard locked"><b>TIER 2 • TOWN WORKSHOP (Coming Soon)</b><p>3× larger town compound with expanded shelves, multi-wagon wholesale bays, and Crystal Mine access.</p></div>
+    <div class="tierCard locked"><b>TIER 3 • GUILD EMPORIUM (Coming Soon)</b><p>Grand royal weapon emporium with specialist master smiths and Ancient Ruins expeditions.</p></div>`;
   }
   if(p==='save'){
     h=`<h2>SAVE & EXIT</h2>
@@ -1281,8 +1443,9 @@ function bindPanel(){
   if($('noSave'))$('noSave').onclick=exitSlots;
 }
 
+// All recommendation coordinates matched to the 1870x2870 Forest Outpost map
 function recommendation(){
-  if(S.coinsFloor>0)return {t:'Collect $'+S.coinsFloor+' at Checkout',x:PTS.coinPile.x,y:PTS.coinPile.y};
+  if(S.coinsFloor>0)return {t:'Collect $'+S.coinsFloor+' at Checkout',x:PTS.coinPile.x,y:PTS.coinPile.y-30};
   if(player.carryCount>0){
     if(matchingContract(player.carryKey,player.carryItems[0]?.q)&&S.productionPriority==='Wholesale'){
       return {t:'Deliver to Contract Warehouse',x:PTS.contractDrop.x,y:PTS.contractDrop.y};
@@ -1290,25 +1453,26 @@ function recommendation(){
     let p=shelfPoint(player.carryKey);
     return {t:'Stock carried items on shelf',x:p.x,y:p.y};
   }
-  if(S.output.sword>0)return {t:'Pick up Swords at Forge Output',x:PTS.swordOut.x,y:PTS.swordOut.y};
-  if(S.output.shield>0)return {t:'Pick up Shields at Forge Output',x:PTS.shieldOut.x,y:PTS.shieldOut.y};
-  if(S.output.potion>0)return {t:'Pick up Potions at Alchemy Output',x:PTS.potionOut.x,y:PTS.potionOut.y};
-  if(S.iron<2||S.wood<1||S.herb<2)return {t:'Gather materials in West Yard',x:280,y:640};
-  if(S.products.sword.stock<2)return {t:'Craft Swords in the Forge',x:815,y:540};
-  if(S.products.potion.stock<2)return {t:'Brew Potions in Alchemy Lab',x:1875,y:540};
-  if(S.employees.length===0&&S.cash>=120)return {t:'Hire 1st Helper in Staff Room ($120)',x:PTS.hire.x,y:PTS.hire.y};
-  return {t:'Fight Slimes in East Forest',x:2620,y:920};
+  if(S.output.sword>0)return {t:'Pick up Swords at Forge Output',x:PTS.swordOut.x,y:PTS.swordOut.y+20};
+  if(S.output.shield>0)return {t:'Pick up Shields at Forge Output',x:PTS.shieldOut.x,y:PTS.shieldOut.y+20};
+  if(S.output.potion>0)return {t:'Pick up Potions at Alchemy Output',x:PTS.potionOut.x,y:PTS.potionOut.y+20};
+  if(!S.visitorClaimed)return {t:'Claim Special Visitor Gift (South Plaza)',x:PTS.visitor.x,y:PTS.visitor.y};
+  if(S.iron<2||S.wood<1||S.herb<2)return {t:'Gather materials in Material Yard',x:335,y:520};
+  if(S.products.sword.stock<2)return {t:'Craft Swords in the Forge',x:355,y:980};
+  if(S.products.potion.stock<2)return {t:'Brew Potions in Alchemy Lab',x:960,y:980};
+  if(S.employees.length===0&&S.cash>=120)return {t:'Hire 1st Helper in Staff House ($120)',x:PTS.hire.x,y:PTS.hire.y};
+  return {t:'Fight Monsters at Forest Gate',x:945,y:215};
 }
 
 function showTutorial(){
   let st=S.tutorialStep||0;
   if(st>=5){$('tutorial').classList.remove('show');return}
   const steps=[
-    ['1/5 • Drag to Move','Hold & slide your finger anywhere like a joystick to walk. Tap 💡 Next Task anytime to auto-walk!'],
-    ['2/5 • Craft at the Forge','Walk into the Forge and tap 🔨 Craft Sword on the bottom action bar.'],
-    ['3/5 • Pick Up & Stock Shelf','Walk over the Sword at FORGE OUTPUT, then carry it to the red ATTACK shelf.'],
-    ['4/5 • Customer & Checkout Coins','Watch a customer take the product from the shelf and leave coins at Checkout. Walk over the coins!'],
-    ['5/5 • Material Yard & Forest','Gather free Iron, Wood & Herbs in the West Material Yard, or fight Slimes in the East Forest!']
+    ['1/5 • Drag to Move','Hold & slide your finger anywhere like a joystick to walk around the Forest Outpost. Tap 💡 Next Task anytime to auto-walk!'],
+    ['2/5 • Craft at the Forge','Walk north into the FORGE (left workshop) and tap 🔨 Sword on the bottom action bar.'],
+    ['3/5 • Pick Up & Stock Shelf','Walk over the Sword at ⚔️ OUT, then carry it to the red ATTACK shelf.'],
+    ['4/5 • Customer & Checkout Coins','Watch a customer walk in from the South Bridge, take the Sword, and leave coins at CHECKOUT. Walk over the coins!'],
+    ['5/5 • Material Yard & Forest Gate','Gather free materials in the top-left Material Yard or fight monsters above the top Forest Gate!']
   ];
   $('tutorialTitle').textContent=steps[st][0];
   $('tutorialText').textContent=steps[st][1];$('tutorial').classList.add('show');
@@ -1322,7 +1486,7 @@ let craftUseSlime=false;
 function startCraftGame(k,useSlime=false){
   if($('craftGame').classList.contains('show'))return;
   if((S.output[k]||0)>=S.outputCap)return toast(recipes[k].name+' output is full!');
-  if(!canCraft(k))return toast('Missing raw materials • Visit the West Material Yard!');
+  if(!canCraft(k))return toast('Missing raw materials • Visit the Material Yard!');
   craftKey=k;craftUseSlime=useSlime;craftAnim=0;
   $('craftTitle').textContent='CRAFTING • '+(useSlime?'SLIME EDGE':recipes[k].name.toUpperCase());
   $('craftGame').classList.add('show');
@@ -1356,7 +1520,7 @@ function exitSlots(){
 }
 
 $('zoomIn').onclick=()=>setZoom(zoom+.1);$('zoomOut').onclick=()=>setZoom(zoom-.1);
-$('overview').onclick=()=>setZoom(.5);$('suggest').onclick=()=>{
+$('overview').onclick=()=>setZoom(.46);$('suggest').onclick=()=>{
   let r=recommendation();
   toast(r.t);
   if(r.page)openPage(r.page);
