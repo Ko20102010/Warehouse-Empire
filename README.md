@@ -1,12 +1,57 @@
 # Weapon Shop Empire
 
-## Current Version: v0.7.00
+## Current Version: v0.8.00
 
-This release completely redesigns the game artwork into an original top-down 2D pixel-art RPG style inspired by classic colorful fantasy management games.
+This release focuses on making the game genuinely playable on phones. It adds hold-and-drag movement, physical collision, and a three-pass quality review process.
 
-## GitHub Upload
+## Phone Movement
 
-Extract the ZIP and replace the repository root with:
+- Press and hold anywhere on the game world.
+- Slide the finger away from the first touch point.
+- The player continuously moves in that direction.
+- Moving the finger farther increases the virtual-stick strength.
+- Releasing the finger stops the player.
+- A quick tap still moves the player toward that point.
+- A temporary virtual-stick indicator appears at the finger position.
+
+## Collision
+
+The player, employees, and clients can no longer walk freely through major structures. Collision is added to:
+
+- Main weapon shop
+- Forge building
+- Contract office
+- Staff House
+- Herb garden fence
+- Attack, Defense, and Other stalls
+- Customer counter
+- Contract warehouse fence
+- Outer forest boundary
+
+Movement uses axis-separated collision so characters can slide along walls rather than stopping completely.
+
+## Three-Pass Review Completed
+
+### Review 1: Code and package integrity
+- JavaScript syntax checked.
+- ZIP integrity checked.
+- File list checked.
+- Version and cache-busting references checked.
+
+### Review 2: Movement and collision logic
+- Drag start, drag update, release-to-stop, and tap fallback checked.
+- Player collision checked.
+- Employee/client route collision checked.
+- Axis-separated wall sliding checked.
+
+### Review 3: Core feature regression
+- Three save slots checked.
+- Zoom, tutorial, daily goals, events and crafting mini-game checked.
+- Employees, clients, wholesale, monster combat and Forever skills checked.
+
+## Upload to GitHub
+
+Extract the ZIP and replace the root files/folder:
 
 ```text
 index.html
@@ -16,58 +61,29 @@ README.md
 assets/
 ```
 
-Delete the old `shop_world.png`. Version v0.7.00 does not use the previous soft-3D image.
-
-## Artwork Redesign
-
-- Removed the previous soft-3D background artwork.
-- Added a large original pixel-art forest map rendered by the game.
-- Added dense green trees and pines around the boundary.
-- Added ponds, streams, stone paths, rocks, fences and grass details.
-- Added a central timber-roof weapon shop.
-- Added a pixel forge, staff house, wholesale storage yard, customer stalls, herb garden and expedition region.
-- Replaced chibi figures with clear pixel people.
-- Added pixel clients, workers, player and slime monsters.
-- Kept customer patience bars, labels and visible employee work.
-- Added crisp pixel scaling at every zoom level.
-- Included an `assets/` folder ready for future modular sprites and tiles.
-
-## Controls and Existing Features
-
-- Tap-to-move on phone.
-- Pinch, mouse-wheel, plus/minus and overview zoom.
-- Daily goals and events.
-- Personal crafting timing game.
-- Visible clients and employees.
-- Products, wages, wholesale contracts, monsters and Forever skills.
-- Three save slots and day-end auto-save.
+The bottom-left marker must show `Weapon Shop Empire v0.8.00`.
 
 ## Version History
 
+### v0.8.00 - 2026-10-16
+- Added hold-and-drag virtual-stick movement.
+- Added release-to-stop control.
+- Kept quick-tap destination movement.
+- Added visible temporary joystick indicator.
+- Added collision for major buildings, walls, fences, counters and stalls.
+- Added axis-separated wall sliding.
+- Repositioned starting characters onto walkable areas.
+- Added formal three-pass review before release.
+
 ### v0.7.00 - 2026-10-16
-- Completely replaced the background and character artwork with original 2D pixel art.
-- Removed `shop_world.png` from the package.
-- Added original pixel terrain, forest, water, paths, buildings, market stalls, warehouse, forge and characters.
-- Added an artwork subfolder structure for future sprites.
+- Replaced soft-3D artwork with original top-down pixel art.
 
 ### v0.6.00 - 2026-10-16
-- Added zoom controls, casual tutorial, suggested actions, daily goals/events, crafting mini-game and customer personalities.
+- Added zoom, casual tutorial, daily variety and crafting timing.
 
-### v0.5.00 - 2026-10-16
-- Added the now-retired soft-3D visual experiment.
-
-### v0.4.00 - 2026-10-16
-- Added tap-to-move, visible workers/clients and phone-friendly pop-up pages.
-
-### v0.3.00 - 2026-10-15
-- Added wholesale contracts and contract storage.
-
-### v0.2.00 - 2026-10-15
-- Added three save slots and day-end-only auto-save.
-
-### v0.1.00 - 2026-10-15
-- First complete Weapon Shop Empire release.
+### v0.5.00 and earlier
+- Added active characters, pop-up UI, wholesale contracts, save slots and the first complete game systems.
 
 ## Version Policy
 
-Continue with v0.x by default. Ask before changing to v1.0.00, v2.0.00 or another major version.
+Continue with v0.x versions by default. Ask before moving to v1.0.00, v2.0.00 or another major version.
