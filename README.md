@@ -44,3 +44,6 @@ JavaScript syntax, version consistency, forbidden concept-map references, ZIP in
 
 ### v0.12.00 & v0.11.00
 - Added Material Yard, Shield crafting, Wholesale Contract Warehouse delivery, item quality inspection, and mobile context bar.
+## Full package contents
+
+This full GitHub package includes the v0.16.01 playable files, the finished transparent environment asset library, the systems preview page in its correct `assets/` location, and the PNG used only by the save-slot title screen. The live game world always uses the modular renderer and does not load a full-map background image.
