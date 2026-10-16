@@ -1,10 +1,10 @@
 # Weapon Shop Empire
 
-## Current Version: v0.16.01
+## Current Version: v0.16.02
 
-Lightweight correction update for the uploaded v0.16.00 modular renderer. Keep the existing `assets/` folder in the GitHub repository and replace only the five files in this ZIP.
+Full clean-install correction package for the modular renderer. It includes the playable files and required environment assets.
 
-## Fixes in v0.16.01
+## Fixes in v0.16.02
 
 - Removed Concept Art Background from playable map rendering. The game now always uses the live modular renderer.
 - Removed invalid `first_shop_art.jpg` title-screen fallback; the PNG may remain as title artwork only.
@@ -15,11 +15,11 @@ Lightweight correction update for the uploaded v0.16.00 modular renderer. Keep t
 - Wholesale crate visuals now separate up to three active contracts and show each contract's correct product icon and delivered crate progress.
 - Product cards show product stock and shared department shelf total.
 - Renamed the preview description to Dynamic Systems and Asset Requirements Preview.
-- Updated visible version and cache references to v0.16.01.
+- Updated visible version and cache references to v0.16.02.
 
 ## Upload
 
-This is a lightweight update ZIP. Upload and replace the five included files in the repository root. Do not delete the existing `assets/` folder.
+This is a full clean-install GitHub ZIP. Upload all contents to the repository root, preserving the included folder structure.
 
 ## Validation
 
@@ -27,7 +27,10 @@ JavaScript syntax, version consistency, forbidden concept-map references, ZIP in
 
 ## Version History
 
-### v0.16.01 - 2026-10-16
+### v0.16.02 - 2026-10-16
+- Critical playability fix: restored crate rendering, first-frame character rendering, movement, camera initialization, and zoom.
+
+### v0.16.02 - 2026-10-16
 - Corrected modular rendering, migrations, shared output capacity, Repair Kit consumption, and multi-contract crate visuals.
 
 ### v0.16.00 - 2026-10-16
@@ -46,4 +49,4 @@ JavaScript syntax, version consistency, forbidden concept-map references, ZIP in
 - Added Material Yard, Shield crafting, Wholesale Contract Warehouse delivery, item quality inspection, and mobile context bar.
 ## Full package contents
 
-This full GitHub package includes the v0.16.01 playable files, the finished transparent environment asset library, the systems preview page in its correct `assets/` location, and the PNG used only by the save-slot title screen. The live game world always uses the modular renderer and does not load a full-map background image.
+This full GitHub package includes the v0.16.02 playable files, the finished transparent environment asset library, the systems preview page in its correct `assets/` location, and the PNG used only by the save-slot title screen. The live game world always uses the modular renderer and does not load a full-map background image.

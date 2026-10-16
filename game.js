@@ -1,14 +1,14 @@
-// Weapon Shop Empire v0.16.01
+// Weapon Shop Empire v0.16.02
 // 6-Layer Modular Forest Outpost Renderer (zero baked people/stock), Grid A* Pathfinding with anti-corner-cutting, 6 Recipes, Repair Kit, and Player Equipment.
 'use strict';
-const VERSION='v0.16.01';
+const VERSION='v0.16.02';
 const c=document.getElementById('game'),g=c.getContext('2d'),$=id=>document.getElementById(id);
 let vw=1280,vh=720;
 const WORLD={w:1870,h:2870};
-const PREFIX='wse_v01601_slot_',OLD_PREFIXES=['wse_v01600_slot_','wse_v01501_slot_','wse_v01500_slot_','wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01601',OLD_FOREVER_KEYS=['wse_forever_v01600','wse_forever_v01501','wse_forever_v01500'];
+const PREFIX='wse_v01602_slot_',OLD_PREFIXES=['wse_v01601_slot_','wse_v01600_slot_','wse_v01501_slot_','wse_v01500_slot_','wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01602',OLD_FOREVER_KEYS=['wse_forever_v01601','wse_forever_v01600','wse_forever_v01501','wse_forever_v01500'];
 let slot=0,playing=false,last=performance.now(),target=null,msgTimer=0,dayTime=0,spawnTimer=2.5,zoom=.66,pinchStart=0,craftAnim=0,craftKey='sword',dragMove={active:false,id:null,sx:0,sy:0,dx:0,dy:0},animClock=0;
 
-// v0.16.01 always uses the live modular renderer. Concept artwork is preview-only.
+// v0.16.02 always uses the live modular renderer. Concept artwork is preview-only.
 
 const SPRITES={};
 const MODULAR_PATHS={
@@ -37,7 +37,7 @@ const MODULAR_PATHS={
 };
 for(const [k,path] of Object.entries(MODULAR_PATHS)){
   const img=new Image();
-  img.src=path+'?v=0.16.01';
+  img.src=path+'?v=0.16.02';
   SPRITES[k]=img;
 }
 function sprReady(k){const i=SPRITES[k];return i&&i.complete&&i.naturalWidth>0}
@@ -1296,6 +1296,17 @@ function drawLayer1And2(){
 }
 
 // LAYER 3: Dynamic World (Materials, Outputs, 12-Slot Shelves, Contract Crates, Rare Storage, Coins & Y-Sorted Characters)
+function drawCrate(x,y,filled=false){
+  const spr=SPRITES.crates;
+  if(spr&&spr.complete&&spr.naturalWidth){
+    g.save();g.globalAlpha=filled?1:.58;g.drawImage(spr,x-30,y-28,60,52);g.restore();
+  }else{
+    pxRect(x-28,y-24,56,46,filled?'#8a5a2f':'#56412f');
+    g.strokeStyle='#d6a45b';g.lineWidth=3;g.strokeRect(x-28,y-24,56,46);
+    g.beginPath();g.moveTo(x-25,y-20);g.lineTo(x+25,y+18);g.moveTo(x+25,y-20);g.lineTo(x-25,y+18);g.stroke();
+  }
+}
+
 function drawLayer3(){
   // Material Yard Nodes
   for(const n of yardNodes){
@@ -1557,6 +1568,7 @@ function start(n){
   if(!S.goals.length)createDayContent();
   if(!S.offers.length)generateContractOffers();
   playing=true;
+  setZoom(S.zoom||.66);
   $('slotScreen').classList.remove('show');
   $('app').classList.remove('hidden');
   if(!existing)save('Slot created');
@@ -1688,11 +1700,11 @@ function openPage(p){
     </div>`;
   }
   if(p==='visual'){
-    h=`<h2>MODULAR WORLD & SYSTEMS PREVIEW (v0.16.01)</h2>
+    h=`<h2>MODULAR WORLD & SYSTEMS PREVIEW (v0.16.02)</h2>
     <div class="visualNote">
       <b>Live Modular Rendering Only:</b> Ground, walls, shelves, workstations, dynamic stock, and characters render in separate layers. Concept artwork is not available as a playable map background.
     </div>
-    <iframe src="assets/art_preview.html?v=0.16.01" style="width:100%;height:56vh;border:2px solid #8c653d;border-radius:12px;background:#1a1e18"></iframe>`;
+    <iframe src="assets/art_preview.html?v=0.16.02" style="width:100%;height:56vh;border:2px solid #8c653d;border-radius:12px;background:#1a1e18"></iframe>`;
   }
   if(p==='save'){
     h=`<h2>SAVE & EXIT</h2>
