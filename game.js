@@ -1,19 +1,14 @@
-// Weapon Shop Empire v0.16.00
+// Weapon Shop Empire v0.16.01
 // 6-Layer Modular Forest Outpost Renderer (zero baked people/stock), Grid A* Pathfinding with anti-corner-cutting, 6 Recipes, Repair Kit, and Player Equipment.
 'use strict';
-const VERSION='v0.16.00';
+const VERSION='v0.16.01';
 const c=document.getElementById('game'),g=c.getContext('2d'),$=id=>document.getElementById(id);
 let vw=1280,vh=720;
 const WORLD={w:1870,h:2870};
-const PREFIX='wse_v01600_slot_',OLD_PREFIXES=['wse_v01501_slot_','wse_v01500_slot_','wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01600';
+const PREFIX='wse_v01601_slot_',OLD_PREFIXES=['wse_v01600_slot_','wse_v01501_slot_','wse_v01500_slot_','wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01601',OLD_FOREVER_KEYS=['wse_forever_v01600','wse_forever_v01501','wse_forever_v01500'];
 let slot=0,playing=false,last=performance.now(),target=null,msgTimer=0,dayTime=0,spawnTimer=2.5,zoom=.66,pinchStart=0,craftAnim=0,craftKey='sword',dragMove={active:false,id:null,sx:0,sy:0,dx:0,dy:0},animClock=0;
 
-// Optional reference map image & modular PNG sprite loader (gracefully falls back to crisp procedural sprites)
-const refMapArt=new Image();
-let refTry=0;
-const refSources=['assets/forest_outpost_map.jpg?v=0.16.00','assets/first_shop_art.png?v=0.16.00','assets/first_shop_art.jpg?v=0.16.00'];
-refMapArt.onerror=()=>{refTry++;if(refTry<refSources.length)refMapArt.src=refSources[refTry]};
-refMapArt.src=refSources[0];
+// v0.16.01 always uses the live modular renderer. Concept artwork is preview-only.
 
 const SPRITES={};
 const MODULAR_PATHS={
@@ -42,7 +37,7 @@ const MODULAR_PATHS={
 };
 for(const [k,path] of Object.entries(MODULAR_PATHS)){
   const img=new Image();
-  img.src=path+'?v=0.16.00';
+  img.src=path+'?v=0.16.01';
   SPRITES[k]=img;
 }
 function sprReady(k){const i=SPRITES[k];return i&&i.complete&&i.naturalWidth>0}
@@ -67,7 +62,6 @@ const base={
   rareDisplay:[],
   equipped:{weapon:{name:'Starter Dagger',icon:'🗡️',stat:12},armor:{name:'Cloth Tunic',icon:'🥋',stat:10}},
   poorPolicy:'Honest',
-  mapStyle:'modular',
   employees:[],review:4.3,badReviews:0,served:0,zoom:.66,tutorialStep:0,
   goals:[],event:null,visitorClaimed:false,
   statsDay:{sales:0,tips:0,crafted:0,monsters:0,lost:0},
@@ -302,7 +296,13 @@ function navigate(o,tx,ty,s,dt){
 // SAVE SYSTEM & MIGRATION
 // ============================================================================
 function loadForever(){
-  try{return JSON.parse(localStorage.getItem(FOREVER_KEY)||'null')}catch{return null}
+  try{
+    let raw=localStorage.getItem(FOREVER_KEY);
+    if(!raw){for(const oldKey of OLD_FOREVER_KEYS){raw=localStorage.getItem(oldKey);if(raw)break}}
+    const data=JSON.parse(raw||'null');
+    if(data&&!localStorage.getItem(FOREVER_KEY))localStorage.setItem(FOREVER_KEY,JSON.stringify(data));
+    return data;
+  }catch{return null}
 }
 function saveForever(){
   try{localStorage.setItem(FOREVER_KEY,JSON.stringify({legacy:S.legacy,skills:S.skills}))}catch{}
@@ -354,7 +354,6 @@ function norm(x){
   n.discoveries=Array.isArray(x?.discoveries)?x.discoveries:[];
   n.coinsFloor=x?.coinsFloor||0;
   n.poorPolicy=x?.poorPolicy||'Honest';
-  n.mapStyle=x?.mapStyle||'modular';
   syncItemArrays(n);
   return n;
 }
@@ -487,10 +486,16 @@ function deptItems(cat){
   });
   return list;
 }
+function outputGroup(k){
+  if(k==='sword'||k==='axe')return ['sword','axe'];
+  if(k==='shield'||k==='helmet')return ['shield','helmet'];
+  return ['potion','repair'];
+}
+function outputGroupCount(k){return outputGroup(k).reduce((n,key)=>n+(S.outputItems[key]?.length||0),0)}
 function canCraft(k){
   let r=recipes[k];
   if(!r||!S.products[k]?.unlocked)return false;
-  if((S.outputItems[k]?.length||0)>=S.outputCap)return false;
+  if(outputGroupCount(k)>=S.outputCap)return false;
   return (!r.iron||S.iron>=r.iron)&&(!r.wood||S.wood>=r.wood)&&(!r.herb||S.herb>=r.herb);
 }
 function maybeAutoEquip(item){
@@ -501,8 +506,8 @@ function maybeAutoEquip(item){
   }
 }
 function craft(k,worker,useSlime=false){
-  if((S.outputItems[k]?.length||0)>=S.outputCap){
-    if(!worker)toast(recipes[k].name+' output table is full (8/8)!');
+  if(outputGroupCount(k)>=S.outputCap){
+    if(!worker)toast(recipes[k].name+' shared output table is full ('+S.outputCap+'/'+S.outputCap+')!');
     return false;
   }
   if(!canCraft(k)){
@@ -522,23 +527,20 @@ function craft(k,worker,useSlime=false){
     }
   }
   let item=makeItemObject(k,qroll(worker?.craft||0),special);
-  // If crafting a Repair Kit, automatically fix any Poor item waiting in outputs or shelves
+  // Repair Kits are consumed immediately when a Poor item is available.
   if(k==='repair'){
+    let repaired=null;
     for(const pk of Object.keys(recipes)){
-      const poorItem=(S.outputItems[pk]||[]).find(x=>x.q===0)||(S.shelfItems[pk]||[]).find(x=>x.q===0);
-      if(poorItem){
-        poorItem.q=2;poorItem.rarity='Uncommon';poorItem.color=rar[2][1];poorItem.defect=null;
-        poorItem.stat=Math.round(recipes[pk].baseStat*rar[2][3]);
-        poorItem.value=Math.round(recipes[pk].value*rar[2][2]);
-        toast(`🔧 Repair Kit upgraded Poor ${poorItem.name} to Uncommon!`);
-        break;
-      }
+      repaired=(S.outputItems[pk]||[]).find(x=>x.q===0)||(S.shelfItems[pk]||[]).find(x=>x.q===0);
+      if(repaired)break;
     }
-  }
-  if(item.q===0&&S.poorPolicy==='Scrap'){
-    if(r.herb)S.herb++;else S.iron++;
-    if(!worker)toast('Poor '+item.name+' auto-scrapped (+1 material)');
-    return true;
+    if(repaired){
+      repaired.q=2;repaired.rarity='Uncommon';repaired.color=rar[2][1];repaired.defect=null;
+      repaired.stat=Math.max(repaired.stat,Math.round(recipes[repaired.key]?.baseStat*1.35)||repaired.stat);
+      toast(`🔧 Repair Kit consumed: ${repaired.name} upgraded to Uncommon!`);
+      S.statsDay.crafted++; craftAnim=.55; craftKey=k;
+      return true;
+    }
   }
   maybeAutoEquip(item);
   S.outputItems[k].push(item);
@@ -1195,10 +1197,6 @@ function drawTreeCanopy(x,y,kind=0){
 
 // LAYER 1 & 2: Modular Ground, Rooms, Walls, Empty Shelves & Workstations
 function drawLayer1And2(){
-  if(S.mapStyle==='concept'&&refMapArt.complete&&refMapArt.naturalWidth){
-    g.drawImage(refMapArt,0,0,WORLD.w,WORLD.h);
-    return;
-  }
   // 1. Base Grass & Meadow Texture
   pxRect(0,0,WORLD.w,WORLD.h,'#3b7a38');
   for(let y=0;y<WORLD.h;y+=64){
@@ -1338,12 +1336,20 @@ function drawLayer3(){
   labelBadge(`✨ RARE SHOWCASE (${S.rareDisplay.length}/6)`,PTS.rare.x,PTS.rare.y-62,'#f3c6ff','#291d36ee',168);
 
   // Contract Warehouse 20-Crate Pallets (visibly filling as wholesale units are delivered)
-  const filledCrates=contractUnits(),activeIcon=S.contracts[0]?recipes[S.contracts[0].key].icon:'📦';
-  for(let i=0;i<20;i++){
-    const cx=1365+(i%5)*80,cy=735+Math.floor(i/5)*88,full=i<filledCrates;
-    pxRect(cx,cy,44,38,full?'#b87c3c':'#4b3b2b');
-    pxRect(cx+4,cy+4,36,30,full?'#dfb06a':'#634e39');
-    if(full)text(activeIcon,cx+22,cy+25,14,'#fff');
+  const filledCrates=contractUnits();
+  const crateSlots=[];
+  S.contracts.slice(0,3).forEach(q=>{
+    const visible=Math.min(5,Math.max(1,Math.ceil(q.qty/4)));
+    for(let j=0;j<visible;j++)crateSlots.push({q,j});
+  });
+  for(let i=0;i<10;i++){
+    const cx=1365+(i%5)*80,cy=735+Math.floor(i/5)*88,slotInfo=crateSlots[i];
+    const delivered=slotInfo?Math.max(0,slotInfo.q.done-slotInfo.j*4):0;
+    drawCrate(cx,cy,delivered>0);
+    if(slotInfo){
+      text(recipes[slotInfo.q.key].icon,cx+22,cy+25,14,'#fff');
+      text(`${Math.min(4,delivered)}/4`,cx+22,cy+56,8,delivered>0?'#9dff9d':'#ffe0a0');
+    }
   }
   pxRect(PTS.contractDrop.x-48,PTS.contractDrop.y-24,96,48,'#3a542c');
   g.strokeStyle='#ffd064';g.lineWidth=2;g.strokeRect(PTS.contractDrop.x-48,PTS.contractDrop.y-24,96,48);
@@ -1405,7 +1411,7 @@ function drawLayer3(){
 
 // LAYER 4, 5 & 6: Upper Tree Canopies, Animated Fire/Bubbles, Request Bubbles & Room Signboards
 function drawLayer4To6(){
-  if(S.mapStyle!=='concept'){
+  {
     // Layer 4: Forest Trees & Perimeter Canopies
     const treeCoords=[
       [110,140,0],[240,120,1],[370,150,2],[1480,130,1],[1620,150,2],[1740,130,0],
@@ -1612,7 +1618,7 @@ function openPage(p){
         return card(`${r.icon} ${r.name}`,`
           <div class="row"><span>Department</span><b>${r.cat} (${r.statName} ${r.baseStat})</b></div>
           <div class="row"><span>Recipe Cost</span><b>${r.iron?r.iron+'🪨 ':''}${r.wood?r.wood+'🪵 ':''}${r.herb?r.herb+'🌿':''}</b></div>
-          <div class="row"><span>Shelf / Output</span><b>${x.stock} stocked (Out: ${S.output[k]}/8)</b></div>
+          <div class="row"><span>Product Stock</span><b>${x.stock}</b></div><div class="row"><span>${r.cat} Shelf Total</span><b>${deptTotalStock(r.cat)}/12</b></div><div class="row"><span>Shared Output</span><b>${outputGroupCount(k)}/${S.outputCap}</b></div>
           ${x.unlocked?`<button data-toggle="${k}" class="${x.on?'on':''}">${x.on?'SELLING ON':'SELLING OFF'}</button>`:`<button data-unlock="${k}">UNLOCK RECIPE ($${r.unlockCost})</button>`}
         `);
       }).join('')}
@@ -1682,15 +1688,11 @@ function openPage(p){
     </div>`;
   }
   if(p==='visual'){
-    h=`<h2>MODULAR WORLD & ART GALLERY (v0.16.00)</h2>
+    h=`<h2>MODULAR WORLD & SYSTEMS PREVIEW (v0.16.01)</h2>
     <div class="visualNote">
-      <b>6-Layer Modular Rendering Active:</b> Ground, walls, empty 12-slot shelves, workstations, dynamic stock, and characters render in separate layers with <b>zero baked-in static people</b>.
-      <div class="presetRow" style="grid-template-columns:repeat(2,1fr);margin-top:8px">
-        <button data-mapstyle="modular" class="${S.mapStyle==='modular'?'on':''}">🧱 CLEAN MODULAR WORLD (DEFAULT)</button>
-        <button data-mapstyle="concept" class="${S.mapStyle==='concept'?'on':''}">🖼️ CONCEPT ART BACKGROUND</button>
-      </div>
+      <b>Live Modular Rendering Only:</b> Ground, walls, shelves, workstations, dynamic stock, and characters render in separate layers. Concept artwork is not available as a playable map background.
     </div>
-    <iframe src="assets/art_preview.html?v=0.16.00" style="width:100%;height:56vh;border:2px solid #8c653d;border-radius:12px;background:#1a1e18"></iframe>`;
+    <iframe src="assets/art_preview.html?v=0.16.01" style="width:100%;height:56vh;border:2px solid #8c653d;border-radius:12px;background:#1a1e18"></iframe>`;
   }
   if(p==='save'){
     h=`<h2>SAVE & EXIT</h2>
@@ -1714,11 +1716,6 @@ function bindPanel(){
     S.poorPolicy=b.dataset.poor;
     toast('Poor item policy: '+S.poorPolicy);
     openPage('products');
-  });
-  document.querySelectorAll('[data-mapstyle]').forEach(b=>b.onclick=()=>{
-    S.mapStyle=b.dataset.mapstyle;
-    toast('Map style: '+(S.mapStyle==='modular'?'Clean Modular World':'Concept Overlay'));
-    openPage('visual');
   });
   document.querySelectorAll('[data-priority]').forEach(b=>b.onclick=()=>{
     S.productionPriority=b.dataset.priority;
@@ -1826,7 +1823,7 @@ function advanceTutorial(){
 let craftUseSlime=false;
 function startCraftGame(k,useSlime=false){
   if($('craftGame').classList.contains('show'))return;
-  if((S.outputItems[k]?.length||0)>=S.outputCap)return toast(recipes[k].name+' output is full!');
+  if(outputGroupCount(k)>=S.outputCap)return toast(recipes[k].name+' shared output table is full!');
   if(!canCraft(k))return toast('Missing raw materials • Visit the Material Yard!');
   craftKey=k;craftUseSlime=useSlime;craftAnim=0;
   $('craftTitle').textContent='CRAFTING • '+(useSlime?'SLIME EDGE':recipes[k].name.toUpperCase());
