@@ -1,19 +1,47 @@
-// Weapon Shop Empire v0.15.01
+// Weapon Shop Empire v0.16.00
 // Forest Outpost 1870x2870 full artwork integration, aligned collision & corridor pathfinding, visible stock/output overlays, Special Visitor & Training Room.
 'use strict';
-const VERSION='v0.15.01';
+const VERSION='v0.16.00';
 const c=document.getElementById('game'),g=c.getContext('2d'),$=id=>document.getElementById(id);
 let vw=1280,vh=720;
 const WORLD={w:1870,h:2870};
-const PREFIX='wse_v01501_slot_',OLD_PREFIXES=['wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01501';
+const PREFIX='wse_v01600_slot_',OLD_PREFIXES=['wse_v01501_slot_','wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01600',OLD_FOREVER_KEYS=['wse_forever_v01501'];
 let slot=0,playing=false,last=performance.now(),target=null,msgTimer=0,dayTime=0,spawnTimer=2.5,zoom=.65,pinchStart=0,craftAnim=0,craftKey='sword',dragMove={active:false,id:null,sx:0,sy:0,dx:0,dy:0},animClock=0;
 
-// Load Forest Outpost Map Artwork with automatic fallback between forest_outpost_map.jpg, first_shop_art.jpg, and first_shop_art.png
+// Load the collision-aligned Forest Outpost base map. v0.16.00 adds a lightweight modular prop layer.
 const mapArt=new Image();
 let mapTry=0;
-const mapSources=['assets/forest_outpost_map.jpg?v=0.15.01','assets/first_shop_art.jpg?v=0.15.01','assets/first_shop_art.png?v=0.15.01','shop_world.png'];
+const mapSources=['assets/forest_outpost_map.jpg?v=0.16.00','assets/first_shop_art.png?v=0.16.00','shop_world.png'];
 mapArt.onerror=()=>{mapTry++;if(mapTry<mapSources.length)mapArt.src=mapSources[mapTry]};
 mapArt.src=mapSources[0];
+
+
+// First production modular-art layer. Only assets used by this build are packaged.
+const MODULAR_ASSET_PATH='assets/modular/';
+const modularDefs={
+  anvil:{file:'props/anvil_table.png',x:300,y:1080,w:86,h:78},
+  tools:{file:'props/tool_table.png',x:450,y:1080,w:84,h:76},
+  alchemy:{file:'props/sacks.png',x:915,y:1080,w:74,h:65},
+  contractCrates:{file:'props/crates.png',x:1365,y:835,w:86,h:76},
+  contractBarrels:{file:'props/barrels.png',x:1460,y:840,w:75,h:70},
+  yardWagon:{file:'props/wagon.png',x:420,y:2420,w:105,h:88},
+  yardWell:{file:'props/well.png',x:620,y:2440,w:82,h:85},
+  forestCamp:{file:'props/campfire.png',x:1180,y:240,w:72,h:66},
+  gateLampL:{file:'props/street_lamp.png',x:850,y:310,w:44,h:92},
+  gateLampR:{file:'props/street_lamp.png',x:1040,y:310,w:44,h:92},
+  ironNode:{file:'materials/ore_iron.png',x:310,y:2510,w:58,h:52},
+  herbNode:{file:'materials/herb_bundle.png',x:760,y:2520,w:56,h:50}
+};
+const modularImages={};
+for(const [id,a] of Object.entries(modularDefs)){
+  const img=new Image(); img.src=MODULAR_ASSET_PATH+a.file+'?v=0.16.00'; modularImages[id]=img;
+}
+function drawModularArt(){
+  for(const [id,a] of Object.entries(modularDefs)){
+    const img=modularImages[id];
+    if(img&&img.complete&&img.naturalWidth)g.drawImage(img,a.x-a.w/2,a.y-a.h,a.w,a.h);
+  }
+}
 
 const base={
   cash:250,rep:20,day:1,legacy:0,
@@ -141,7 +169,11 @@ function moveEntity(o,nx,ny,r=17){
 }
 
 function loadForever(){
-  try{return JSON.parse(localStorage.getItem(FOREVER_KEY)||'null')}catch{return null}
+  try{
+    let raw=localStorage.getItem(FOREVER_KEY);
+    if(!raw){for(const oldKey of OLD_FOREVER_KEYS){raw=localStorage.getItem(oldKey);if(raw)break}}
+    return JSON.parse(raw||'null');
+  }catch{return null}
 }
 function saveForever(){
   try{localStorage.setItem(FOREVER_KEY,JSON.stringify({legacy:S.legacy,skills:S.skills}))}catch{}
@@ -960,6 +992,9 @@ function drawPixelWorld(){
     text('Loading Forest Outpost Artwork...',WORLD.w/2,1350,24,'#fff');
   }
 
+  // v0.16.00 modular environment props aligned to existing gameplay zones
+  drawModularArt();
+
   // Material Yard live nodes & regrowth timers
   for(const n of yardNodes){
     pxRect(n.x-26,n.y-20,52,36,n.ready?'#1c1816bb':'#1c1816dd');
@@ -1268,7 +1303,7 @@ function openPage(p){
   if(p==='visual'){
     h=`<h2>FOREST OUTPOST • MAP & PROGRESSION</h2>
     <div class="visualNote">Your Forest Outpost artwork is active as the live scrolling world! All rooms, doorways, shelves, outputs, and paths are aligned with the map below.</div>
-    <img class="visualHero" src="assets/first_shop_art.jpg?v=0.15.01" onerror="this.src='assets/forest_outpost_map.jpg?v=0.15.01'">
+    <img class="visualHero" src="assets/first_shop_art.png?v=0.16.00" onerror="this.src='assets/forest_outpost_map.jpg?v=0.16.00'">
     <h2>SHOP TIER PROGRESSION</h2>
     <div class="tierCard"><b>TIER 1 • FOREST OUTPOST (Active)</b><p>Includes Material Yard, Staff House, Training Room, Forge, Alchemy Lab, Contract Warehouse, Attack/Defense/Other Display Hall, Rare Storage, Checkout, Management Office, Special Visitor Plaza, and Forest Adventure Gate.</p></div>
     <div class="tierCard locked"><b>TIER 2 • TOWN WORKSHOP (Coming Soon)</b><p>3× larger town compound with expanded shelves, multi-wagon wholesale bays, and Crystal Mine access.</p></div>

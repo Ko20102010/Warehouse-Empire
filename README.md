@@ -1,20 +1,31 @@
-# Weapon Shop Empire v0.16.00 Modular Asset Starter Pack
+# Weapon Shop Empire
 
-This package contains the first real modular artwork batch and the complete asset-production plan.
+## Current Version: v0.16.00
 
-## Included now
+Playable modular-art integration release based on the tested v0.15.01 Forest Outpost build.
 
-- 76 individually cropped transparent PNG assets
-- 1 transparent master environment sprite sheet
-- Terrain, floors, water, bridge, cliffs, walls, doorways, fences, trees, vegetation, rocks, material nodes, and workshop/outdoor props
-- JSON asset manifest containing file locations, sizes, anchors, and initial collision guidance
-- Full phased plan for characters, products, monsters, shop furniture, UI, effects, and map metadata
-- Browser-based preview gallery
+### Changes in v0.16.00
 
-## Important
+- Added the first production modular-art loading layer.
+- Integrated 11 modular environment/material PNG files used by the playable map.
+- Retained the collision-aligned Forest Outpost base artwork to preserve routes and gameplay boundaries.
+- Corrected invalid `first_shop_art.jpg` references to the packaged PNG.
+- Updated cache-busting references and all visible version labels.
+- Added save migration from v0.15.01 while retaining older migration prefixes.
+- Included a reduced asset manifest containing only artwork packaged in this build.
 
-This is an **asset production starter pack**, not yet the complete v0.16.00 playable game conversion. The current batch focuses on environment artwork. Character animation, product sprites, customer sprites, monsters, functional empty shelves, UI, and effects are specified in the plan and reserved in the folder structure for subsequent batches.
+### Preserved systems
 
-## Source artwork
+Three save slots, end-of-day auto-save, camera and zoom, touch/drag movement, collision, A* routing, crafting, stocking, customers, employees, wholesale, combat, reputation, game over and Forever Skills remain in the playable code.
 
-The master sheet and all cropped pieces are original generated artwork for Weapon Shop Empire's approved colorful, lightly pixelated mobile-game direction.
+## Upload
+
+Upload the contents of this ZIP to the root of the GitHub-hosted site. No manual code editing or merging is required.
+
+## Packaging policy
+
+This package includes only artwork needed by this build. The full modular starter pack remains a separate source-art package.
+
+## Version policy
+
+Continue with v0.x by default. Ask before moving to v1.0.00 or any later major version.

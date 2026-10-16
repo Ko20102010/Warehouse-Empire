@@ -70,7 +70,7 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#18351f
 .dragStick{display:none;position:fixed;width:88px;height:88px;margin:-44px 0 0 -44px;border-radius:50%;background:#17171a66;border:2px solid #fff7;z-index:8;pointer-events:none}
 .dragStick.show{display:block}
 .dragStick i{position:absolute;width:34px;height:34px;left:25px;top:25px;border-radius:50%;background:#ffd064dd;border:2px solid #fff9}
-.firstShopLanding{background:linear-gradient(#10101588,#101015dd),url('assets/first_shop_art.jpg?v=0.15.00') center 18%/cover no-repeat fixed,url('assets/forest_outpost_map.jpg?v=0.15.00') center 18%/cover no-repeat fixed,radial-gradient(circle at top,#55351f,#171416 70%)}
+.firstShopLanding{background:linear-gradient(#10101588,#101015dd),url('assets/first_shop_art.png?v=0.16.00') center 18%/cover no-repeat fixed,url('assets/forest_outpost_map.jpg?v=0.16.00') center 18%/cover no-repeat fixed,radial-gradient(circle at top,#55351f,#171416 70%)}
 .firstShopLanding .slotbox{background:#201a1ce8;backdrop-filter:blur(8px)}
 .visualHero{width:min(760px,100%);display:block;margin:10px auto;border:2px solid #a87a43;border-radius:14px;image-rendering:auto}
 .visualNote{background:#3b2a1f;border-left:4px solid #ffd064;padding:12px;border-radius:8px;color:#ffe9c0;font-size:13px;line-height:1.45}

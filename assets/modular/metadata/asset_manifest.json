@@ -1,0 +1,140 @@
+{
+  "version": "v0.16.00",
+  "source": "Weapon Shop Empire modular starter pack",
+  "count": 11,
+  "basePath": "assets/modular/",
+  "assets": [
+    {
+      "id": "materials.herb_bundle",
+      "category": "materials",
+      "file": "materials/herb_bundle.png",
+      "width": 130,
+      "height": 130,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.ore_iron",
+      "category": "materials",
+      "file": "materials/ore_iron.png",
+      "width": 145,
+      "height": 145,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "props.barrels",
+      "category": "props",
+      "file": "props/barrels.png",
+      "width": 184,
+      "height": 184,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.sacks",
+      "category": "props",
+      "file": "props/sacks.png",
+      "width": 184,
+      "height": 184,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.crates",
+      "category": "props",
+      "file": "props/crates.png",
+      "width": 160,
+      "height": 160,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.street_lamp",
+      "category": "props",
+      "file": "props/street_lamp.png",
+      "width": 184,
+      "height": 184,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.campfire",
+      "category": "props",
+      "file": "props/campfire.png",
+      "width": 150,
+      "height": 150,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.anvil_table",
+      "category": "props",
+      "file": "props/anvil_table.png",
+      "width": 151,
+      "height": 151,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.tool_table",
+      "category": "props",
+      "file": "props/tool_table.png",
+      "width": 152,
+      "height": 152,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.wagon",
+      "category": "props",
+      "file": "props/wagon.png",
+      "width": 166,
+      "height": 166,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.well",
+      "category": "props",
+      "file": "props/well.png",
+      "width": 155,
+      "height": 155,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    }
+  ]
+}
