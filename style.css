@@ -80,3 +80,4 @@ canvas{display:block;width:100%;height:100%;touch-action:none;background:#18351f
   .slots{grid-template-columns:1fr}
   .slot{min-height:145px}
 }
+.firstShopLanding{background:linear-gradient(#10101588,#101015dd),url('assets/first_shop_art.png?v=0.13.00') center 18%/cover no-repeat fixed}.firstShopLanding .slotbox{background:#201a1ce8;backdrop-filter:blur(8px)}.visualHero{width:min(760px,100%);display:block;margin:auto;border:2px solid #a87a43;border-radius:14px;image-rendering:auto}.visualNote{background:#3b2a1f;border-left:4px solid #ffd064;padding:12px;border-radius:8px;color:#ffe9c0}.tierCard{background:#1b1a1d;border:1px solid #66503c;padding:12px;border-radius:11px;margin:8px 0}.tierCard.locked{opacity:.6}

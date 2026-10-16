@@ -1,32 +1,49 @@
 # Weapon Shop Empire
 
-## Current Version: v0.12.02
+## Current Version: v0.14.00
 
-Corrected release based on the uploaded v0.12.02 candidate.
+The approved Forest Outpost artwork is now the actual scrolling gameplay map rather than only a landing-screen concept.
 
+## Collision-aligned gameplay map
 
-## v0.12.02 Patch Note
+- The world uses `assets/forest_outpost_map.jpg` as the live canvas map.
+- World size is 1870 × 2870, larger than a phone screen.
+- Camera follows the player and supports pinch, wheel and button zoom.
+- Collision strips align to visible room edges, racks, counters, fences, office walls and water.
+- Visible entrances remain open and walkable.
+- Dynamic player, customers, employees, products, materials, coins and monsters render over the artwork.
+- Live station labels show the exact interaction locations for the first conversion build.
 
-- Renumbered the reviewed corrected package from v0.12.00 to v0.12.02.
-- No major artwork replacement is included in this patch.
-- The visual presentation remains the existing code-rendered pixel prototype plus the separate art-preview page.
-- This patch focuses on customer requirement matching, tip calculation, wholesale deadline processing, contract capacity, storage-capacity separation, and package completeness.
+## First shop and future properties
 
-## Corrections made after review
+### Tier 1: Forest Outpost
+This v0.14.00 map is the first shop.
 
-- Customers now purchase only products that meet both minimum ATK/DEF and minimum rarity.
-- Customers wait and may leave if no suitable product exists, instead of taking the wrong item.
-- Fixed the base-tip calculation when `RareBonus` is undefined.
-- Split wholesale deadline processing from wholesale-offer generation.
-- Loading or starting a day no longer decreases active-contract deadlines.
-- Contract Warehouse capacity is enforced for player and employee deliveries.
-- Added separate `outputCap`, `rareStorageCap`, and `contractCap` state values.
-- Included the missing `assets/art_preview.html` file.
-- Delivered as a real GitHub-ready ZIP instead of an incomplete downloader HTML.
+### Tier 2: Town Workshop
+Future purchasable property around three times larger.
 
-## Important upload structure
+### Tier 3: Guild Emporium
+Future much larger multi-building shop and adventure compound.
 
-Extract the ZIP and upload these directly to the repository root:
+## Important limitation
+
+The approved concept artwork contains some baked decorative people, labels and goods. The gameplay systems are dynamic and collision-aligned, but the next art-production pass should replace the single concept image with clean modular layers that remove all baked characters and stock. v0.14.00 is the first functional collision-aligned conversion.
+
+## Retained gameplay
+
+- Three save slots and day-end auto-save
+- Drag movement, camera follow and zoom
+- Material gathering
+- Sword, Shield, Potion and Slime Edge crafting
+- Physical outputs, carrying, visible shelf inventory and checkout coins
+- Customer ATK/DEF and rarity requirements
+- Zero-employee start, hiring and worker assignments
+- Contract Warehouse and wholesale deadlines
+- Daily goals, events, combat, reputation and Forever skills
+
+## Upload
+
+Extract and upload every file and the complete assets folder:
 
 ```text
 index.html
@@ -35,20 +52,8 @@ game.js
 README.md
 assets/
   art_preview.html
+  first_shop_art.png
+  forest_outpost_map.jpg
 ```
 
-## Core features retained
-
-- Three save slots and end-of-day auto-save
-- Drag movement, pinch zoom, collisions, and waypoint routing
-- Material Yard and gathering nodes
-- Sword, Shield, Potion, and Slime Edge crafting
-- Physical output tables, carrying, shelves, customer shopping, checkout coins
-- Customer requirements and quality inspection
-- Zero-employee start, hiring, assignments, wages, and expeditions
-- Wholesale contracts and Contract Warehouse
-- Daily goals/events, combat, reputation, and Forever skills
-
-## Version policy
-
-Continue with v0.x by default. Ask before moving to v1.0.00 or a later major version.
+The visible version must show `v0.14.00`.
