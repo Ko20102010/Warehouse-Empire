@@ -1,0 +1,56 @@
+{
+  "version": "v0.17.00",
+  "shelves": {
+    "attack": {
+      "point": "attackShelf",
+      "capacity": 12,
+      "rows": 2,
+      "columns": 6
+    },
+    "defense": {
+      "point": "defenseShelf",
+      "capacity": 12,
+      "rows": 2,
+      "columns": 6
+    },
+    "other": {
+      "point": "otherShelf",
+      "capacity": 12,
+      "rows": 2,
+      "columns": 6
+    }
+  },
+  "outputs": {
+    "attack": {
+      "point": "swordOut",
+      "capacity": 8,
+      "products": [
+        "sword",
+        "axe"
+      ]
+    },
+    "defense": {
+      "point": "shieldOut",
+      "capacity": 8,
+      "products": [
+        "shield",
+        "helmet"
+      ]
+    },
+    "other": {
+      "point": "potionOut",
+      "capacity": 8,
+      "products": [
+        "potion",
+        "repair"
+      ]
+    }
+  },
+  "contracts": {
+    "point": "contractDrop",
+    "visibleCrates": 10,
+    "unitsPerCrate": 4,
+    "maximumVisibleContracts": 3
+  },
+  "status": "production-template; furniture assets still required"
+}

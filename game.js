@@ -1,17 +1,39 @@
-// Weapon Shop Empire v0.16.02
+// Weapon Shop Empire v0.17.00
 // 6-Layer Modular Forest Outpost Renderer (zero baked people/stock), Grid A* Pathfinding with anti-corner-cutting, 6 Recipes, Repair Kit, and Player Equipment.
 'use strict';
-const VERSION='v0.16.02';
+const VERSION='v0.17.00';
 const c=document.getElementById('game'),g=c.getContext('2d'),$=id=>document.getElementById(id);
 let vw=1280,vh=720;
 const WORLD={w:1870,h:2870};
-const PREFIX='wse_v01602_slot_',OLD_PREFIXES=['wse_v01601_slot_','wse_v01600_slot_','wse_v01501_slot_','wse_v01500_slot_','wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01602',OLD_FOREVER_KEYS=['wse_forever_v01601','wse_forever_v01600','wse_forever_v01501','wse_forever_v01500'];
+const PREFIX='wse_v01700_slot_',OLD_PREFIXES=['wse_v01602_slot_','wse_v01601_slot_','wse_v01600_slot_','wse_v01501_slot_','wse_v01500_slot_','wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01700',OLD_FOREVER_KEYS=['wse_forever_v01602','wse_forever_v01601','wse_forever_v01600','wse_forever_v01501','wse_forever_v01500'];
 let slot=0,playing=false,last=performance.now(),target=null,msgTimer=0,dayTime=0,spawnTimer=2.5,zoom=.66,pinchStart=0,craftAnim=0,craftKey='sword',dragMove={active:false,id:null,sx:0,sy:0,dx:0,dy:0},animClock=0;
 
 // v0.16.02 always uses the live modular renderer. Concept artwork is preview-only.
 
 const SPRITES={};
 const MODULAR_PATHS={
+  wallStraight:'assets/walls/wall_straight.png',
+  wallCornerOuter:'assets/walls/wall_corner_outer.png',
+  wallPillar:'assets/walls/wall_pillar_pair.png',
+  fenceSolid:'assets/walls/fence_solid.png',
+  fenceShort:'assets/walls/fence_short.png',
+  gateLarge:'assets/walls/gate_large.png',
+  doorOpen:'assets/walls/door_frame_open.png',
+  doorBeam:'assets/walls/door_frame_beam.png',
+  fenceGate:'assets/walls/fence_gate.png',
+  lampPost:'assets/walls/lamp_post.png',
+  dirtPath:'assets/terrain/dirt_path.png',
+  grassWhite:'assets/terrain/grass_flowers_white.png',
+  grassRocks:'assets/terrain/grass_rocks_flowers.png',
+  waterRocks:'assets/terrain/water_rocks.png',
+  riverEdge:'assets/terrain/river_edge.png',
+  hayBale:'assets/props/hay_bale.png',
+  sacks:'assets/props/sacks.png',
+  choppingBlock:'assets/props/chopping_block.png',
+  streetLamp:'assets/props/street_lamp.png',
+  bushRound:'assets/trees/bush_round.png',
+  mushrooms:'assets/materials/mushrooms.png',
+  rockMossy:'assets/materials/rock_mossy_large.png',
   grass:'assets/terrain/grass_plain.png',
   grassFlower:'assets/terrain/grass_flowers_color.png',
   floorWood:'assets/terrain/floor_wood.png',
@@ -37,9 +59,15 @@ const MODULAR_PATHS={
 };
 for(const [k,path] of Object.entries(MODULAR_PATHS)){
   const img=new Image();
-  img.src=path+'?v=0.16.02';
+  img.src=path+'?v=0.17.00';
   SPRITES[k]=img;
 }
+
+let MAP_DATA=null;
+if(typeof fetch==='function'){fetch('data/world_map.json?v=0.17.00').then(r=>r.ok?r.json():Promise.reject(new Error('map data unavailable'))).then(data=>{MAP_DATA=data}).catch(()=>{})}
+function ensureMapAsset(path){const key='map:'+path;if(!SPRITES[key]){const img=new Image();img.src=path+'?v=0.17.00';SPRITES[key]=img}return SPRITES[key]}
+function drawMapObjects(layer){if(!MAP_DATA?.objects)return;for(const o of MAP_DATA.objects){if(o.layer!==layer)continue;const img=ensureMapAsset(o.asset);if(img.complete&&img.naturalWidth){const ax=o.anchor?.[0]??.5,ay=o.anchor?.[1]??1;g.drawImage(img,o.x-o.w*ax,o.y-o.h*ay,o.w,o.h)}}}
+function drawWallAssetSegment(seg){const horizontal=seg.w>=seg.h,img=SPRITES.wallStraight;if(!(img&&img.complete&&img.naturalWidth)){pxRect(seg.x,seg.y,seg.w,seg.h,'#593e2e');return}const step=horizontal?72:54;if(horizontal){for(let x=seg.x;x<seg.x+seg.w;x+=step)g.drawImage(img,x,seg.y-20,Math.min(step,seg.x+seg.w-x),48)}else{for(let y=seg.y;y<seg.y+seg.h;y+=step)g.drawImage(img,seg.x-18,y,54,Math.min(step,seg.y+seg.h-y))}}
 function sprReady(k){const i=SPRITES[k];return i&&i.complete&&i.naturalWidth>0}
 
 const base={
@@ -1286,13 +1314,13 @@ function drawLayer1And2(){
   pxRect(495,1905,465,12,'#b88038');
   text('🪙 CHECKOUT COUNTER',725,1938,12,'#ffe9b5');
 
-  // Physical Walls & Fences from SOLIDS
-  for(const s of SOLIDS){
-    if(s.y>=2340&&s.h>=180)continue; // river already drawn
-    if(s.x===495&&s.y===1905)continue; // checkout already drawn
-    pxRect(s.x,s.y,s.w,s.h,'#593e2e');
-    pxRect(s.x,s.y,s.w,Math.min(7,s.h),'#8c664b');
+  // Physical walls now use existing transparent wall PNGs while collision stays independent.
+  for(const wall of SOLIDS){
+    if(wall.y>=2340&&wall.h>=180)continue;
+    if(wall.x===495&&wall.y===1905)continue;
+    drawWallAssetSegment(wall);
   }
+  drawMapObjects('lowProps');
 }
 
 // LAYER 3: Dynamic World (Materials, Outputs, 12-Slot Shelves, Contract Crates, Rare Storage, Coins & Y-Sorted Characters)
@@ -1430,6 +1458,7 @@ function drawLayer4To6(){
       [220,2680,1],[480,2680,0],[960,2680,1],[1220,2680,0],[1520,2680,2]
     ];
     for(const [tx,ty,tk] of treeCoords)drawTreeCanopy(tx,ty,tk);
+    drawMapObjects('highProps');
 
     // Forest Adventure Archway Sign
     pxRect(835,255,220,28,'#593a22');
@@ -1704,7 +1733,7 @@ function openPage(p){
     <div class="visualNote">
       <b>Live Modular Rendering Only:</b> Ground, walls, shelves, workstations, dynamic stock, and characters render in separate layers. Concept artwork is not available as a playable map background.
     </div>
-    <iframe src="assets/art_preview.html?v=0.16.02" style="width:100%;height:56vh;border:2px solid #8c653d;border-radius:12px;background:#1a1e18"></iframe>`;
+    <iframe src="assets/art_preview.html?v=0.17.00" style="width:100%;height:56vh;border:2px solid #8c653d;border-radius:12px;background:#1a1e18"></iframe>`;
   }
   if(p==='save'){
     h=`<h2>SAVE & EXIT</h2>

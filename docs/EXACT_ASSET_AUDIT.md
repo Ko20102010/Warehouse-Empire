@@ -1,0 +1,107 @@
+# Exact Asset Audit - v0.17.00 Stage 1
+
+- Existing manifest assets: 81
+- Integrated now: 44
+- Existing but not integrated: 37
+- Required but not created: 14
+
+## Integrated
+- `terrain/grass_plain.png`
+- `terrain/grass_flowers_white.png`
+- `terrain/grass_rocks_flowers.png`
+- `terrain/grass_flowers_color.png`
+- `terrain/path_sandstone.png`
+- `terrain/path_mossy_stone.png`
+- `terrain/floor_wood.png`
+- `terrain/floor_workshop.png`
+- `terrain/water_rocks.png`
+- `terrain/river_edge.png`
+- `terrain/dirt_path.png`
+- `terrain/bridge_wood.png`
+- `walls/wall_straight.png`
+- `walls/door_frame_open.png`
+- `walls/door_frame_beam.png`
+- `walls/wall_corner_outer.png`
+- `walls/wall_pillar_pair.png`
+- `walls/fence_short.png`
+- `walls/gate_large.png`
+- `walls/lamp_post.png`
+- `walls/fence_solid.png`
+- `walls/fence_gate.png`
+- `trees/tree_green_01.png`
+- `trees/pine_01.png`
+- `trees/tree_dark_green.png`
+- `trees/fallen_log.png`
+- `trees/bush_flowers.png`
+- `trees/bush_round.png`
+- `materials/herb_bundle.png`
+- `materials/mushrooms.png`
+- `materials/crystal_blue.png`
+- `materials/ore_iron.png`
+- `materials/rock_mossy_large.png`
+- `props/barrels.png`
+- `props/sacks.png`
+- `props/crates.png`
+- `props/hay_bale.png`
+- `props/street_lamp.png`
+- `props/campfire.png`
+- `props/anvil_table.png`
+- `props/tool_table.png`
+- `props/chopping_block.png`
+- `props/wagon.png`
+- `props/well.png`
+
+## Existing but not integrated
+- `terrain/river_curve.png`
+- `terrain/water_corner.png`
+- `terrain/cliff_straight.png`
+- `terrain/cliff_corner.png`
+- `terrain/cliff_stairs.png`
+- `walls/wall_corner_inner.png`
+- `walls/wall_narrow.png`
+- `walls/door_stone_closed.png`
+- `walls/wall_diagonal_left.png`
+- `walls/wall_diagonal_right.png`
+- `walls/fence_banner.png`
+- `walls/fence_open.png`
+- `walls/beam_sign.png`
+- `walls/picket_fence.png`
+- `trees/tree_green_02.png`
+- `trees/tree_autumn.png`
+- `trees/pine_02.png`
+- `trees/pine_03.png`
+- `trees/pine_04.png`
+- `trees/dead_tree.png`
+- `trees/stump.png`
+- `trees/cut_stump.png`
+- `trees/leaf_plant.png`
+- `trees/berry_bush.png`
+- `materials/flowers_white.png`
+- `materials/flowers_yellow.png`
+- `materials/flowers_red.png`
+- `materials/flowers_blue.png`
+- `materials/lavender.png`
+- `materials/rocks_small.png`
+- `materials/rocks_medium.png`
+- `materials/ore_mossy.png`
+- `materials/boulder_01.png`
+- `materials/boulder_02.png`
+- `materials/boulder_03.png`
+- `materials/rock_cluster.png`
+- `materials/boulder_large.png`
+
+## Required but not created
+- `furniture/shelf_attack_empty.png` - Attack shelf
+- `furniture/shelf_defense_empty.png` - Defense shelf
+- `furniture/shelf_other_empty.png` - Other shelf
+- `stations/forge_idle.png` - Forge
+- `stations/alchemy_idle.png` - Alchemy
+- `furniture/checkout_counter.png` - Checkout
+- `furniture/rare_showcase_empty.png` - Rare showcase
+- `products/iron_sword_world.png` - Iron Sword
+- `products/battle_axe_world.png` - Battle Axe
+- `products/slime_edge_world.png` - Slime Edge
+- `products/wooden_shield_world.png` - Wooden Shield
+- `products/guard_helmet_world.png` - Guard Helmet
+- `products/healing_potion_world.png` - Healing Potion
+- `products/repair_kit_world.png` - Repair Kit

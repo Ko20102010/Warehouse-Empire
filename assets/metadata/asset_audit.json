@@ -1,0 +1,1341 @@
+{
+  "version": "v0.17.00-stage1",
+  "baseline": "v0.16.02",
+  "summary": {
+    "integrated": 44,
+    "available-not-integrated": 37,
+    "missing-not-created": 14
+  },
+  "assets": [
+    {
+      "id": "terrain.grass_plain",
+      "category": "terrain",
+      "path": "terrain/grass_plain.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 145,
+      "height": 145,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.grass_flowers_white",
+      "category": "terrain",
+      "path": "terrain/grass_flowers_white.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 145,
+      "height": 145,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.grass_rocks_flowers",
+      "category": "terrain",
+      "path": "terrain/grass_rocks_flowers.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 145,
+      "height": 145,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.grass_flowers_color",
+      "category": "terrain",
+      "path": "terrain/grass_flowers_color.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 150,
+      "height": 150,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.path_sandstone",
+      "category": "terrain",
+      "path": "terrain/path_sandstone.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 150,
+      "height": 150,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.path_mossy_stone",
+      "category": "terrain",
+      "path": "terrain/path_mossy_stone.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 145,
+      "height": 145,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.floor_wood",
+      "category": "terrain",
+      "path": "terrain/floor_wood.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 145,
+      "height": 145,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.floor_workshop",
+      "category": "terrain",
+      "path": "terrain/floor_workshop.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 150,
+      "height": 150,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.water_rocks",
+      "category": "terrain",
+      "path": "terrain/water_rocks.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 187,
+      "height": 187,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.river_edge",
+      "category": "terrain",
+      "path": "terrain/river_edge.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 160,
+      "height": 160,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.dirt_path",
+      "category": "terrain",
+      "path": "terrain/dirt_path.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 156,
+      "height": 156,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.river_curve",
+      "category": "terrain",
+      "path": "terrain/river_curve.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 160,
+      "height": 160,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.water_corner",
+      "category": "terrain",
+      "path": "terrain/water_corner.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 160,
+      "height": 160,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.bridge_wood",
+      "category": "terrain",
+      "path": "terrain/bridge_wood.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 165,
+      "height": 165,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.cliff_straight",
+      "category": "terrain",
+      "path": "terrain/cliff_straight.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 170,
+      "height": 170,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.cliff_corner",
+      "category": "terrain",
+      "path": "terrain/cliff_corner.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 175,
+      "height": 175,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "terrain.cliff_stairs",
+      "category": "terrain",
+      "path": "terrain/cliff_stairs.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 261,
+      "height": 261,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "walls.wall_straight",
+      "category": "walls",
+      "path": "walls/wall_straight.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 150,
+      "height": 150,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.wall_corner_inner",
+      "category": "walls",
+      "path": "walls/wall_corner_inner.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 162,
+      "height": 162,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.wall_narrow",
+      "category": "walls",
+      "path": "walls/wall_narrow.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 157,
+      "height": 157,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.door_frame_open",
+      "category": "walls",
+      "path": "walls/door_frame_open.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 160,
+      "height": 160,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.door_stone_closed",
+      "category": "walls",
+      "path": "walls/door_stone_closed.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 165,
+      "height": 165,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.door_frame_beam",
+      "category": "walls",
+      "path": "walls/door_frame_beam.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 161,
+      "height": 161,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.wall_corner_outer",
+      "category": "walls",
+      "path": "walls/wall_corner_outer.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 163,
+      "height": 163,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.wall_pillar_pair",
+      "category": "walls",
+      "path": "walls/wall_pillar_pair.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 161,
+      "height": 161,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.wall_diagonal_left",
+      "category": "walls",
+      "path": "walls/wall_diagonal_left.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 165,
+      "height": 165,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.wall_diagonal_right",
+      "category": "walls",
+      "path": "walls/wall_diagonal_right.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 165,
+      "height": 165,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.fence_short",
+      "category": "walls",
+      "path": "walls/fence_short.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 133,
+      "height": 133,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.fence_banner",
+      "category": "walls",
+      "path": "walls/fence_banner.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 145,
+      "height": 145,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.fence_open",
+      "category": "walls",
+      "path": "walls/fence_open.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 160,
+      "height": 160,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.gate_large",
+      "category": "walls",
+      "path": "walls/gate_large.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 180,
+      "height": 180,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.lamp_post",
+      "category": "walls",
+      "path": "walls/lamp_post.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 138,
+      "height": 138,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.beam_sign",
+      "category": "walls",
+      "path": "walls/beam_sign.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 155,
+      "height": 155,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.picket_fence",
+      "category": "walls",
+      "path": "walls/picket_fence.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 155,
+      "height": 155,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.fence_solid",
+      "category": "walls",
+      "path": "walls/fence_solid.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 170,
+      "height": 170,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "walls.fence_gate",
+      "category": "walls",
+      "path": "walls/fence_gate.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 179,
+      "height": 179,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.tree_green_01",
+      "category": "trees",
+      "path": "trees/tree_green_01.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 200,
+      "height": 200,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.tree_green_02",
+      "category": "trees",
+      "path": "trees/tree_green_02.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 200,
+      "height": 200,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.tree_autumn",
+      "category": "trees",
+      "path": "trees/tree_autumn.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 200,
+      "height": 200,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.pine_01",
+      "category": "trees",
+      "path": "trees/pine_01.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 200,
+      "height": 200,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.tree_dark_green",
+      "category": "trees",
+      "path": "trees/tree_dark_green.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 200,
+      "height": 200,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.pine_02",
+      "category": "trees",
+      "path": "trees/pine_02.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 200,
+      "height": 200,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.pine_03",
+      "category": "trees",
+      "path": "trees/pine_03.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 200,
+      "height": 200,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.pine_04",
+      "category": "trees",
+      "path": "trees/pine_04.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 204,
+      "height": 204,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.dead_tree",
+      "category": "trees",
+      "path": "trees/dead_tree.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 140,
+      "height": 140,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.stump",
+      "category": "trees",
+      "path": "trees/stump.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 140,
+      "height": 140,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.fallen_log",
+      "category": "trees",
+      "path": "trees/fallen_log.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 185,
+      "height": 185,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.cut_stump",
+      "category": "trees",
+      "path": "trees/cut_stump.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 140,
+      "height": 140,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.bush_flowers",
+      "category": "trees",
+      "path": "trees/bush_flowers.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 155,
+      "height": 155,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.leaf_plant",
+      "category": "trees",
+      "path": "trees/leaf_plant.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 140,
+      "height": 140,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.bush_round",
+      "category": "trees",
+      "path": "trees/bush_round.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 145,
+      "height": 145,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "trees.berry_bush",
+      "category": "trees",
+      "path": "trees/berry_bush.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 145,
+      "height": 145,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "materials.flowers_white",
+      "category": "materials",
+      "path": "materials/flowers_white.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 130,
+      "height": 130,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.flowers_yellow",
+      "category": "materials",
+      "path": "materials/flowers_yellow.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 130,
+      "height": 130,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.flowers_red",
+      "category": "materials",
+      "path": "materials/flowers_red.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 130,
+      "height": 130,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.flowers_blue",
+      "category": "materials",
+      "path": "materials/flowers_blue.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 125,
+      "height": 125,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.lavender",
+      "category": "materials",
+      "path": "materials/lavender.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 122,
+      "height": 122,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.herb_bundle",
+      "category": "materials",
+      "path": "materials/herb_bundle.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 130,
+      "height": 130,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.mushrooms",
+      "category": "materials",
+      "path": "materials/mushrooms.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 130,
+      "height": 130,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.rocks_small",
+      "category": "materials",
+      "path": "materials/rocks_small.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 140,
+      "height": 140,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.rocks_medium",
+      "category": "materials",
+      "path": "materials/rocks_medium.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 140,
+      "height": 140,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.ore_mossy",
+      "category": "materials",
+      "path": "materials/ore_mossy.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 140,
+      "height": 140,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.crystal_blue",
+      "category": "materials",
+      "path": "materials/crystal_blue.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 145,
+      "height": 145,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.ore_iron",
+      "category": "materials",
+      "path": "materials/ore_iron.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 145,
+      "height": 145,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.boulder_01",
+      "category": "materials",
+      "path": "materials/boulder_01.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 138,
+      "height": 138,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.boulder_02",
+      "category": "materials",
+      "path": "materials/boulder_02.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 135,
+      "height": 135,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.boulder_03",
+      "category": "materials",
+      "path": "materials/boulder_03.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 135,
+      "height": 135,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.rock_cluster",
+      "category": "materials",
+      "path": "materials/rock_cluster.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 135,
+      "height": 135,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.boulder_large",
+      "category": "materials",
+      "path": "materials/boulder_large.png",
+      "status": "available-not-integrated",
+      "use": "packaged asset awaiting map placement",
+      "width": 175,
+      "height": 175,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "materials.rock_mossy_large",
+      "category": "materials",
+      "path": "materials/rock_mossy_large.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 160,
+      "height": 160,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "collision": "none"
+    },
+    {
+      "id": "props.barrels",
+      "category": "props",
+      "path": "props/barrels.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 184,
+      "height": 184,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "props.sacks",
+      "category": "props",
+      "path": "props/sacks.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 184,
+      "height": 184,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "props.crates",
+      "category": "props",
+      "path": "props/crates.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 160,
+      "height": 160,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "props.hay_bale",
+      "category": "props",
+      "path": "props/hay_bale.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 155,
+      "height": 155,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "props.street_lamp",
+      "category": "props",
+      "path": "props/street_lamp.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 184,
+      "height": 184,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "props.campfire",
+      "category": "props",
+      "path": "props/campfire.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 150,
+      "height": 150,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "props.anvil_table",
+      "category": "props",
+      "path": "props/anvil_table.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 151,
+      "height": 151,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "props.tool_table",
+      "category": "props",
+      "path": "props/tool_table.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 152,
+      "height": 152,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "props.chopping_block",
+      "category": "props",
+      "path": "props/chopping_block.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 184,
+      "height": 184,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "props.wagon",
+      "category": "props",
+      "path": "props/wagon.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 166,
+      "height": 166,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "props.well",
+      "category": "props",
+      "path": "props/well.png",
+      "status": "integrated",
+      "use": "runtime renderer",
+      "width": 155,
+      "height": 155,
+      "anchor": [
+        0.5,
+        0.85
+      ],
+      "collision": "configured-in-map"
+    },
+    {
+      "id": "furniture.shelf_attack_empty",
+      "category": "furniture",
+      "path": "furniture/shelf_attack_empty.png",
+      "status": "missing-not-created",
+      "use": "Attack shelf",
+      "width": null,
+      "height": null,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "collision": "external"
+    },
+    {
+      "id": "furniture.shelf_defense_empty",
+      "category": "furniture",
+      "path": "furniture/shelf_defense_empty.png",
+      "status": "missing-not-created",
+      "use": "Defense shelf",
+      "width": null,
+      "height": null,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "collision": "external"
+    },
+    {
+      "id": "furniture.shelf_other_empty",
+      "category": "furniture",
+      "path": "furniture/shelf_other_empty.png",
+      "status": "missing-not-created",
+      "use": "Other shelf",
+      "width": null,
+      "height": null,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "collision": "external"
+    },
+    {
+      "id": "stations.forge_idle",
+      "category": "stations",
+      "path": "stations/forge_idle.png",
+      "status": "missing-not-created",
+      "use": "Forge",
+      "width": null,
+      "height": null,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "collision": "external"
+    },
+    {
+      "id": "stations.alchemy_idle",
+      "category": "stations",
+      "path": "stations/alchemy_idle.png",
+      "status": "missing-not-created",
+      "use": "Alchemy",
+      "width": null,
+      "height": null,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "collision": "external"
+    },
+    {
+      "id": "furniture.checkout_counter",
+      "category": "furniture",
+      "path": "furniture/checkout_counter.png",
+      "status": "missing-not-created",
+      "use": "Checkout",
+      "width": null,
+      "height": null,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "collision": "external"
+    },
+    {
+      "id": "furniture.rare_showcase_empty",
+      "category": "furniture",
+      "path": "furniture/rare_showcase_empty.png",
+      "status": "missing-not-created",
+      "use": "Rare showcase",
+      "width": null,
+      "height": null,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "collision": "external"
+    },
+    {
+      "id": "products.iron_sword",
+      "category": "products",
+      "path": "products/iron_sword_world.png",
+      "status": "missing-not-created",
+      "use": "Iron Sword",
+      "width": null,
+      "height": null,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "collision": "external"
+    },
+    {
+      "id": "products.battle_axe",
+      "category": "products",
+      "path": "products/battle_axe_world.png",
+      "status": "missing-not-created",
+      "use": "Battle Axe",
+      "width": null,
+      "height": null,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "collision": "external"
+    },
+    {
+      "id": "products.slime_edge",
+      "category": "products",
+      "path": "products/slime_edge_world.png",
+      "status": "missing-not-created",
+      "use": "Slime Edge",
+      "width": null,
+      "height": null,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "collision": "external"
+    },
+    {
+      "id": "products.wooden_shield",
+      "category": "products",
+      "path": "products/wooden_shield_world.png",
+      "status": "missing-not-created",
+      "use": "Wooden Shield",
+      "width": null,
+      "height": null,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "collision": "external"
+    },
+    {
+      "id": "products.guard_helmet",
+      "category": "products",
+      "path": "products/guard_helmet_world.png",
+      "status": "missing-not-created",
+      "use": "Guard Helmet",
+      "width": null,
+      "height": null,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "collision": "external"
+    },
+    {
+      "id": "products.healing_potion",
+      "category": "products",
+      "path": "products/healing_potion_world.png",
+      "status": "missing-not-created",
+      "use": "Healing Potion",
+      "width": null,
+      "height": null,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "collision": "external"
+    },
+    {
+      "id": "products.repair_kit",
+      "category": "products",
+      "path": "products/repair_kit_world.png",
+      "status": "missing-not-created",
+      "use": "Repair Kit",
+      "width": null,
+      "height": null,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "collision": "external"
+    }
+  ]
+}

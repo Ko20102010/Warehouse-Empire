@@ -1,0 +1,81 @@
+{
+  "version": "v0.17.00",
+  "points": {
+    "swordOut": {
+      "x": 315,
+      "y": 1195,
+      "type": "swordOut"
+    },
+    "shieldOut": {
+      "x": 415,
+      "y": 1195,
+      "type": "shieldOut"
+    },
+    "potionOut": {
+      "x": 960,
+      "y": 1195,
+      "type": "potionOut"
+    },
+    "attackShelf": {
+      "x": 285,
+      "y": 1385,
+      "type": "attackShelf"
+    },
+    "defenseShelf": {
+      "x": 735,
+      "y": 1385,
+      "type": "defenseShelf"
+    },
+    "otherShelf": {
+      "x": 1105,
+      "y": 1385,
+      "type": "otherShelf"
+    },
+    "coinPile": {
+      "x": 825,
+      "y": 1875,
+      "type": "coinPile"
+    },
+    "checkoutWait": {
+      "x": 745,
+      "y": 1815,
+      "type": "checkoutWait"
+    },
+    "hire": {
+      "x": 915,
+      "y": 585,
+      "type": "hire"
+    },
+    "contractDrop": {
+      "x": 1385,
+      "y": 910,
+      "type": "contractDrop"
+    },
+    "rare": {
+      "x": 225,
+      "y": 1845,
+      "type": "rare"
+    },
+    "training": {
+      "x": 1395,
+      "y": 525,
+      "type": "training"
+    },
+    "office": {
+      "x": 1460,
+      "y": 1635,
+      "type": "office"
+    },
+    "visitor": {
+      "x": 315,
+      "y": 2335,
+      "type": "visitor"
+    },
+    "gate": {
+      "x": 945,
+      "y": 215,
+      "type": "gate"
+    }
+  },
+  "notes": "Coordinates preserve the tested v0.16.02 gameplay baseline."
+}

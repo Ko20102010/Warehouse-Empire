@@ -1,0 +1,353 @@
+{
+  "version": "v0.17.00",
+  "world": {
+    "width": 1870,
+    "height": 2870,
+    "backgroundImage": null,
+    "sourceBaseline": "v0.16.02"
+  },
+  "rooms": {
+    "material": {
+      "x": 60,
+      "y": 310,
+      "w": 555,
+      "h": 365,
+      "title": "MATERIAL YARD",
+      "floor": "#7d6748"
+    },
+    "staff": {
+      "x": 660,
+      "y": 310,
+      "w": 565,
+      "h": 370,
+      "title": "STAFF HOUSE",
+      "floor": "#b59b74"
+    },
+    "training": {
+      "x": 1265,
+      "y": 325,
+      "w": 270,
+      "h": 345,
+      "title": "TRAINING YARD",
+      "floor": "#8b7654"
+    },
+    "forge": {
+      "x": 55,
+      "y": 730,
+      "w": 580,
+      "h": 435,
+      "title": "FORGE (WEAPONS)",
+      "floor": "#876b52"
+    },
+    "alchemy": {
+      "x": 660,
+      "y": 730,
+      "w": 595,
+      "h": 435,
+      "title": "ALCHEMY LAB",
+      "floor": "#7e6c54"
+    },
+    "contract": {
+      "x": 1285,
+      "y": 660,
+      "w": 535,
+      "h": 505,
+      "title": "CONTRACT WAREHOUSE",
+      "floor": "#7b6546"
+    },
+    "attack": {
+      "x": 80,
+      "y": 1190,
+      "w": 460,
+      "h": 430,
+      "title": "ATTACK PRODUCTS",
+      "floor": "#c8ad7f"
+    },
+    "defense": {
+      "x": 550,
+      "y": 1190,
+      "w": 390,
+      "h": 430,
+      "title": "DEFENSE PRODUCTS",
+      "floor": "#c8ad7f"
+    },
+    "other": {
+      "x": 950,
+      "y": 1190,
+      "w": 315,
+      "h": 430,
+      "title": "OTHER PRODUCTS",
+      "floor": "#c8ad7f"
+    },
+    "rare": {
+      "x": 70,
+      "y": 1645,
+      "w": 315,
+      "h": 400,
+      "title": "RARE STORAGE",
+      "floor": "#594563"
+    },
+    "counter": {
+      "x": 400,
+      "y": 1640,
+      "w": 865,
+      "h": 400,
+      "title": "CUSTOMER HALL & CHECKOUT",
+      "floor": "#ccb285"
+    },
+    "management": {
+      "x": 1285,
+      "y": 1350,
+      "w": 425,
+      "h": 690,
+      "title": "MANAGEMENT & UPGRADES",
+      "floor": "#a88d67"
+    },
+    "visitor": {
+      "x": 110,
+      "y": 2150,
+      "w": 410,
+      "h": 360,
+      "title": "SPECIAL VISITOR PLAZA",
+      "floor": "#968463"
+    },
+    "gate": {
+      "x": 770,
+      "y": 105,
+      "w": 350,
+      "h": 195,
+      "title": "FOREST ADVENTURE GATE",
+      "floor": "#5e7844"
+    },
+    "forest": {
+      "x": 120,
+      "y": 60,
+      "w": 1620,
+      "h": 235,
+      "title": "SLIME WOODS & RUINS",
+      "floor": "#2d6830"
+    }
+  },
+  "objects": [
+    {
+      "id": "gate-large",
+      "asset": "assets/walls/gate_large.png",
+      "x": 945,
+      "y": 286,
+      "w": 150,
+      "h": 116,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "collisionRef": "gate-arch"
+    },
+    {
+      "id": "gate-lamp-left",
+      "asset": "assets/walls/lamp_post.png",
+      "x": 830,
+      "y": 310,
+      "w": 48,
+      "h": 92,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps"
+    },
+    {
+      "id": "gate-lamp-right",
+      "asset": "assets/walls/lamp_post.png",
+      "x": 1060,
+      "y": 310,
+      "w": 48,
+      "h": 92,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps"
+    },
+    {
+      "id": "material-gate",
+      "asset": "assets/walls/fence_gate.png",
+      "x": 342,
+      "y": 687,
+      "w": 110,
+      "h": 72,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps"
+    },
+    {
+      "id": "staff-door",
+      "asset": "assets/walls/door_frame_open.png",
+      "x": 920,
+      "y": 699,
+      "w": 108,
+      "h": 84,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps"
+    },
+    {
+      "id": "forge-door",
+      "asset": "assets/walls/door_frame_beam.png",
+      "x": 355,
+      "y": 1178,
+      "w": 112,
+      "h": 84,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps"
+    },
+    {
+      "id": "alchemy-door",
+      "asset": "assets/walls/door_frame_open.png",
+      "x": 962,
+      "y": 1178,
+      "w": 112,
+      "h": 84,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps"
+    },
+    {
+      "id": "contract-gate",
+      "asset": "assets/walls/fence_gate.png",
+      "x": 1302,
+      "y": 908,
+      "w": 82,
+      "h": 112,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps"
+    },
+    {
+      "id": "yard-street-lamp",
+      "asset": "assets/props/street_lamp.png",
+      "x": 610,
+      "y": 2180,
+      "w": 52,
+      "h": 104,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps"
+    },
+    {
+      "id": "visitor-wagon",
+      "asset": "assets/props/wagon.png",
+      "x": 450,
+      "y": 2385,
+      "w": 116,
+      "h": 92,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps"
+    },
+    {
+      "id": "visitor-hay",
+      "asset": "assets/props/hay_bale.png",
+      "x": 170,
+      "y": 2410,
+      "w": 76,
+      "h": 58,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps"
+    },
+    {
+      "id": "material-sacks",
+      "asset": "assets/props/sacks.png",
+      "x": 535,
+      "y": 635,
+      "w": 72,
+      "h": 62,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps"
+    },
+    {
+      "id": "material-chop",
+      "asset": "assets/props/chopping_block.png",
+      "x": 120,
+      "y": 620,
+      "w": 64,
+      "h": 58,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps"
+    },
+    {
+      "id": "forest-rocks",
+      "asset": "assets/materials/rock_mossy_large.png",
+      "x": 1510,
+      "y": 255,
+      "w": 88,
+      "h": 70,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps"
+    },
+    {
+      "id": "forest-mushrooms",
+      "asset": "assets/materials/mushrooms.png",
+      "x": 590,
+      "y": 250,
+      "w": 58,
+      "h": 48,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps"
+    },
+    {
+      "id": "courtyard-bush",
+      "asset": "assets/trees/bush_round.png",
+      "x": 1180,
+      "y": 2220,
+      "w": 78,
+      "h": 66,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps"
+    }
+  ],
+  "renderLayers": [
+    "ground",
+    "floor",
+    "walls",
+    "lowProps",
+    "stock",
+    "entities",
+    "highProps",
+    "effects",
+    "ui"
+  ]
+}
