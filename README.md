@@ -1,52 +1,61 @@
 # Weapon Shop Empire
 
-## Current Version: v0.4.00
+## Current Version: v0.5.00
 
-## Important GitHub Upload
-Extract the ZIP. Replace the repository root files with `index.html`, `style.css`, `game.js`, and `README.md`. Do not upload the ZIP as the web page. The live page must show **Weapon Shop Empire v0.4.00** at the bottom-left.
+This release upgrades the game to a polished soft-3D isometric fantasy-shop presentation inspired by high-quality mobile idle arcade games, while keeping the original Weapon Shop Empire mechanics.
 
-## v0.4.00 Major Improvements
-- Replaced phone direction buttons with tap-to-move controls. Tap anywhere on the shop floor and the player walks there.
-- Keyboard controls remain available on desktop.
-- Expanded the shop world to 3200 × 2200 with larger walking routes and departments.
-- Made all clients visible. Clients walk in, queue at the counter, wait, buy products, and leave.
-- Made all employees visible. Sales workers walk to customers, Craft workers walk to production stations, Expedition workers walk toward the forest, and Staff House workers return to their room.
-- Removed unexplained passive money. Cash now increases only when a visible client purchase or completed wholesale contract occurs.
-- Added visible floating payment effects at client sales.
-- Increased player activities: physically walk to Forge or Alchemy to craft; maintain product stock; fight monsters; assign employees; unlock products; and manage wholesale orders.
-- Replaced the always-visible management sidebar with six compact phone menu buttons and full-screen pop-up pages.
-- Added separate pop-up pages for Shop, Products, Employees, Wholesale, Forever skills, and Save.
-- Retained three save slots and day-end-only auto-save.
-- Retained multi-day wholesale orders and separate Contract Warehouse.
+## GitHub Upload
 
-## Controls
-### Phone
-- Tap the shop floor to move.
-- Open **SAVE**, then tap **Attack Nearby Monster** when beside a slime.
-- Use the compact menu buttons to open management pages.
+Extract the ZIP and replace the root files in the repository with:
 
-### Desktop
-- Click the shop floor to move, or use WASD / arrow keys.
-- Space attacks a nearby monster.
+```text
+index.html
+style.css
+game.js
+shop_world.png
+README.md
+```
 
-## Money Rules
-Money does not increase automatically. Money is earned through:
-- A visible retail client purchase.
-- A completed wholesale order.
+The image asset must be uploaded beside `index.html`. The live page must show **Weapon Shop Empire v0.5.00** at the bottom-left.
 
-Money is spent on wages and upgrades. If previous versions appeared to earn money continuously, that was caused by invisible automatic Sales processing. v0.4.00 makes the clients, seller movement, stock reduction, and payment animation visible.
+## Art Upgrade
+
+- Added an original high-detail isometric fantasy weapon-shop environment.
+- Added snow-covered exterior terrain, pine trees, stone walls, warm lanterns, fences, stairs, a portal, storage crates, beds, a wagon, weapon displays, armor displays, potion shelves, a forge, and an alchemy station.
+- Replaced large flat colored department rectangles with smaller glowing interaction pads.
+- Replaced line stick figures with rounded chibi-style workers, clients, and the player.
+- Added soft character shadows and walking-leg animation.
+- Added improved slime artwork and shadows.
+- Retained tap-to-move phone controls and camera following.
+
+## Gameplay
+
+- Tap the glowing orange forge pad to craft swords.
+- Tap the glowing green alchemy pad to craft potions.
+- Clients and workers visibly move around the shop.
+- Retail money appears only when a visible sale occurs.
+- Employees can work in Sales, Craft, Expedition, or Staff House.
+- Wholesale products are stored separately.
+- The portal/forest side leads to monster materials.
+- Three save slots remain available.
+- Auto-save occurs only at game-day end.
 
 ## Version History
+
+### v0.5.00 - 2026-10-16
+- Added original soft-3D isometric shop artwork.
+- Integrated the new artwork as the full scrolling game world.
+- Added rounded chibi-style active characters.
+- Added animated walking legs and soft shadows.
+- Replaced intrusive zone rectangles with subtle glowing interaction pads.
+- Repositioned all gameplay systems to match the new visual map.
+- Added a separate shop-world image asset with cache busting.
+
 ### v0.4.00 - 2026-10-16
-- Added tap-to-move phone controls.
-- Added moving visible clients and employees.
-- Greatly enlarged shop and walking area.
-- Reworked money feedback and visible sales.
-- Rebuilt phone UI around pop-up management pages.
-- Added more direct player tasks and clearer activity guidance.
+- Added tap-to-move controls, visible moving clients and employees, larger shop routes, visible sales, and pop-up management pages.
 
 ### v0.3.00 - 2026-10-15
-- Added wholesale orders, contract storage, contract slots, quality requirements, deadlines, and employee contract handling.
+- Added wholesale orders, deadlines, contract storage, and Contract Office upgrades.
 
 ### v0.2.00 - 2026-10-15
 - Added three save slots and day-end-only auto-save.
@@ -55,4 +64,5 @@ Money is spent on wages and upgrades. If previous versions appeared to earn mone
 - First complete Weapon Shop Empire release.
 
 ## Version Policy
+
 Continue with v0.x versions by default. Ask before changing to v1.0.00, v2.0.00, or another major version.
