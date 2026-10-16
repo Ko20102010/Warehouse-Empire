@@ -1,21 +1,20 @@
-# Weapon Shop Empire v0.17.00 Stage 1 Update
+# Weapon Shop Empire v0.17.00 Stage 2 Update
 
-Lightweight first-stage real-asset integration update built from the playable v0.16.02 baseline. Existing PNG files are not duplicated.
+Lightweight real-asset integration update. It uses the artwork already installed in the repository and includes no unchanged PNG files.
 
-## Included changes
+## Completed in Stage 2
 
-- Added production JSON map files for world objects, collisions, interactions, and visual slots.
-- Added runtime loading of `data/world_map.json`.
-- Started integrating existing wall, door, gate, lamp, prop, material, terrain, and vegetation PNGs.
-- Replaced the procedural wall pass with the existing transparent wall asset, while preserving independent collision geometry.
-- Updated the preview to show real repository PNGs only.
-- Added exact JSON, CSV, and Markdown asset audits.
-- Preserved v0.16.02 movement, camera, zoom, save, and first-frame crash fixes.
+- Integrated or assigned all 81 existing environment PNG assets.
+- Added the remaining 37 assets to `data/world_map.json`.
+- Added river corners, cliffs, additional walls, decorative doors, fences, signs, trees, plants, flowers, rocks, ore, and boulders.
+- Preserved independent collision data in `data/collisions.json`.
+- Updated the exact JSON, CSV, Markdown, and in-game HTML audits.
+- Preserved the playable v0.16.02 fixes and v0.17.00 Stage 1 JSON renderer.
 
-## Important
+## Honest remaining gap
 
-This is Stage 1, not the completed visual conversion. Furniture and product sprites listed as `missing-not-created` remain required before v0.17.00 can be declared visually complete.
+The existing environment library is fully assigned, but 14 functional furniture and product assets still do not exist. They remain listed as `missing-not-created`; procedural furniture and product icons remain temporary until new transparent PNGs are produced.
 
 ## Upload
 
-Upload the contents over the existing repository. Keep all existing artwork files. This ZIP includes no unchanged PNG artwork.
+Upload this ZIP over the existing repository. Keep the existing artwork folders.

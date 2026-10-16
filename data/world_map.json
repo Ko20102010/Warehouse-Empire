@@ -337,6 +337,524 @@
         1
       ],
       "layer": "lowProps"
+    },
+    {
+      "id": "river-curve-west",
+      "asset": "assets/terrain/river_curve.png",
+      "x": 170,
+      "y": 2635,
+      "w": 170,
+      "h": 170,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "layer": "ground",
+      "use": "south river bend"
+    },
+    {
+      "id": "water-corner-east",
+      "asset": "assets/terrain/water_corner.png",
+      "x": 1690,
+      "y": 2570,
+      "w": 170,
+      "h": 170,
+      "anchor": [
+        0.5,
+        0.5
+      ],
+      "layer": "ground",
+      "use": "south river corner"
+    },
+    {
+      "id": "cliff-north-west",
+      "asset": "assets/terrain/cliff_straight.png",
+      "x": 235,
+      "y": 305,
+      "w": 150,
+      "h": 96,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "forest boundary"
+    },
+    {
+      "id": "cliff-north-corner",
+      "asset": "assets/terrain/cliff_corner.png",
+      "x": 150,
+      "y": 315,
+      "w": 110,
+      "h": 100,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "forest boundary corner"
+    },
+    {
+      "id": "cliff-forest-stairs",
+      "asset": "assets/terrain/cliff_stairs.png",
+      "x": 945,
+      "y": 310,
+      "w": 105,
+      "h": 120,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "adventure gate approach"
+    },
+    {
+      "id": "wall-inner-retail",
+      "asset": "assets/walls/wall_corner_inner.png",
+      "x": 535,
+      "y": 1620,
+      "w": 80,
+      "h": 80,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "attack/defense divider"
+    },
+    {
+      "id": "wall-narrow-rare",
+      "asset": "assets/walls/wall_narrow.png",
+      "x": 390,
+      "y": 1645,
+      "w": 46,
+      "h": 92,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "rare storage edge"
+    },
+    {
+      "id": "door-management-closed",
+      "asset": "assets/walls/door_stone_closed.png",
+      "x": 1490,
+      "y": 2045,
+      "w": 90,
+      "h": 95,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "management decorative service door"
+    },
+    {
+      "id": "wall-diagonal-left-visitor",
+      "asset": "assets/walls/wall_diagonal_left.png",
+      "x": 105,
+      "y": 2160,
+      "w": 84,
+      "h": 76,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "visitor plaza border"
+    },
+    {
+      "id": "wall-diagonal-right-visitor",
+      "asset": "assets/walls/wall_diagonal_right.png",
+      "x": 525,
+      "y": 2160,
+      "w": 84,
+      "h": 76,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "visitor plaza border"
+    },
+    {
+      "id": "fence-banner-training",
+      "asset": "assets/walls/fence_banner.png",
+      "x": 1400,
+      "y": 680,
+      "w": 115,
+      "h": 78,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "training yard banner"
+    },
+    {
+      "id": "fence-open-yard",
+      "asset": "assets/walls/fence_open.png",
+      "x": 585,
+      "y": 690,
+      "w": 100,
+      "h": 68,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "material yard open boundary"
+    },
+    {
+      "id": "beam-sign-forge",
+      "asset": "assets/walls/beam_sign.png",
+      "x": 345,
+      "y": 750,
+      "w": 95,
+      "h": 70,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "forge sign"
+    },
+    {
+      "id": "picket-fence-visitor",
+      "asset": "assets/walls/picket_fence.png",
+      "x": 315,
+      "y": 2150,
+      "w": 120,
+      "h": 62,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "visitor plaza fence"
+    },
+    {
+      "id": "tree-green-02-east",
+      "asset": "assets/trees/tree_green_02.png",
+      "x": 1720,
+      "y": 430,
+      "w": 125,
+      "h": 150,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "east perimeter"
+    },
+    {
+      "id": "tree-autumn-visitor",
+      "asset": "assets/trees/tree_autumn.png",
+      "x": 115,
+      "y": 2310,
+      "w": 130,
+      "h": 155,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "visitor plaza"
+    },
+    {
+      "id": "pine-02-forest",
+      "asset": "assets/trees/pine_02.png",
+      "x": 520,
+      "y": 290,
+      "w": 115,
+      "h": 155,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "forest"
+    },
+    {
+      "id": "pine-03-forest",
+      "asset": "assets/trees/pine_03.png",
+      "x": 1320,
+      "y": 290,
+      "w": 120,
+      "h": 160,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "forest"
+    },
+    {
+      "id": "pine-04-south",
+      "asset": "assets/trees/pine_04.png",
+      "x": 1710,
+      "y": 2810,
+      "w": 125,
+      "h": 165,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "south perimeter"
+    },
+    {
+      "id": "dead-tree-ruins",
+      "asset": "assets/trees/dead_tree.png",
+      "x": 280,
+      "y": 270,
+      "w": 105,
+      "h": 135,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "highProps",
+      "use": "forest ruins"
+    },
+    {
+      "id": "stump-material",
+      "asset": "assets/trees/stump.png",
+      "x": 90,
+      "y": 530,
+      "w": 60,
+      "h": 48,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "material yard"
+    },
+    {
+      "id": "cut-stump-training",
+      "asset": "assets/trees/cut_stump.png",
+      "x": 1500,
+      "y": 610,
+      "w": 58,
+      "h": 45,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "training yard"
+    },
+    {
+      "id": "leaf-plant-alchemy",
+      "asset": "assets/trees/leaf_plant.png",
+      "x": 1185,
+      "y": 1110,
+      "w": 52,
+      "h": 52,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "alchemy garden"
+    },
+    {
+      "id": "berry-bush-material",
+      "asset": "assets/trees/berry_bush.png",
+      "x": 560,
+      "y": 400,
+      "w": 68,
+      "h": 58,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "material yard"
+    },
+    {
+      "id": "flowers-white-staff",
+      "asset": "assets/materials/flowers_white.png",
+      "x": 720,
+      "y": 650,
+      "w": 50,
+      "h": 42,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "staff house garden"
+    },
+    {
+      "id": "flowers-yellow-visitor",
+      "asset": "assets/materials/flowers_yellow.png",
+      "x": 225,
+      "y": 2470,
+      "w": 48,
+      "h": 40,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "visitor plaza"
+    },
+    {
+      "id": "flowers-red-forge",
+      "asset": "assets/materials/flowers_red.png",
+      "x": 590,
+      "y": 1120,
+      "w": 48,
+      "h": 40,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "forge exterior"
+    },
+    {
+      "id": "flowers-blue-alchemy",
+      "asset": "assets/materials/flowers_blue.png",
+      "x": 700,
+      "y": 1120,
+      "w": 48,
+      "h": 40,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "alchemy exterior"
+    },
+    {
+      "id": "lavender-alchemy",
+      "asset": "assets/materials/lavender.png",
+      "x": 1120,
+      "y": 1085,
+      "w": 48,
+      "h": 45,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "alchemy garden"
+    },
+    {
+      "id": "rocks-small-river",
+      "asset": "assets/materials/rocks_small.png",
+      "x": 420,
+      "y": 2600,
+      "w": 58,
+      "h": 42,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "river bank"
+    },
+    {
+      "id": "rocks-medium-gate",
+      "asset": "assets/materials/rocks_medium.png",
+      "x": 760,
+      "y": 300,
+      "w": 68,
+      "h": 50,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "adventure gate"
+    },
+    {
+      "id": "ore-mossy-forest",
+      "asset": "assets/materials/ore_mossy.png",
+      "x": 1450,
+      "y": 255,
+      "w": 62,
+      "h": 52,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "forest resource scenery"
+    },
+    {
+      "id": "boulder-01-west",
+      "asset": "assets/materials/boulder_01.png",
+      "x": 85,
+      "y": 900,
+      "w": 70,
+      "h": 58,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "west boundary"
+    },
+    {
+      "id": "boulder-02-east",
+      "asset": "assets/materials/boulder_02.png",
+      "x": 1780,
+      "y": 1200,
+      "w": 72,
+      "h": 60,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "east boundary"
+    },
+    {
+      "id": "boulder-03-south",
+      "asset": "assets/materials/boulder_03.png",
+      "x": 1500,
+      "y": 2790,
+      "w": 75,
+      "h": 62,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "south boundary"
+    },
+    {
+      "id": "rock-cluster-river",
+      "asset": "assets/materials/rock_cluster.png",
+      "x": 1120,
+      "y": 2600,
+      "w": 78,
+      "h": 58,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "river bank"
+    },
+    {
+      "id": "boulder-large-forest",
+      "asset": "assets/materials/boulder_large.png",
+      "x": 1650,
+      "y": 275,
+      "w": 95,
+      "h": 75,
+      "anchor": [
+        0.5,
+        1
+      ],
+      "layer": "lowProps",
+      "use": "forest boundary"
     }
   ],
   "renderLayers": [
@@ -349,5 +867,6 @@
     "highProps",
     "effects",
     "ui"
-  ]
+  ],
+  "stage": "Stage 2 - all existing environment PNG assets assigned"
 }

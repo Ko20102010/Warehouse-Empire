@@ -1,94 +1,95 @@
-# Exact Asset Audit - v0.17.00 Stage 1
+# Exact Asset Audit - v0.17.00 Stage 2
 
 - Existing manifest assets: 81
-- Integrated now: 44
-- Existing but not integrated: 37
+- Integrated: 81
+- Existing but not integrated: 0
 - Required but not created: 14
 
-## Integrated
-- `terrain/grass_plain.png`
-- `terrain/grass_flowers_white.png`
-- `terrain/grass_rocks_flowers.png`
-- `terrain/grass_flowers_color.png`
-- `terrain/path_sandstone.png`
-- `terrain/path_mossy_stone.png`
-- `terrain/floor_wood.png`
-- `terrain/floor_workshop.png`
-- `terrain/water_rocks.png`
-- `terrain/river_edge.png`
-- `terrain/dirt_path.png`
-- `terrain/bridge_wood.png`
-- `walls/wall_straight.png`
-- `walls/door_frame_open.png`
-- `walls/door_frame_beam.png`
-- `walls/wall_corner_outer.png`
-- `walls/wall_pillar_pair.png`
-- `walls/fence_short.png`
-- `walls/gate_large.png`
-- `walls/lamp_post.png`
-- `walls/fence_solid.png`
-- `walls/fence_gate.png`
-- `trees/tree_green_01.png`
-- `trees/pine_01.png`
-- `trees/tree_dark_green.png`
-- `trees/fallen_log.png`
-- `trees/bush_flowers.png`
-- `trees/bush_round.png`
-- `materials/herb_bundle.png`
-- `materials/mushrooms.png`
-- `materials/crystal_blue.png`
-- `materials/ore_iron.png`
-- `materials/rock_mossy_large.png`
-- `props/barrels.png`
-- `props/sacks.png`
-- `props/crates.png`
-- `props/hay_bale.png`
-- `props/street_lamp.png`
-- `props/campfire.png`
-- `props/anvil_table.png`
-- `props/tool_table.png`
-- `props/chopping_block.png`
-- `props/wagon.png`
-- `props/well.png`
+## Integrated existing assets
+- `terrain/grass_plain.png` -> runtime renderer
+- `terrain/grass_flowers_white.png` -> runtime renderer
+- `terrain/grass_rocks_flowers.png` -> runtime renderer
+- `terrain/grass_flowers_color.png` -> runtime renderer
+- `terrain/path_sandstone.png` -> runtime renderer
+- `terrain/path_mossy_stone.png` -> runtime renderer
+- `terrain/floor_wood.png` -> runtime renderer
+- `terrain/floor_workshop.png` -> runtime renderer
+- `terrain/water_rocks.png` -> runtime renderer
+- `terrain/river_edge.png` -> runtime renderer
+- `terrain/dirt_path.png` -> runtime renderer
+- `terrain/river_curve.png` -> river-curve-west
+- `terrain/water_corner.png` -> water-corner-east
+- `terrain/bridge_wood.png` -> runtime renderer
+- `terrain/cliff_straight.png` -> cliff-north-west
+- `terrain/cliff_corner.png` -> cliff-north-corner
+- `terrain/cliff_stairs.png` -> cliff-forest-stairs
+- `walls/wall_straight.png` -> runtime renderer
+- `walls/wall_corner_inner.png` -> wall-inner-retail
+- `walls/wall_narrow.png` -> wall-narrow-rare
+- `walls/door_frame_open.png` -> staff-door, alchemy-door
+- `walls/door_stone_closed.png` -> door-management-closed
+- `walls/door_frame_beam.png` -> forge-door
+- `walls/wall_corner_outer.png` -> runtime renderer
+- `walls/wall_pillar_pair.png` -> runtime renderer
+- `walls/wall_diagonal_left.png` -> wall-diagonal-left-visitor
+- `walls/wall_diagonal_right.png` -> wall-diagonal-right-visitor
+- `walls/fence_short.png` -> runtime renderer
+- `walls/fence_banner.png` -> fence-banner-training
+- `walls/fence_open.png` -> fence-open-yard
+- `walls/gate_large.png` -> gate-large
+- `walls/lamp_post.png` -> gate-lamp-left, gate-lamp-right
+- `walls/beam_sign.png` -> beam-sign-forge
+- `walls/picket_fence.png` -> picket-fence-visitor
+- `walls/fence_solid.png` -> runtime renderer
+- `walls/fence_gate.png` -> material-gate, contract-gate
+- `trees/tree_green_01.png` -> runtime renderer
+- `trees/tree_green_02.png` -> tree-green-02-east
+- `trees/tree_autumn.png` -> tree-autumn-visitor
+- `trees/pine_01.png` -> runtime renderer
+- `trees/tree_dark_green.png` -> runtime renderer
+- `trees/pine_02.png` -> pine-02-forest
+- `trees/pine_03.png` -> pine-03-forest
+- `trees/pine_04.png` -> pine-04-south
+- `trees/dead_tree.png` -> dead-tree-ruins
+- `trees/stump.png` -> stump-material
+- `trees/fallen_log.png` -> runtime renderer
+- `trees/cut_stump.png` -> cut-stump-training
+- `trees/bush_flowers.png` -> runtime renderer
+- `trees/leaf_plant.png` -> leaf-plant-alchemy
+- `trees/bush_round.png` -> courtyard-bush
+- `trees/berry_bush.png` -> berry-bush-material
+- `materials/flowers_white.png` -> flowers-white-staff
+- `materials/flowers_yellow.png` -> flowers-yellow-visitor
+- `materials/flowers_red.png` -> flowers-red-forge
+- `materials/flowers_blue.png` -> flowers-blue-alchemy
+- `materials/lavender.png` -> lavender-alchemy
+- `materials/herb_bundle.png` -> runtime renderer
+- `materials/mushrooms.png` -> forest-mushrooms
+- `materials/rocks_small.png` -> rocks-small-river
+- `materials/rocks_medium.png` -> rocks-medium-gate
+- `materials/ore_mossy.png` -> ore-mossy-forest
+- `materials/crystal_blue.png` -> runtime renderer
+- `materials/ore_iron.png` -> runtime renderer
+- `materials/boulder_01.png` -> boulder-01-west
+- `materials/boulder_02.png` -> boulder-02-east
+- `materials/boulder_03.png` -> boulder-03-south
+- `materials/rock_cluster.png` -> rock-cluster-river
+- `materials/boulder_large.png` -> boulder-large-forest
+- `materials/rock_mossy_large.png` -> forest-rocks
+- `props/barrels.png` -> runtime renderer
+- `props/sacks.png` -> material-sacks
+- `props/crates.png` -> runtime renderer
+- `props/hay_bale.png` -> visitor-hay
+- `props/street_lamp.png` -> yard-street-lamp
+- `props/campfire.png` -> runtime renderer
+- `props/anvil_table.png` -> runtime renderer
+- `props/tool_table.png` -> runtime renderer
+- `props/chopping_block.png` -> material-chop
+- `props/wagon.png` -> visitor-wagon
+- `props/well.png` -> runtime renderer
 
 ## Existing but not integrated
-- `terrain/river_curve.png`
-- `terrain/water_corner.png`
-- `terrain/cliff_straight.png`
-- `terrain/cliff_corner.png`
-- `terrain/cliff_stairs.png`
-- `walls/wall_corner_inner.png`
-- `walls/wall_narrow.png`
-- `walls/door_stone_closed.png`
-- `walls/wall_diagonal_left.png`
-- `walls/wall_diagonal_right.png`
-- `walls/fence_banner.png`
-- `walls/fence_open.png`
-- `walls/beam_sign.png`
-- `walls/picket_fence.png`
-- `trees/tree_green_02.png`
-- `trees/tree_autumn.png`
-- `trees/pine_02.png`
-- `trees/pine_03.png`
-- `trees/pine_04.png`
-- `trees/dead_tree.png`
-- `trees/stump.png`
-- `trees/cut_stump.png`
-- `trees/leaf_plant.png`
-- `trees/berry_bush.png`
-- `materials/flowers_white.png`
-- `materials/flowers_yellow.png`
-- `materials/flowers_red.png`
-- `materials/flowers_blue.png`
-- `materials/lavender.png`
-- `materials/rocks_small.png`
-- `materials/rocks_medium.png`
-- `materials/ore_mossy.png`
-- `materials/boulder_01.png`
-- `materials/boulder_02.png`
-- `materials/boulder_03.png`
-- `materials/rock_cluster.png`
-- `materials/boulder_large.png`
+- None. All 81 existing environment PNG assets are now integrated or assigned.
 
 ## Required but not created
 - `furniture/shelf_attack_empty.png` - Attack shelf

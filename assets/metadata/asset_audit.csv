@@ -1,96 +1,96 @@
-id,category,path,status,use,width,height,anchor,collision
-terrain.grass_plain,terrain,terrain/grass_plain.png,integrated,runtime renderer,145,145,"[0.5, 0.5]",none
-terrain.grass_flowers_white,terrain,terrain/grass_flowers_white.png,integrated,runtime renderer,145,145,"[0.5, 0.5]",none
-terrain.grass_rocks_flowers,terrain,terrain/grass_rocks_flowers.png,integrated,runtime renderer,145,145,"[0.5, 0.5]",none
-terrain.grass_flowers_color,terrain,terrain/grass_flowers_color.png,integrated,runtime renderer,150,150,"[0.5, 0.5]",none
-terrain.path_sandstone,terrain,terrain/path_sandstone.png,integrated,runtime renderer,150,150,"[0.5, 0.5]",none
-terrain.path_mossy_stone,terrain,terrain/path_mossy_stone.png,integrated,runtime renderer,145,145,"[0.5, 0.5]",none
-terrain.floor_wood,terrain,terrain/floor_wood.png,integrated,runtime renderer,145,145,"[0.5, 0.5]",none
-terrain.floor_workshop,terrain,terrain/floor_workshop.png,integrated,runtime renderer,150,150,"[0.5, 0.5]",none
-terrain.water_rocks,terrain,terrain/water_rocks.png,integrated,runtime renderer,187,187,"[0.5, 0.5]",none
-terrain.river_edge,terrain,terrain/river_edge.png,integrated,runtime renderer,160,160,"[0.5, 0.5]",none
-terrain.dirt_path,terrain,terrain/dirt_path.png,integrated,runtime renderer,156,156,"[0.5, 0.5]",none
-terrain.river_curve,terrain,terrain/river_curve.png,available-not-integrated,packaged asset awaiting map placement,160,160,"[0.5, 0.5]",none
-terrain.water_corner,terrain,terrain/water_corner.png,available-not-integrated,packaged asset awaiting map placement,160,160,"[0.5, 0.5]",none
-terrain.bridge_wood,terrain,terrain/bridge_wood.png,integrated,runtime renderer,165,165,"[0.5, 0.5]",none
-terrain.cliff_straight,terrain,terrain/cliff_straight.png,available-not-integrated,packaged asset awaiting map placement,170,170,"[0.5, 0.5]",none
-terrain.cliff_corner,terrain,terrain/cliff_corner.png,available-not-integrated,packaged asset awaiting map placement,175,175,"[0.5, 0.5]",none
-terrain.cliff_stairs,terrain,terrain/cliff_stairs.png,available-not-integrated,packaged asset awaiting map placement,261,261,"[0.5, 0.5]",none
-walls.wall_straight,walls,walls/wall_straight.png,integrated,runtime renderer,150,150,"[0.5, 0.85]",configured-in-map
-walls.wall_corner_inner,walls,walls/wall_corner_inner.png,available-not-integrated,packaged asset awaiting map placement,162,162,"[0.5, 0.85]",configured-in-map
-walls.wall_narrow,walls,walls/wall_narrow.png,available-not-integrated,packaged asset awaiting map placement,157,157,"[0.5, 0.85]",configured-in-map
-walls.door_frame_open,walls,walls/door_frame_open.png,integrated,runtime renderer,160,160,"[0.5, 0.85]",configured-in-map
-walls.door_stone_closed,walls,walls/door_stone_closed.png,available-not-integrated,packaged asset awaiting map placement,165,165,"[0.5, 0.85]",configured-in-map
-walls.door_frame_beam,walls,walls/door_frame_beam.png,integrated,runtime renderer,161,161,"[0.5, 0.85]",configured-in-map
-walls.wall_corner_outer,walls,walls/wall_corner_outer.png,integrated,runtime renderer,163,163,"[0.5, 0.85]",configured-in-map
-walls.wall_pillar_pair,walls,walls/wall_pillar_pair.png,integrated,runtime renderer,161,161,"[0.5, 0.85]",configured-in-map
-walls.wall_diagonal_left,walls,walls/wall_diagonal_left.png,available-not-integrated,packaged asset awaiting map placement,165,165,"[0.5, 0.85]",configured-in-map
-walls.wall_diagonal_right,walls,walls/wall_diagonal_right.png,available-not-integrated,packaged asset awaiting map placement,165,165,"[0.5, 0.85]",configured-in-map
-walls.fence_short,walls,walls/fence_short.png,integrated,runtime renderer,133,133,"[0.5, 0.85]",configured-in-map
-walls.fence_banner,walls,walls/fence_banner.png,available-not-integrated,packaged asset awaiting map placement,145,145,"[0.5, 0.85]",configured-in-map
-walls.fence_open,walls,walls/fence_open.png,available-not-integrated,packaged asset awaiting map placement,160,160,"[0.5, 0.85]",configured-in-map
-walls.gate_large,walls,walls/gate_large.png,integrated,runtime renderer,180,180,"[0.5, 0.85]",configured-in-map
-walls.lamp_post,walls,walls/lamp_post.png,integrated,runtime renderer,138,138,"[0.5, 0.85]",configured-in-map
-walls.beam_sign,walls,walls/beam_sign.png,available-not-integrated,packaged asset awaiting map placement,155,155,"[0.5, 0.85]",configured-in-map
-walls.picket_fence,walls,walls/picket_fence.png,available-not-integrated,packaged asset awaiting map placement,155,155,"[0.5, 0.85]",configured-in-map
-walls.fence_solid,walls,walls/fence_solid.png,integrated,runtime renderer,170,170,"[0.5, 0.85]",configured-in-map
-walls.fence_gate,walls,walls/fence_gate.png,integrated,runtime renderer,179,179,"[0.5, 0.85]",configured-in-map
-trees.tree_green_01,trees,trees/tree_green_01.png,integrated,runtime renderer,200,200,"[0.5, 0.85]",configured-in-map
-trees.tree_green_02,trees,trees/tree_green_02.png,available-not-integrated,packaged asset awaiting map placement,200,200,"[0.5, 0.85]",configured-in-map
-trees.tree_autumn,trees,trees/tree_autumn.png,available-not-integrated,packaged asset awaiting map placement,200,200,"[0.5, 0.85]",configured-in-map
-trees.pine_01,trees,trees/pine_01.png,integrated,runtime renderer,200,200,"[0.5, 0.85]",configured-in-map
-trees.tree_dark_green,trees,trees/tree_dark_green.png,integrated,runtime renderer,200,200,"[0.5, 0.85]",configured-in-map
-trees.pine_02,trees,trees/pine_02.png,available-not-integrated,packaged asset awaiting map placement,200,200,"[0.5, 0.85]",configured-in-map
-trees.pine_03,trees,trees/pine_03.png,available-not-integrated,packaged asset awaiting map placement,200,200,"[0.5, 0.85]",configured-in-map
-trees.pine_04,trees,trees/pine_04.png,available-not-integrated,packaged asset awaiting map placement,204,204,"[0.5, 0.85]",configured-in-map
-trees.dead_tree,trees,trees/dead_tree.png,available-not-integrated,packaged asset awaiting map placement,140,140,"[0.5, 0.85]",configured-in-map
-trees.stump,trees,trees/stump.png,available-not-integrated,packaged asset awaiting map placement,140,140,"[0.5, 0.85]",configured-in-map
-trees.fallen_log,trees,trees/fallen_log.png,integrated,runtime renderer,185,185,"[0.5, 0.85]",configured-in-map
-trees.cut_stump,trees,trees/cut_stump.png,available-not-integrated,packaged asset awaiting map placement,140,140,"[0.5, 0.85]",configured-in-map
-trees.bush_flowers,trees,trees/bush_flowers.png,integrated,runtime renderer,155,155,"[0.5, 0.85]",configured-in-map
-trees.leaf_plant,trees,trees/leaf_plant.png,available-not-integrated,packaged asset awaiting map placement,140,140,"[0.5, 0.85]",configured-in-map
-trees.bush_round,trees,trees/bush_round.png,integrated,runtime renderer,145,145,"[0.5, 0.85]",configured-in-map
-trees.berry_bush,trees,trees/berry_bush.png,available-not-integrated,packaged asset awaiting map placement,145,145,"[0.5, 0.85]",configured-in-map
-materials.flowers_white,materials,materials/flowers_white.png,available-not-integrated,packaged asset awaiting map placement,130,130,"[0.5, 0.5]",none
-materials.flowers_yellow,materials,materials/flowers_yellow.png,available-not-integrated,packaged asset awaiting map placement,130,130,"[0.5, 0.5]",none
-materials.flowers_red,materials,materials/flowers_red.png,available-not-integrated,packaged asset awaiting map placement,130,130,"[0.5, 0.5]",none
-materials.flowers_blue,materials,materials/flowers_blue.png,available-not-integrated,packaged asset awaiting map placement,125,125,"[0.5, 0.5]",none
-materials.lavender,materials,materials/lavender.png,available-not-integrated,packaged asset awaiting map placement,122,122,"[0.5, 0.5]",none
-materials.herb_bundle,materials,materials/herb_bundle.png,integrated,runtime renderer,130,130,"[0.5, 0.5]",none
-materials.mushrooms,materials,materials/mushrooms.png,integrated,runtime renderer,130,130,"[0.5, 0.5]",none
-materials.rocks_small,materials,materials/rocks_small.png,available-not-integrated,packaged asset awaiting map placement,140,140,"[0.5, 0.5]",none
-materials.rocks_medium,materials,materials/rocks_medium.png,available-not-integrated,packaged asset awaiting map placement,140,140,"[0.5, 0.5]",none
-materials.ore_mossy,materials,materials/ore_mossy.png,available-not-integrated,packaged asset awaiting map placement,140,140,"[0.5, 0.5]",none
-materials.crystal_blue,materials,materials/crystal_blue.png,integrated,runtime renderer,145,145,"[0.5, 0.5]",none
-materials.ore_iron,materials,materials/ore_iron.png,integrated,runtime renderer,145,145,"[0.5, 0.5]",none
-materials.boulder_01,materials,materials/boulder_01.png,available-not-integrated,packaged asset awaiting map placement,138,138,"[0.5, 0.5]",none
-materials.boulder_02,materials,materials/boulder_02.png,available-not-integrated,packaged asset awaiting map placement,135,135,"[0.5, 0.5]",none
-materials.boulder_03,materials,materials/boulder_03.png,available-not-integrated,packaged asset awaiting map placement,135,135,"[0.5, 0.5]",none
-materials.rock_cluster,materials,materials/rock_cluster.png,available-not-integrated,packaged asset awaiting map placement,135,135,"[0.5, 0.5]",none
-materials.boulder_large,materials,materials/boulder_large.png,available-not-integrated,packaged asset awaiting map placement,175,175,"[0.5, 0.5]",none
-materials.rock_mossy_large,materials,materials/rock_mossy_large.png,integrated,runtime renderer,160,160,"[0.5, 0.5]",none
-props.barrels,props,props/barrels.png,integrated,runtime renderer,184,184,"[0.5, 0.85]",configured-in-map
-props.sacks,props,props/sacks.png,integrated,runtime renderer,184,184,"[0.5, 0.85]",configured-in-map
-props.crates,props,props/crates.png,integrated,runtime renderer,160,160,"[0.5, 0.85]",configured-in-map
-props.hay_bale,props,props/hay_bale.png,integrated,runtime renderer,155,155,"[0.5, 0.85]",configured-in-map
-props.street_lamp,props,props/street_lamp.png,integrated,runtime renderer,184,184,"[0.5, 0.85]",configured-in-map
-props.campfire,props,props/campfire.png,integrated,runtime renderer,150,150,"[0.5, 0.85]",configured-in-map
-props.anvil_table,props,props/anvil_table.png,integrated,runtime renderer,151,151,"[0.5, 0.85]",configured-in-map
-props.tool_table,props,props/tool_table.png,integrated,runtime renderer,152,152,"[0.5, 0.85]",configured-in-map
-props.chopping_block,props,props/chopping_block.png,integrated,runtime renderer,184,184,"[0.5, 0.85]",configured-in-map
-props.wagon,props,props/wagon.png,integrated,runtime renderer,166,166,"[0.5, 0.85]",configured-in-map
-props.well,props,props/well.png,integrated,runtime renderer,155,155,"[0.5, 0.85]",configured-in-map
-furniture.shelf_attack_empty,furniture,furniture/shelf_attack_empty.png,missing-not-created,Attack shelf,,,"[0.5, 1]",external
-furniture.shelf_defense_empty,furniture,furniture/shelf_defense_empty.png,missing-not-created,Defense shelf,,,"[0.5, 1]",external
-furniture.shelf_other_empty,furniture,furniture/shelf_other_empty.png,missing-not-created,Other shelf,,,"[0.5, 1]",external
-stations.forge_idle,stations,stations/forge_idle.png,missing-not-created,Forge,,,"[0.5, 1]",external
-stations.alchemy_idle,stations,stations/alchemy_idle.png,missing-not-created,Alchemy,,,"[0.5, 1]",external
-furniture.checkout_counter,furniture,furniture/checkout_counter.png,missing-not-created,Checkout,,,"[0.5, 1]",external
-furniture.rare_showcase_empty,furniture,furniture/rare_showcase_empty.png,missing-not-created,Rare showcase,,,"[0.5, 1]",external
-products.iron_sword,products,products/iron_sword_world.png,missing-not-created,Iron Sword,,,"[0.5, 1]",external
-products.battle_axe,products,products/battle_axe_world.png,missing-not-created,Battle Axe,,,"[0.5, 1]",external
-products.slime_edge,products,products/slime_edge_world.png,missing-not-created,Slime Edge,,,"[0.5, 1]",external
-products.wooden_shield,products,products/wooden_shield_world.png,missing-not-created,Wooden Shield,,,"[0.5, 1]",external
-products.guard_helmet,products,products/guard_helmet_world.png,missing-not-created,Guard Helmet,,,"[0.5, 1]",external
-products.healing_potion,products,products/healing_potion_world.png,missing-not-created,Healing Potion,,,"[0.5, 1]",external
-products.repair_kit,products,products/repair_kit_world.png,missing-not-created,Repair Kit,,,"[0.5, 1]",external
+id,category,path,status,use,placements,width,height,anchor,collision
+terrain.grass_plain,terrain,terrain/grass_plain.png,integrated,runtime or map placement,[],145,145,"[0.5, 0.5]",none
+terrain.grass_flowers_white,terrain,terrain/grass_flowers_white.png,integrated,runtime or map placement,[],145,145,"[0.5, 0.5]",none
+terrain.grass_rocks_flowers,terrain,terrain/grass_rocks_flowers.png,integrated,runtime or map placement,[],145,145,"[0.5, 0.5]",none
+terrain.grass_flowers_color,terrain,terrain/grass_flowers_color.png,integrated,runtime or map placement,[],150,150,"[0.5, 0.5]",none
+terrain.path_sandstone,terrain,terrain/path_sandstone.png,integrated,runtime or map placement,[],150,150,"[0.5, 0.5]",none
+terrain.path_mossy_stone,terrain,terrain/path_mossy_stone.png,integrated,runtime or map placement,[],145,145,"[0.5, 0.5]",none
+terrain.floor_wood,terrain,terrain/floor_wood.png,integrated,runtime or map placement,[],145,145,"[0.5, 0.5]",none
+terrain.floor_workshop,terrain,terrain/floor_workshop.png,integrated,runtime or map placement,[],150,150,"[0.5, 0.5]",none
+terrain.water_rocks,terrain,terrain/water_rocks.png,integrated,runtime or map placement,[],187,187,"[0.5, 0.5]",none
+terrain.river_edge,terrain,terrain/river_edge.png,integrated,runtime or map placement,[],160,160,"[0.5, 0.5]",none
+terrain.dirt_path,terrain,terrain/dirt_path.png,integrated,runtime or map placement,[],156,156,"[0.5, 0.5]",none
+terrain.river_curve,terrain,terrain/river_curve.png,integrated,runtime or map placement,"[""river-curve-west""]",160,160,"[0.5, 0.5]",none
+terrain.water_corner,terrain,terrain/water_corner.png,integrated,runtime or map placement,"[""water-corner-east""]",160,160,"[0.5, 0.5]",none
+terrain.bridge_wood,terrain,terrain/bridge_wood.png,integrated,runtime or map placement,[],165,165,"[0.5, 0.5]",none
+terrain.cliff_straight,terrain,terrain/cliff_straight.png,integrated,runtime or map placement,"[""cliff-north-west""]",170,170,"[0.5, 0.5]",none
+terrain.cliff_corner,terrain,terrain/cliff_corner.png,integrated,runtime or map placement,"[""cliff-north-corner""]",175,175,"[0.5, 0.5]",none
+terrain.cliff_stairs,terrain,terrain/cliff_stairs.png,integrated,runtime or map placement,"[""cliff-forest-stairs""]",261,261,"[0.5, 0.5]",none
+walls.wall_straight,walls,walls/wall_straight.png,integrated,runtime or map placement,[],150,150,"[0.5, 0.85]",configured-in-map
+walls.wall_corner_inner,walls,walls/wall_corner_inner.png,integrated,runtime or map placement,"[""wall-inner-retail""]",162,162,"[0.5, 0.85]",configured-in-map
+walls.wall_narrow,walls,walls/wall_narrow.png,integrated,runtime or map placement,"[""wall-narrow-rare""]",157,157,"[0.5, 0.85]",configured-in-map
+walls.door_frame_open,walls,walls/door_frame_open.png,integrated,runtime or map placement,"[""staff-door"", ""alchemy-door""]",160,160,"[0.5, 0.85]",configured-in-map
+walls.door_stone_closed,walls,walls/door_stone_closed.png,integrated,runtime or map placement,"[""door-management-closed""]",165,165,"[0.5, 0.85]",configured-in-map
+walls.door_frame_beam,walls,walls/door_frame_beam.png,integrated,runtime or map placement,"[""forge-door""]",161,161,"[0.5, 0.85]",configured-in-map
+walls.wall_corner_outer,walls,walls/wall_corner_outer.png,integrated,runtime or map placement,[],163,163,"[0.5, 0.85]",configured-in-map
+walls.wall_pillar_pair,walls,walls/wall_pillar_pair.png,integrated,runtime or map placement,[],161,161,"[0.5, 0.85]",configured-in-map
+walls.wall_diagonal_left,walls,walls/wall_diagonal_left.png,integrated,runtime or map placement,"[""wall-diagonal-left-visitor""]",165,165,"[0.5, 0.85]",configured-in-map
+walls.wall_diagonal_right,walls,walls/wall_diagonal_right.png,integrated,runtime or map placement,"[""wall-diagonal-right-visitor""]",165,165,"[0.5, 0.85]",configured-in-map
+walls.fence_short,walls,walls/fence_short.png,integrated,runtime or map placement,[],133,133,"[0.5, 0.85]",configured-in-map
+walls.fence_banner,walls,walls/fence_banner.png,integrated,runtime or map placement,"[""fence-banner-training""]",145,145,"[0.5, 0.85]",configured-in-map
+walls.fence_open,walls,walls/fence_open.png,integrated,runtime or map placement,"[""fence-open-yard""]",160,160,"[0.5, 0.85]",configured-in-map
+walls.gate_large,walls,walls/gate_large.png,integrated,runtime or map placement,"[""gate-large""]",180,180,"[0.5, 0.85]",configured-in-map
+walls.lamp_post,walls,walls/lamp_post.png,integrated,runtime or map placement,"[""gate-lamp-left"", ""gate-lamp-right""]",138,138,"[0.5, 0.85]",configured-in-map
+walls.beam_sign,walls,walls/beam_sign.png,integrated,runtime or map placement,"[""beam-sign-forge""]",155,155,"[0.5, 0.85]",configured-in-map
+walls.picket_fence,walls,walls/picket_fence.png,integrated,runtime or map placement,"[""picket-fence-visitor""]",155,155,"[0.5, 0.85]",configured-in-map
+walls.fence_solid,walls,walls/fence_solid.png,integrated,runtime or map placement,[],170,170,"[0.5, 0.85]",configured-in-map
+walls.fence_gate,walls,walls/fence_gate.png,integrated,runtime or map placement,"[""material-gate"", ""contract-gate""]",179,179,"[0.5, 0.85]",configured-in-map
+trees.tree_green_01,trees,trees/tree_green_01.png,integrated,runtime or map placement,[],200,200,"[0.5, 0.85]",configured-in-map
+trees.tree_green_02,trees,trees/tree_green_02.png,integrated,runtime or map placement,"[""tree-green-02-east""]",200,200,"[0.5, 0.85]",configured-in-map
+trees.tree_autumn,trees,trees/tree_autumn.png,integrated,runtime or map placement,"[""tree-autumn-visitor""]",200,200,"[0.5, 0.85]",configured-in-map
+trees.pine_01,trees,trees/pine_01.png,integrated,runtime or map placement,[],200,200,"[0.5, 0.85]",configured-in-map
+trees.tree_dark_green,trees,trees/tree_dark_green.png,integrated,runtime or map placement,[],200,200,"[0.5, 0.85]",configured-in-map
+trees.pine_02,trees,trees/pine_02.png,integrated,runtime or map placement,"[""pine-02-forest""]",200,200,"[0.5, 0.85]",configured-in-map
+trees.pine_03,trees,trees/pine_03.png,integrated,runtime or map placement,"[""pine-03-forest""]",200,200,"[0.5, 0.85]",configured-in-map
+trees.pine_04,trees,trees/pine_04.png,integrated,runtime or map placement,"[""pine-04-south""]",204,204,"[0.5, 0.85]",configured-in-map
+trees.dead_tree,trees,trees/dead_tree.png,integrated,runtime or map placement,"[""dead-tree-ruins""]",140,140,"[0.5, 0.85]",configured-in-map
+trees.stump,trees,trees/stump.png,integrated,runtime or map placement,"[""stump-material""]",140,140,"[0.5, 0.85]",configured-in-map
+trees.fallen_log,trees,trees/fallen_log.png,integrated,runtime or map placement,[],185,185,"[0.5, 0.85]",configured-in-map
+trees.cut_stump,trees,trees/cut_stump.png,integrated,runtime or map placement,"[""cut-stump-training""]",140,140,"[0.5, 0.85]",configured-in-map
+trees.bush_flowers,trees,trees/bush_flowers.png,integrated,runtime or map placement,[],155,155,"[0.5, 0.85]",configured-in-map
+trees.leaf_plant,trees,trees/leaf_plant.png,integrated,runtime or map placement,"[""leaf-plant-alchemy""]",140,140,"[0.5, 0.85]",configured-in-map
+trees.bush_round,trees,trees/bush_round.png,integrated,runtime or map placement,"[""courtyard-bush""]",145,145,"[0.5, 0.85]",configured-in-map
+trees.berry_bush,trees,trees/berry_bush.png,integrated,runtime or map placement,"[""berry-bush-material""]",145,145,"[0.5, 0.85]",configured-in-map
+materials.flowers_white,materials,materials/flowers_white.png,integrated,runtime or map placement,"[""flowers-white-staff""]",130,130,"[0.5, 0.5]",none
+materials.flowers_yellow,materials,materials/flowers_yellow.png,integrated,runtime or map placement,"[""flowers-yellow-visitor""]",130,130,"[0.5, 0.5]",none
+materials.flowers_red,materials,materials/flowers_red.png,integrated,runtime or map placement,"[""flowers-red-forge""]",130,130,"[0.5, 0.5]",none
+materials.flowers_blue,materials,materials/flowers_blue.png,integrated,runtime or map placement,"[""flowers-blue-alchemy""]",125,125,"[0.5, 0.5]",none
+materials.lavender,materials,materials/lavender.png,integrated,runtime or map placement,"[""lavender-alchemy""]",122,122,"[0.5, 0.5]",none
+materials.herb_bundle,materials,materials/herb_bundle.png,integrated,runtime or map placement,[],130,130,"[0.5, 0.5]",none
+materials.mushrooms,materials,materials/mushrooms.png,integrated,runtime or map placement,"[""forest-mushrooms""]",130,130,"[0.5, 0.5]",none
+materials.rocks_small,materials,materials/rocks_small.png,integrated,runtime or map placement,"[""rocks-small-river""]",140,140,"[0.5, 0.5]",none
+materials.rocks_medium,materials,materials/rocks_medium.png,integrated,runtime or map placement,"[""rocks-medium-gate""]",140,140,"[0.5, 0.5]",none
+materials.ore_mossy,materials,materials/ore_mossy.png,integrated,runtime or map placement,"[""ore-mossy-forest""]",140,140,"[0.5, 0.5]",none
+materials.crystal_blue,materials,materials/crystal_blue.png,integrated,runtime or map placement,[],145,145,"[0.5, 0.5]",none
+materials.ore_iron,materials,materials/ore_iron.png,integrated,runtime or map placement,[],145,145,"[0.5, 0.5]",none
+materials.boulder_01,materials,materials/boulder_01.png,integrated,runtime or map placement,"[""boulder-01-west""]",138,138,"[0.5, 0.5]",none
+materials.boulder_02,materials,materials/boulder_02.png,integrated,runtime or map placement,"[""boulder-02-east""]",135,135,"[0.5, 0.5]",none
+materials.boulder_03,materials,materials/boulder_03.png,integrated,runtime or map placement,"[""boulder-03-south""]",135,135,"[0.5, 0.5]",none
+materials.rock_cluster,materials,materials/rock_cluster.png,integrated,runtime or map placement,"[""rock-cluster-river""]",135,135,"[0.5, 0.5]",none
+materials.boulder_large,materials,materials/boulder_large.png,integrated,runtime or map placement,"[""boulder-large-forest""]",175,175,"[0.5, 0.5]",none
+materials.rock_mossy_large,materials,materials/rock_mossy_large.png,integrated,runtime or map placement,"[""forest-rocks""]",160,160,"[0.5, 0.5]",none
+props.barrels,props,props/barrels.png,integrated,runtime or map placement,[],184,184,"[0.5, 0.85]",configured-in-map
+props.sacks,props,props/sacks.png,integrated,runtime or map placement,"[""material-sacks""]",184,184,"[0.5, 0.85]",configured-in-map
+props.crates,props,props/crates.png,integrated,runtime or map placement,[],160,160,"[0.5, 0.85]",configured-in-map
+props.hay_bale,props,props/hay_bale.png,integrated,runtime or map placement,"[""visitor-hay""]",155,155,"[0.5, 0.85]",configured-in-map
+props.street_lamp,props,props/street_lamp.png,integrated,runtime or map placement,"[""yard-street-lamp""]",184,184,"[0.5, 0.85]",configured-in-map
+props.campfire,props,props/campfire.png,integrated,runtime or map placement,[],150,150,"[0.5, 0.85]",configured-in-map
+props.anvil_table,props,props/anvil_table.png,integrated,runtime or map placement,[],151,151,"[0.5, 0.85]",configured-in-map
+props.tool_table,props,props/tool_table.png,integrated,runtime or map placement,[],152,152,"[0.5, 0.85]",configured-in-map
+props.chopping_block,props,props/chopping_block.png,integrated,runtime or map placement,"[""material-chop""]",184,184,"[0.5, 0.85]",configured-in-map
+props.wagon,props,props/wagon.png,integrated,runtime or map placement,"[""visitor-wagon""]",166,166,"[0.5, 0.85]",configured-in-map
+props.well,props,props/well.png,integrated,runtime or map placement,[],155,155,"[0.5, 0.85]",configured-in-map
+furniture.shelf_attack_empty,furniture,furniture/shelf_attack_empty.png,missing-not-created,Attack shelf,[],,,"[0.5, 1]",external
+furniture.shelf_defense_empty,furniture,furniture/shelf_defense_empty.png,missing-not-created,Defense shelf,[],,,"[0.5, 1]",external
+furniture.shelf_other_empty,furniture,furniture/shelf_other_empty.png,missing-not-created,Other shelf,[],,,"[0.5, 1]",external
+stations.forge_idle,stations,stations/forge_idle.png,missing-not-created,Forge,[],,,"[0.5, 1]",external
+stations.alchemy_idle,stations,stations/alchemy_idle.png,missing-not-created,Alchemy,[],,,"[0.5, 1]",external
+furniture.checkout_counter,furniture,furniture/checkout_counter.png,missing-not-created,Checkout,[],,,"[0.5, 1]",external
+furniture.rare_showcase_empty,furniture,furniture/rare_showcase_empty.png,missing-not-created,Rare showcase,[],,,"[0.5, 1]",external
+products.iron_sword,products,products/iron_sword_world.png,missing-not-created,Iron Sword,[],,,"[0.5, 1]",external
+products.battle_axe,products,products/battle_axe_world.png,missing-not-created,Battle Axe,[],,,"[0.5, 1]",external
+products.slime_edge,products,products/slime_edge_world.png,missing-not-created,Slime Edge,[],,,"[0.5, 1]",external
+products.wooden_shield,products,products/wooden_shield_world.png,missing-not-created,Wooden Shield,[],,,"[0.5, 1]",external
+products.guard_helmet,products,products/guard_helmet_world.png,missing-not-created,Guard Helmet,[],,,"[0.5, 1]",external
+products.healing_potion,products,products/healing_potion_world.png,missing-not-created,Healing Potion,[],,,"[0.5, 1]",external
+products.repair_kit,products,products/repair_kit_world.png,missing-not-created,Repair Kit,[],,,"[0.5, 1]",external
