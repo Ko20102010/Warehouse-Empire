@@ -1,24 +1,36 @@
 # Weapon Shop Empire
 
-## Current Version: v0.15.00
+## Current Version: v0.15.01
 
-This update fixes the Home Page load error and completes the full `1870 × 2870` **Forest Outpost** artwork alignment (`assets/forest_outpost_map.jpg` and `assets/first_shop_art.jpg`).
+This release merges the uploaded v0.15.00 Forest Outpost alignment build with the tested v0.14.01 collision and A* worker-routing patch.
 
-## What Is Fixed & Improved in v0.15.00
+## Merge contents
 
-- **Fixed Home Page `GAME LOAD ERROR`:**
-  - Removed the fragile global error listener in `index.html` that overwrote `#saveSlots` on minor asset events.
-  - Added automatic `.jpg` / `.png` fallback for `forest_outpost_map.jpg` and `first_shop_art.jpg`.
-- **Aligned All Spawners, Waypoints & Rooms to the `1870 × 2870` Forest Outpost Artwork:**
-  - **Customer Flow:** Customers now spawn on the South Stone Bridge (`745, 2480`), walk north through the **Main Entrance** (`745, 2040`), browse the **Attack / Defense / Other** shelves, queue at **Checkout** (`745, 1815`), leave coins on the counter (`825, 1880`), and exit south.
-  - **Corridor-Aware Employee Pathfinding (`navigate()`):** Workers cleanly route along the upper corridor (`y: 702`) and central vertical avenues (`x: 648` and `x: 1265`) between **Staff House**, **Material Yard**, **Training Room**, **Forge**, **Alchemy**, **Contract Warehouse**, and the **Retail Floor**.
-  - **Forest Adventure Monsters:** Slimes and Forest Wolves now spawn in the northern forest above the **FOREST ADVENTURE** gate (`x: 440..1400, y: 125..260`).
-  - **Live Visual Overlays on Map Artwork:** Output badges (`⚔️ OUT`, `🛡️ OUT`, `🧪 OUT`), shelf stock counters (`ATTACK 3/12`, etc.), Rare Storage showcase icons, Contract Warehouse progress, and Material Yard regrowth bars render cleanly over the artwork.
-  - **New Interactive Rooms Matching Artwork:** Added one-tap interactions for the **Special Visitor Plaza** (`315, 2350`), **Training Room** (`1395, 525`), and **Management Office** (`1460, 1640`).
+### Retained from uploaded v0.15.00
+- South Stone Bridge customer entrance and updated Forest Outpost coordinates.
+- Forest monster spawning in the northern adventure area.
+- Live product-output badges, shelf counters, Rare Storage, contract progress, and Material Yard regrowth indicators.
+- Special Visitor Plaza, Training Room, and Management Office interactions.
+- Artwork JPG/PNG fallback loading.
+- Updated portrait-phone interface.
 
-## Upload Instructions
+### Merged from v0.14.01
+- Collision-aware A* pathfinding using the same `SOLIDS` geometry as the player.
+- Diagonal corner protection.
+- Automatic stale-route recalculation.
+- Tested worker routes for Sales, Craft, Expedition, recovery, and wholesale jobs.
+- Tested customer routes for Attack, Defense, and Other shopping loops.
+- Complete artwork assets and art preview.
 
-Ensure these exact filenames are in your repository root:
+## Fixes in v0.15.01
+- Fixed invalid JavaScript created by the text `\vert{}\vert{}` inside the save-slot renderer.
+- Restored valid `employees?.length || 0` JavaScript.
+- Merged save migration support for v0.15.00 and v0.14.01 localStorage slots.
+- Updated version and browser cache references.
+
+## Upload
+
+Extract and replace the complete repository root with:
 
 ```text
 index.html
@@ -27,5 +39,11 @@ game.js
 README.md
 assets/
   art_preview.html
-  first_shop_art.jpg
+  first_shop_art.png
   forest_outpost_map.jpg
+```
+
+The visible version must show `v0.15.01`.
+
+## Version policy
+Continue with v0.x by default. Ask before moving to v1.0.00 or another major version.

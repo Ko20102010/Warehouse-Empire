@@ -1,17 +1,17 @@
-// Weapon Shop Empire v0.15.00
+// Weapon Shop Empire v0.15.01
 // Forest Outpost 1870x2870 full artwork integration, aligned collision & corridor pathfinding, visible stock/output overlays, Special Visitor & Training Room.
 'use strict';
-const VERSION='v0.15.00';
+const VERSION='v0.15.01';
 const c=document.getElementById('game'),g=c.getContext('2d'),$=id=>document.getElementById(id);
 let vw=1280,vh=720;
 const WORLD={w:1870,h:2870};
-const PREFIX='wse_v01500_slot_',OLD_PREFIXES=['wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01500';
+const PREFIX='wse_v01501_slot_',OLD_PREFIXES=['wse_v01400_slot_','wse_v01200_slot_','wse_v01100_slot_'],FOREVER_KEY='wse_forever_v01501';
 let slot=0,playing=false,last=performance.now(),target=null,msgTimer=0,dayTime=0,spawnTimer=2.5,zoom=.65,pinchStart=0,craftAnim=0,craftKey='sword',dragMove={active:false,id:null,sx:0,sy:0,dx:0,dy:0},animClock=0;
 
 // Load Forest Outpost Map Artwork with automatic fallback between forest_outpost_map.jpg, first_shop_art.jpg, and first_shop_art.png
 const mapArt=new Image();
 let mapTry=0;
-const mapSources=['assets/forest_outpost_map.jpg?v=0.15.00','assets/first_shop_art.jpg?v=0.15.00','assets/first_shop_art.png?v=0.15.00','shop_world.png'];
+const mapSources=['assets/forest_outpost_map.jpg?v=0.15.01','assets/first_shop_art.jpg?v=0.15.01','assets/first_shop_art.png?v=0.15.01','shop_world.png'];
 mapArt.onerror=()=>{mapTry++;if(mapTry<mapSources.length)mapArt.src=mapSources[mapTry]};
 mapArt.src=mapSources[0];
 
@@ -78,15 +78,15 @@ const SOLIDS=[
   // Material Yard walls (South door at x:280..395, y:666)
   {x:45,y:305,w:580,h:22},{x:45,y:305,w:22,h:380},{x:603,y:305,w:22,h:380},{x:45,y:665,w:235,h:22},{x:395,y:665,w:230,h:22},
   // Staff House walls (South door at x:860..975, y:675)
-  {x:655,y:305,w:580,h:22},{x:655,y:305,w:22,h:390},{x:1213,y:305,w:22,h:390},{x:655,y:675,w:205,h:22},{x:975,y:675,w:260,h:22},
+  {x:655,y:305,w:205,h:22},{x:975,y:305,w:260,h:22},{x:655,y:305,w:22,h:390},{x:1213,y:305,w:22,h:390},{x:655,y:675,w:205,h:22},{x:975,y:675,w:260,h:22},
   // Training Room walls (Open south entrance x:1330..1475)
   {x:1255,y:315,w:290,h:22},{x:1255,y:315,w:22,h:355},{x:1523,y:315,w:22,h:355},
   // Forge walls (South door at x:290..415, y:1155)
-  {x:45,y:720,w:595,h:22},{x:45,y:720,w:22,h:455},{x:618,y:720,w:22,h:455},{x:45,y:1155,w:245,h:22},{x:415,y:1155,w:225,h:22},
+  {x:45,y:720,w:235,h:22},{x:395,y:720,w:245,h:22},{x:45,y:720,w:22,h:455},{x:618,y:720,w:22,h:455},{x:45,y:1155,w:245,h:22},{x:415,y:1155,w:225,h:22},
   // Alchemy walls (South door at x:900..1020, y:1155)
-  {x:660,y:720,w:600,h:22},{x:660,y:720,w:22,h:455},{x:1238,y:720,w:22,h:455},{x:660,y:1155,w:240,h:22},{x:1020,y:1155,w:240,h:22},
+  {x:660,y:720,w:240,h:22},{x:1020,y:720,w:240,h:22},{x:660,y:720,w:22,h:455},{x:1238,y:720,w:22,h:455},{x:660,y:1155,w:240,h:22},{x:1020,y:1155,w:240,h:22},
   // Contract Warehouse walls (West gate at x:1280, y:845..965)
-  {x:1280,y:650,w:550,h:22},{x:1280,y:650,w:22,h:195},{x:1280,y:965,w:22,h:215},{x:1808,y:650,w:22,h:530},{x:1280,y:1158,w:550,h:22},
+  {x:1280,y:650,w:50,h:22},{x:1475,y:650,w:355,h:22},{x:1280,y:650,w:22,h:195},{x:1280,y:965,w:22,h:215},{x:1808,y:650,w:22,h:530},{x:1280,y:1158,w:80,h:22},{x:1475,y:1158,w:355,h:22},
   // Checkout physical counter bar (walkable around left/right ends)
   {x:495,y:1905,w:465,h:52},
   // Rare Storage walls (North door at x:185..295, y:1640)
@@ -292,135 +292,52 @@ function inContractRoom(p){return p.x>1280&&p.x<1830&&p.y>650&&p.y<1175}
 function inRareRoom(p){return p.x>60&&p.x<390&&p.y>1640&&p.y<2050}
 function inOfficeRoom(p){return p.x>1280&&p.x<1720&&p.y>1340&&p.y<2050}
 
-// Corridor-aware waypoint router built specifically for the 1870x2870 Forest Outpost map
-function navigate(o,tx,ty,s,dt){
-  const goal={x:tx,y:ty};
-
-  // 1. Exit enclosed rooms through their doorway first
-  if(inMaterialRoom(o)&&!inMaterialRoom(goal))return stepToward(o,340,702,s,dt),false;
-  if(inStaffRoom(o)&&!inStaffRoom(goal))return stepToward(o,915,702,s,dt),false;
-  if(inTrainingRoom(o)&&!inTrainingRoom(goal))return stepToward(o,1400,702,s,dt),false;
-  if(inForgeRoom(o)&&!inForgeRoom(goal))return stepToward(o,355,1195,s,dt),false;
-  if(inAlchemyRoom(o)&&!inAlchemyRoom(goal))return stepToward(o,960,1195,s,dt),false;
-  if(inContractRoom(o)&&!inContractRoom(goal))return stepToward(o,1262,910,s,dt),false;
-  if(inRareRoom(o)&&!inRareRoom(goal))return stepToward(o,235,1615,s,dt),false;
-  if(inOfficeRoom(o)&&!inOfficeRoom(goal))return stepToward(o,1255,1635,s,dt),false;
-
-  // 2. Moving between South Town (y > 2055) and Main Shop (y <= 2055) via Main Entrance (x:745, y:2040)
-  if(o.y>2055&&goal.y<=2055){
-    if(Math.abs(o.x-745)>45)return stepToward(o,745,2110,s,dt),false;
-    return stepToward(o,745,1995,s,dt),false;
+// Collision-aware A* routing. Workers and customers use the same SOLIDS as the player.
+const PATH_CELL=28;
+function gridKey(x,y){return x+','+y}
+function cellOpen(cx,cy,r=18){
+  const x=cx*PATH_CELL+PATH_CELL/2,y=cy*PATH_CELL+PATH_CELL/2;
+  return x>r&&y>r&&x<WORLD.w-r&&y<WORLD.h-r&&!collides(x,y,r);
+}
+function nearestOpenCell(x,y,r=18){
+  let sx=Math.floor(x/PATH_CELL),sy=Math.floor(y/PATH_CELL);
+  if(cellOpen(sx,sy,r))return {x:sx,y:sy};
+  for(let ring=1;ring<=8;ring++){
+    for(let dx=-ring;dx<=ring;dx++)for(const dy of [-ring,ring])if(cellOpen(sx+dx,sy+dy,r))return {x:sx+dx,y:sy+dy};
+    for(let dy=-ring+1;dy<ring;dy++)for(const dx of [-ring,ring])if(cellOpen(sx+dx,sy+dy,r))return {x:sx+dx,y:sy+dy};
   }
-  if(o.y<=2055&&goal.y>2055){
-    if(o.y<1960&&Math.abs(o.x-745)>60)return stepToward(o,745,1980,s,dt),false;
-    if(Math.abs(o.x-745)>45)return stepToward(o,745,2000,s,dt),false;
-    return stepToward(o,745,2120,s,dt),false;
-  }
-
-  // 3. Moving between North Forest (y < 305) and Upper Corridor (y >= 305) via Forest Gate (x:945 or x:648)
-  if(o.y>=305&&goal.y<305){
-    if(o.y>715){
-      const colX=Math.abs(o.x-648)<Math.abs(o.x-1265)?648:1265;
-      if(Math.abs(o.x-colX)>24)return stepToward(o,colX,1200,s,dt),false;
-      return stepToward(o,colX,700,s,dt),false;
+  return null;
+}
+function buildPath(sx,sy,tx,ty,r=18){
+  const begin=nearestOpenCell(sx,sy,r),goal=nearestOpenCell(tx,ty,r);if(!begin||!goal)return [];
+  const open=[{x:begin.x,y:begin.y,g:0,f:0}],came=new Map(),best=new Map([[gridKey(begin.x,begin.y),0]]);
+  const dirs=[[1,0,1],[-1,0,1],[0,1,1],[0,-1,1],[1,1,1.414],[1,-1,1.414],[-1,1,1.414],[-1,-1,1.414]];
+  let found=null,guard=0;
+  while(open.length&&guard++<14000){
+    open.sort((a,b)=>a.f-b.f);const cur=open.shift(),ck=gridKey(cur.x,cur.y);
+    if(cur.x===goal.x&&cur.y===goal.y){found=cur;break}
+    for(const [dx,dy,cost] of dirs){
+      const nx=cur.x+dx,ny=cur.y+dy;if(!cellOpen(nx,ny,r))continue;
+      if(dx&&dy&&(!cellOpen(cur.x+dx,cur.y,r)||!cellOpen(cur.x,cur.y+dy,r)))continue;
+      const nk=gridKey(nx,ny),ng=cur.g+cost;if(ng>=(best.get(nk)??Infinity))continue;
+      best.set(nk,ng);came.set(nk,ck);const h=Math.hypot(goal.x-nx,goal.y-ny);open.push({x:nx,y:ny,g:ng,f:ng+h});
     }
-    if(Math.abs(o.x-648)>30&&o.y>295)return stepToward(o,648,700,s,dt),false;
-    return stepToward(o,648,270,s,dt),false;
   }
-  if(o.y<305&&goal.y>=305){
-    if(Math.abs(o.x-648)>35)return stepToward(o,648,265,s,dt),false;
-    return stepToward(o,648,700,s,dt),false;
-  }
-
-  // 4. Moving between Upper Corridor (y <= 715) and Retail Floor (y >= 1175) via vertical avenues (x:648 or x:1265)
-  if(o.y<=715&&goal.y>=1175){
-    const aveX=goal.x>1050?1265:648;
-    if(Math.abs(o.x-aveX)>24)return stepToward(o,aveX,702,s,dt),false;
-    return stepToward(o,aveX,1205,s,dt),false;
-  }
-  if(o.y>=1175&&goal.y<=715){
-    const aveX=goal.x>1050?1265:648;
-    if(Math.abs(o.x-aveX)>28)return stepToward(o,aveX,1205,s,dt),false;
-    return stepToward(o,aveX,702,s,dt),false;
-  }
-
-  // 5. Entering Contract Warehouse (x:1280, y:910)
-  if(!inContractRoom(o)&&inContractRoom(goal)){
-    if(Math.abs(o.y-910)>35){
-      if(Math.abs(o.x-1265)>25)return stepToward(o,1265,o.y<910?702:1205,s,dt),false;
-      return stepToward(o,1265,910,s,dt),false;
-    }
-    return stepToward(o,1345,910,s,dt),false;
-  }
-
-  // 6. Entering Upper Rooms from Upper Corridor (y ~ 702)
-  if(!inMaterialRoom(o)&&inMaterialRoom(goal)){
-    if(Math.abs(o.x-340)>28)return stepToward(o,340,702,s,dt),false;
-    return stepToward(o,tx,ty,s,dt);
-  }
-  if(!inStaffRoom(o)&&inStaffRoom(goal)){
-    if(Math.abs(o.x-915)>28)return stepToward(o,915,702,s,dt),false;
-    return stepToward(o,tx,ty,s,dt);
-  }
-  if(!inTrainingRoom(o)&&inTrainingRoom(goal)){
-    if(Math.abs(o.x-1400)>28)return stepToward(o,1400,702,s,dt),false;
-    return stepToward(o,tx,ty,s,dt);
-  }
-
-  // 7. Entering Workshops from Retail Floor (y ~ 1195)
-  if(!inForgeRoom(o)&&inForgeRoom(goal)){
-    if(o.y<1170)return stepToward(o,648,1205,s,dt),false;
-    if(Math.abs(o.x-355)>32)return stepToward(o,355,1205,s,dt),false;
-    return stepToward(o,tx,ty,s,dt);
-  }
-  if(!inAlchemyRoom(o)&&inAlchemyRoom(goal)){
-    if(o.y<1170)return stepToward(o,648,1205,s,dt),false;
-    if(Math.abs(o.x-960)>32)return stepToward(o,960,1205,s,dt),false;
-    return stepToward(o,tx,ty,s,dt);
-  }
-
-  // 8. Entering Rare Storage or Management Office
-  if(!inRareRoom(o)&&inRareRoom(goal)){
-    if(Math.abs(o.x-235)>28||o.y<1590)return stepToward(o,235,1615,s,dt),false;
-    return stepToward(o,tx,ty,s,dt);
-  }
-  if(!inOfficeRoom(o)&&inOfficeRoom(goal)){
-    if(Math.abs(o.y-1635)>35)return stepToward(o,1250,1635,s,dt),false;
-    return stepToward(o,tx,ty,s,dt);
-  }
-
-  return stepToward(o,tx,ty,s,dt);
+  if(!found)return [];
+  const cells=[];let key=gridKey(goal.x,goal.y);while(key!==gridKey(begin.x,begin.y)){const [x,y]=key.split(',').map(Number);cells.push({x:x*PATH_CELL+PATH_CELL/2,y:y*PATH_CELL+PATH_CELL/2});key=came.get(key);if(!key)return []}
+  cells.reverse();cells.push({x:tx,y:ty});
+  // Remove unnecessary collinear nodes.
+  return cells.filter((p,i,a)=>i===0||i===a.length-1||Math.sign(p.x-a[i-1].x)!==Math.sign(a[i+1].x-p.x)||Math.sign(p.y-a[i-1].y)!==Math.sign(a[i+1].y-p.y));
+}
+function navigate(o,tx,ty,speed,dt){
+  const changed=!o._pathGoal||Math.hypot(o._pathGoal.x-tx,o._pathGoal.y-ty)>20;
+  if(changed||!o._path||!o._path.length||o._pathAge>2.5){o._path=buildPath(o.x,o.y,tx,ty,17);o._pathGoal={x:tx,y:ty};o._pathAge=0}
+  o._pathAge=(o._pathAge||0)+dt;
+  if(!o._path.length)return Math.hypot(o.x-tx,o.y-ty)<12;
+  const node=o._path[0];if(stepToward(o,node.x,node.y,speed,dt))o._path.shift();
+  return Math.hypot(o.x-tx,o.y-ty)<12;
 }
 
-function qroll(skill=0){
-  let bonus=S.skills.quality*.04+skill*.002+(S.nextCraftBonus||0)+(S.event?.type==='forge'?.08:0);
-  S.nextCraftBonus=0;
-  let r=Math.random()+bonus;
-  return r<.09?0:r<.56?1:r<.81?2:r<.94?3:r<.985?4:5;
-}
-function makeItemObject(k,qIndex,special=false){
-  const r=recipes[k],q=typeof qIndex==='number'?qIndex:qroll(0);
-  const stat=Math.round(r.baseStat*rar[q][3])+(special?6:0);
-  const val=Math.round(r.value*rar[q][2]*(S.event?.type==='attack'&&k==='sword'?1.2:1))+(special?35:0);
-  return {
-    key:k,
-    name:special?'Slime Edge':r.name,
-    icon:special?'🗡️':r.icon,
-    q,
-    rarity:rar[q][0],
-    color:rar[q][1],
-    stat,
-    value:val,
-    defect:q===0?'Weak structure':null,
-    special
-  };
-}
-function canCraft(k){
-  let r=recipes[k];
-  if(!r||!S.products[k]?.unlocked)return false;
-  if((S.output[k]||0)>=S.outputCap)return false;
-  return (!r.iron||S.iron>=r.iron)&&(!r.wood||S.wood>=r.wood)&&(!r.herb||S.herb>=r.herb);
-}
 function outputPoint(k){
   return k==='potion'?PTS.potionOut:k==='shield'?PTS.shieldOut:PTS.swordOut;
 }
@@ -1206,7 +1123,7 @@ function renderSlots(){
   if(!box)return;
   box.innerHTML=[1,2,3].map(n=>{
     let d=load(n);
-    return `<div class="slot"><h2>SAVE SLOT ${n}</h2>${d?`<p>Day ${d.day} • Cash $${d.cash}<br>Reputation ${d.rep} • Legacy ${d.legacy||0}<br>Staff ${d.employees?.length\vert{}\vert{}0} • Saved ${d.savedAt||'Recently'}</p>`:'<p>Empty shop record<br>Start at the Forest Outpost with 0 employees and build your empire!</p>'}<div class="actions"><button data-load="${n}">${d?'LOAD SHOP':'START NEW SHOP'}</button>${d?`<button class="danger" data-del="${n}">DELETE</button>`:''}</div></div>`;
+    return `<div class="slot"><h2>SAVE SLOT ${n}</h2>${d?`<p>Day ${d.day} • Cash $${d.cash}<br>Reputation ${d.rep} • Legacy ${d.legacy||0}<br>Staff ${d.employees?.length||0} • Saved ${d.savedAt||'Recently'}</p>`:'<p>Empty shop record<br>Start at the Forest Outpost with 0 employees and build your empire!</p>'}<div class="actions"><button data-load="${n}">${d?'LOAD SHOP':'START NEW SHOP'}</button>${d?`<button class="danger" data-del="${n}">DELETE</button>`:''}</div></div>`;
   }).join('');
   document.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>start(Number(b.dataset.load)));
   document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
@@ -1351,7 +1268,7 @@ function openPage(p){
   if(p==='visual'){
     h=`<h2>FOREST OUTPOST • MAP & PROGRESSION</h2>
     <div class="visualNote">Your Forest Outpost artwork is active as the live scrolling world! All rooms, doorways, shelves, outputs, and paths are aligned with the map below.</div>
-    <img class="visualHero" src="assets/first_shop_art.jpg?v=0.15.00" onerror="this.src='assets/forest_outpost_map.jpg?v=0.15.00'">
+    <img class="visualHero" src="assets/first_shop_art.jpg?v=0.15.01" onerror="this.src='assets/forest_outpost_map.jpg?v=0.15.01'">
     <h2>SHOP TIER PROGRESSION</h2>
     <div class="tierCard"><b>TIER 1 • FOREST OUTPOST (Active)</b><p>Includes Material Yard, Staff House, Training Room, Forge, Alchemy Lab, Contract Warehouse, Attack/Defense/Other Display Hall, Rare Storage, Checkout, Management Office, Special Visitor Plaza, and Forest Adventure Gate.</p></div>
     <div class="tierCard locked"><b>TIER 2 • TOWN WORKSHOP (Coming Soon)</b><p>3× larger town compound with expanded shelves, multi-wagon wholesale bays, and Crystal Mine access.</p></div>
