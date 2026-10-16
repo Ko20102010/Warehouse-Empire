@@ -1,0 +1,979 @@
+{
+  "version": "v0.16.00",
+  "source": "source/modular_environment_master.png",
+  "count": 81,
+  "assets": [
+    {
+      "id": "terrain.grass_plain",
+      "category": "terrain",
+      "file": "terrain/grass_plain.png",
+      "width": 145,
+      "height": 145,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.grass_flowers_white",
+      "category": "terrain",
+      "file": "terrain/grass_flowers_white.png",
+      "width": 145,
+      "height": 145,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.grass_rocks_flowers",
+      "category": "terrain",
+      "file": "terrain/grass_rocks_flowers.png",
+      "width": 145,
+      "height": 145,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.grass_flowers_color",
+      "category": "terrain",
+      "file": "terrain/grass_flowers_color.png",
+      "width": 150,
+      "height": 150,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.path_sandstone",
+      "category": "terrain",
+      "file": "terrain/path_sandstone.png",
+      "width": 150,
+      "height": 150,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.path_mossy_stone",
+      "category": "terrain",
+      "file": "terrain/path_mossy_stone.png",
+      "width": 145,
+      "height": 145,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.floor_wood",
+      "category": "terrain",
+      "file": "terrain/floor_wood.png",
+      "width": 145,
+      "height": 145,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.floor_workshop",
+      "category": "terrain",
+      "file": "terrain/floor_workshop.png",
+      "width": 150,
+      "height": 150,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.water_rocks",
+      "category": "terrain",
+      "file": "terrain/water_rocks.png",
+      "width": 187,
+      "height": 187,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.river_edge",
+      "category": "terrain",
+      "file": "terrain/river_edge.png",
+      "width": 160,
+      "height": 160,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.dirt_path",
+      "category": "terrain",
+      "file": "terrain/dirt_path.png",
+      "width": 156,
+      "height": 156,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.river_curve",
+      "category": "terrain",
+      "file": "terrain/river_curve.png",
+      "width": 160,
+      "height": 160,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.water_corner",
+      "category": "terrain",
+      "file": "terrain/water_corner.png",
+      "width": 160,
+      "height": 160,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.bridge_wood",
+      "category": "terrain",
+      "file": "terrain/bridge_wood.png",
+      "width": 165,
+      "height": 165,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.cliff_straight",
+      "category": "terrain",
+      "file": "terrain/cliff_straight.png",
+      "width": 170,
+      "height": 170,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.cliff_corner",
+      "category": "terrain",
+      "file": "terrain/cliff_corner.png",
+      "width": 175,
+      "height": 175,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "terrain.cliff_stairs",
+      "category": "terrain",
+      "file": "terrain/cliff_stairs.png",
+      "width": 261,
+      "height": 261,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "walls.wall_straight",
+      "category": "walls",
+      "file": "walls/wall_straight.png",
+      "width": 150,
+      "height": 150,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.wall_corner_inner",
+      "category": "walls",
+      "file": "walls/wall_corner_inner.png",
+      "width": 162,
+      "height": 162,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.wall_narrow",
+      "category": "walls",
+      "file": "walls/wall_narrow.png",
+      "width": 157,
+      "height": 157,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.door_frame_open",
+      "category": "walls",
+      "file": "walls/door_frame_open.png",
+      "width": 160,
+      "height": 160,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.door_stone_closed",
+      "category": "walls",
+      "file": "walls/door_stone_closed.png",
+      "width": 165,
+      "height": 165,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.door_frame_beam",
+      "category": "walls",
+      "file": "walls/door_frame_beam.png",
+      "width": 161,
+      "height": 161,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.wall_corner_outer",
+      "category": "walls",
+      "file": "walls/wall_corner_outer.png",
+      "width": 163,
+      "height": 163,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.wall_pillar_pair",
+      "category": "walls",
+      "file": "walls/wall_pillar_pair.png",
+      "width": 161,
+      "height": 161,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.wall_diagonal_left",
+      "category": "walls",
+      "file": "walls/wall_diagonal_left.png",
+      "width": 165,
+      "height": 165,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.wall_diagonal_right",
+      "category": "walls",
+      "file": "walls/wall_diagonal_right.png",
+      "width": 165,
+      "height": 165,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.fence_short",
+      "category": "walls",
+      "file": "walls/fence_short.png",
+      "width": 133,
+      "height": 133,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.fence_banner",
+      "category": "walls",
+      "file": "walls/fence_banner.png",
+      "width": 145,
+      "height": 145,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.fence_open",
+      "category": "walls",
+      "file": "walls/fence_open.png",
+      "width": 160,
+      "height": 160,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.gate_large",
+      "category": "walls",
+      "file": "walls/gate_large.png",
+      "width": 180,
+      "height": 180,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.lamp_post",
+      "category": "walls",
+      "file": "walls/lamp_post.png",
+      "width": 138,
+      "height": 138,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.beam_sign",
+      "category": "walls",
+      "file": "walls/beam_sign.png",
+      "width": 155,
+      "height": 155,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.picket_fence",
+      "category": "walls",
+      "file": "walls/picket_fence.png",
+      "width": 155,
+      "height": 155,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.fence_solid",
+      "category": "walls",
+      "file": "walls/fence_solid.png",
+      "width": 170,
+      "height": 170,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "walls.fence_gate",
+      "category": "walls",
+      "file": "walls/fence_gate.png",
+      "width": 179,
+      "height": 179,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.tree_green_01",
+      "category": "trees",
+      "file": "trees/tree_green_01.png",
+      "width": 200,
+      "height": 200,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.tree_green_02",
+      "category": "trees",
+      "file": "trees/tree_green_02.png",
+      "width": 200,
+      "height": 200,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.tree_autumn",
+      "category": "trees",
+      "file": "trees/tree_autumn.png",
+      "width": 200,
+      "height": 200,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.pine_01",
+      "category": "trees",
+      "file": "trees/pine_01.png",
+      "width": 200,
+      "height": 200,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.tree_dark_green",
+      "category": "trees",
+      "file": "trees/tree_dark_green.png",
+      "width": 200,
+      "height": 200,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.pine_02",
+      "category": "trees",
+      "file": "trees/pine_02.png",
+      "width": 200,
+      "height": 200,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.pine_03",
+      "category": "trees",
+      "file": "trees/pine_03.png",
+      "width": 200,
+      "height": 200,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.pine_04",
+      "category": "trees",
+      "file": "trees/pine_04.png",
+      "width": 204,
+      "height": 204,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.dead_tree",
+      "category": "trees",
+      "file": "trees/dead_tree.png",
+      "width": 140,
+      "height": 140,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.stump",
+      "category": "trees",
+      "file": "trees/stump.png",
+      "width": 140,
+      "height": 140,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.fallen_log",
+      "category": "trees",
+      "file": "trees/fallen_log.png",
+      "width": 185,
+      "height": 185,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.cut_stump",
+      "category": "trees",
+      "file": "trees/cut_stump.png",
+      "width": 140,
+      "height": 140,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.bush_flowers",
+      "category": "trees",
+      "file": "trees/bush_flowers.png",
+      "width": 155,
+      "height": 155,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.leaf_plant",
+      "category": "trees",
+      "file": "trees/leaf_plant.png",
+      "width": 140,
+      "height": 140,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.bush_round",
+      "category": "trees",
+      "file": "trees/bush_round.png",
+      "width": 145,
+      "height": 145,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "trees.berry_bush",
+      "category": "trees",
+      "file": "trees/berry_bush.png",
+      "width": 145,
+      "height": 145,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "materials.flowers_white",
+      "category": "materials",
+      "file": "materials/flowers_white.png",
+      "width": 130,
+      "height": 130,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.flowers_yellow",
+      "category": "materials",
+      "file": "materials/flowers_yellow.png",
+      "width": 130,
+      "height": 130,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.flowers_red",
+      "category": "materials",
+      "file": "materials/flowers_red.png",
+      "width": 130,
+      "height": 130,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.flowers_blue",
+      "category": "materials",
+      "file": "materials/flowers_blue.png",
+      "width": 125,
+      "height": 125,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.lavender",
+      "category": "materials",
+      "file": "materials/lavender.png",
+      "width": 122,
+      "height": 122,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.herb_bundle",
+      "category": "materials",
+      "file": "materials/herb_bundle.png",
+      "width": 130,
+      "height": 130,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.mushrooms",
+      "category": "materials",
+      "file": "materials/mushrooms.png",
+      "width": 130,
+      "height": 130,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.rocks_small",
+      "category": "materials",
+      "file": "materials/rocks_small.png",
+      "width": 140,
+      "height": 140,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.rocks_medium",
+      "category": "materials",
+      "file": "materials/rocks_medium.png",
+      "width": 140,
+      "height": 140,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.ore_mossy",
+      "category": "materials",
+      "file": "materials/ore_mossy.png",
+      "width": 140,
+      "height": 140,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.crystal_blue",
+      "category": "materials",
+      "file": "materials/crystal_blue.png",
+      "width": 145,
+      "height": 145,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.ore_iron",
+      "category": "materials",
+      "file": "materials/ore_iron.png",
+      "width": 145,
+      "height": 145,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.boulder_01",
+      "category": "materials",
+      "file": "materials/boulder_01.png",
+      "width": 138,
+      "height": 138,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.boulder_02",
+      "category": "materials",
+      "file": "materials/boulder_02.png",
+      "width": 135,
+      "height": 135,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.boulder_03",
+      "category": "materials",
+      "file": "materials/boulder_03.png",
+      "width": 135,
+      "height": 135,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.rock_cluster",
+      "category": "materials",
+      "file": "materials/rock_cluster.png",
+      "width": 135,
+      "height": 135,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.boulder_large",
+      "category": "materials",
+      "file": "materials/boulder_large.png",
+      "width": 175,
+      "height": 175,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "materials.rock_mossy_large",
+      "category": "materials",
+      "file": "materials/rock_mossy_large.png",
+      "width": 160,
+      "height": 160,
+      "collision": "none",
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "id": "props.barrels",
+      "category": "props",
+      "file": "props/barrels.png",
+      "width": 184,
+      "height": 184,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.sacks",
+      "category": "props",
+      "file": "props/sacks.png",
+      "width": 184,
+      "height": 184,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.crates",
+      "category": "props",
+      "file": "props/crates.png",
+      "width": 160,
+      "height": 160,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.hay_bale",
+      "category": "props",
+      "file": "props/hay_bale.png",
+      "width": 155,
+      "height": 155,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.street_lamp",
+      "category": "props",
+      "file": "props/street_lamp.png",
+      "width": 184,
+      "height": 184,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.campfire",
+      "category": "props",
+      "file": "props/campfire.png",
+      "width": 150,
+      "height": 150,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.anvil_table",
+      "category": "props",
+      "file": "props/anvil_table.png",
+      "width": 151,
+      "height": 151,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.tool_table",
+      "category": "props",
+      "file": "props/tool_table.png",
+      "width": 152,
+      "height": 152,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.chopping_block",
+      "category": "props",
+      "file": "props/chopping_block.png",
+      "width": 184,
+      "height": 184,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.wagon",
+      "category": "props",
+      "file": "props/wagon.png",
+      "width": 166,
+      "height": 166,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    },
+    {
+      "id": "props.well",
+      "category": "props",
+      "file": "props/well.png",
+      "width": 155,
+      "height": 155,
+      "collision": "configured-in-map",
+      "anchor": [
+        0.5,
+        0.85
+      ]
+    }
+  ]
+}

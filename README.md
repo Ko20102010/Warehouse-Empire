@@ -1,49 +1,20 @@
-# Weapon Shop Empire
+# Weapon Shop Empire v0.16.00 Modular Asset Starter Pack
 
-## Current Version: v0.15.01
+This package contains the first real modular artwork batch and the complete asset-production plan.
 
-This release merges the uploaded v0.15.00 Forest Outpost alignment build with the tested v0.14.01 collision and A* worker-routing patch.
+## Included now
 
-## Merge contents
+- 76 individually cropped transparent PNG assets
+- 1 transparent master environment sprite sheet
+- Terrain, floors, water, bridge, cliffs, walls, doorways, fences, trees, vegetation, rocks, material nodes, and workshop/outdoor props
+- JSON asset manifest containing file locations, sizes, anchors, and initial collision guidance
+- Full phased plan for characters, products, monsters, shop furniture, UI, effects, and map metadata
+- Browser-based preview gallery
 
-### Retained from uploaded v0.15.00
-- South Stone Bridge customer entrance and updated Forest Outpost coordinates.
-- Forest monster spawning in the northern adventure area.
-- Live product-output badges, shelf counters, Rare Storage, contract progress, and Material Yard regrowth indicators.
-- Special Visitor Plaza, Training Room, and Management Office interactions.
-- Artwork JPG/PNG fallback loading.
-- Updated portrait-phone interface.
+## Important
 
-### Merged from v0.14.01
-- Collision-aware A* pathfinding using the same `SOLIDS` geometry as the player.
-- Diagonal corner protection.
-- Automatic stale-route recalculation.
-- Tested worker routes for Sales, Craft, Expedition, recovery, and wholesale jobs.
-- Tested customer routes for Attack, Defense, and Other shopping loops.
-- Complete artwork assets and art preview.
+This is an **asset production starter pack**, not yet the complete v0.16.00 playable game conversion. The current batch focuses on environment artwork. Character animation, product sprites, customer sprites, monsters, functional empty shelves, UI, and effects are specified in the plan and reserved in the folder structure for subsequent batches.
 
-## Fixes in v0.15.01
-- Fixed invalid JavaScript created by the text `\vert{}\vert{}` inside the save-slot renderer.
-- Restored valid `employees?.length || 0` JavaScript.
-- Merged save migration support for v0.15.00 and v0.14.01 localStorage slots.
-- Updated version and browser cache references.
+## Source artwork
 
-## Upload
-
-Extract and replace the complete repository root with:
-
-```text
-index.html
-style.css
-game.js
-README.md
-assets/
-  art_preview.html
-  first_shop_art.png
-  forest_outpost_map.jpg
-```
-
-The visible version must show `v0.15.01`.
-
-## Version policy
-Continue with v0.x by default. Ask before moving to v1.0.00 or another major version.
+The master sheet and all cropped pieces are original generated artwork for Weapon Shop Empire's approved colorful, lightly pixelated mobile-game direction.
