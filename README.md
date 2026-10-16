@@ -1,57 +1,82 @@
 # Weapon Shop Empire
 
-## Current Version: v0.8.00
+## Current Version: v0.9.00
 
-This release focuses on making the game genuinely playable on phones. It adds hold-and-drag movement, physical collision, and a three-pass quality review process.
+This release rebuilds the map around gameplay meaning. The pixel-art style is original and only takes broad inspiration from colorful top-down RPG management games. No supplied reference map is copied.
 
-## Phone Movement
+## Map Design Logic
 
-- Press and hold anywhere on the game world.
-- Slide the finger away from the first touch point.
-- The player continuously moves in that direction.
-- Moving the finger farther increases the virtual-stick strength.
-- Releasing the finger stops the player.
-- A quick tap still moves the player toward that point.
-- A temporary virtual-stick indicator appears at the finger position.
+The map no longer uses decorative houses that cannot be understood. Every operational room is shown as an open-top floor with walls, furniture, a room label and a visible door gap.
 
-## Collision
+### Main Shop
+- Large shared retail floor.
+- Attack, Defense and Other counters have wide aisles.
+- Customer Hall connects directly to the east entrance.
+- South entrance connects the retail shop to Staff and Contract areas.
 
-The player, employees, and clients can no longer walk freely through major structures. Collision is added to:
+### Forge
+- Walkable interior room.
+- Visible furnace and anvil.
+- South door is open.
+- Orange interaction area is reachable inside the room.
 
-- Main weapon shop
-- Forge building
-- Contract office
-- Staff House
-- Herb garden fence
-- Attack, Defense, and Other stalls
-- Customer counter
-- Contract warehouse fence
-- Outer forest boundary
+### Alchemy
+- Walkable interior room.
+- Visible potion bottles and workbench.
+- South door is open.
+- Green interaction area is reachable inside the room.
 
-Movement uses axis-separated collision so characters can slide along walls rather than stopping completely.
+### Staff Room
+- Open-top interior with beds and table.
+- North door is open.
+- Employees physically return there to recover.
 
-## Three-Pass Review Completed
+### Contract Warehouse
+- Fenced outdoor storage yard.
+- Visible product crates.
+- West-side gate is open.
+- Contract storage interaction area is reachable.
 
-### Review 1: Code and package integrity
-- JavaScript syntax checked.
-- ZIP integrity checked.
-- File list checked.
-- Version and cache-busting references checked.
+### Monster Forest
+- Outside the shop through the east opening.
+- Trees and rocks visually distinguish the adventure area.
 
-### Review 2: Movement and collision logic
-- Drag start, drag update, release-to-stop, and tap fallback checked.
-- Player collision checked.
-- Employee/client route collision checked.
-- Axis-separated wall sliding checked.
+## Movement
+- Hold and drag anywhere for floating-joystick movement.
+- Release to stop.
+- Quick tap keeps destination movement.
+- Buildings, counters, walls and fences block movement.
+- Door gaps are physically open and traversable.
+- Characters slide along walls.
 
-### Review 3: Core feature regression
-- Three save slots checked.
-- Zoom, tutorial, daily goals, events and crafting mini-game checked.
-- Employees, clients, wholesale, monster combat and Forever skills checked.
+## Three Reviews Completed
+
+### Review 1: Player-view design review
+- Every room has a visible purpose.
+- Every operational room has a visible entrance.
+- Important stations are located inside reachable spaces.
+- Wide aisles support phone movement.
+- Decorative roofs no longer hide playable rooms.
+
+### Review 2: Map and collision review
+- Spawn point is outside obstacles.
+- Forge interaction point is reachable.
+- Alchemy interaction point is reachable.
+- All three retail zones are reachable.
+- Customer area, Staff Room, Contract Warehouse and Monster Forest are reachable.
+- Door gaps are wider than the player collision diameter.
+- Player, clients and employees use the same collision system.
+
+### Review 3: Gameplay regression review
+- Three save slots remain available.
+- Drag movement and zoom remain available.
+- Tutorial, daily goals, events and crafting mini-game remain available.
+- Employees, clients, wholesale and monster combat remain available.
+- README version history and cache-busting version updated.
 
 ## Upload to GitHub
 
-Extract the ZIP and replace the root files/folder:
+Extract and replace:
 
 ```text
 index.html
@@ -61,29 +86,28 @@ README.md
 assets/
 ```
 
-The bottom-left marker must show `Weapon Shop Empire v0.8.00`.
+The lower-left marker must show `Weapon Shop Empire v0.9.00`.
 
 ## Version History
 
+### v0.9.00 - 2026-10-16
+- Rebuilt the full map around meaningful shop functions.
+- Removed decorative inaccessible building logic.
+- Added open-top walkable Forge, Alchemy and Staff rooms.
+- Added a gated walk-in Contract Warehouse.
+- Added visible doors and wide navigation aisles.
+- Rebuilt wall collision to match displayed walls.
+- Repositioned clients, workers, player and monster routes.
+- Completed player-view, map/collision and regression reviews.
+
 ### v0.8.00 - 2026-10-16
-- Added hold-and-drag virtual-stick movement.
-- Added release-to-stop control.
-- Kept quick-tap destination movement.
-- Added visible temporary joystick indicator.
-- Added collision for major buildings, walls, fences, counters and stalls.
-- Added axis-separated wall sliding.
-- Repositioned starting characters onto walkable areas.
-- Added formal three-pass review before release.
+- Added drag movement and physical collision.
 
 ### v0.7.00 - 2026-10-16
-- Replaced soft-3D artwork with original top-down pixel art.
+- Added original top-down pixel-art presentation.
 
-### v0.6.00 - 2026-10-16
-- Added zoom, casual tutorial, daily variety and crafting timing.
-
-### v0.5.00 and earlier
-- Added active characters, pop-up UI, wholesale contracts, save slots and the first complete game systems.
+### v0.6.00 and earlier
+- Added zoom, tutorials, daily variety, active workers/clients, wholesale, save slots and core game systems.
 
 ## Version Policy
-
-Continue with v0.x versions by default. Ask before moving to v1.0.00, v2.0.00 or another major version.
+Continue with v0.x by default. Ask before moving to v1.0.00, v2.0.00 or another major version.
