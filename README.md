@@ -1,52 +1,49 @@
-# Weapon Shop Empire
+# Weapon Shop Empire v0.17.00 Real-Asset Integration Plan
 
-## Current Version: v0.16.02
+This is a planning and implementation-control package, not a playable build and not a concept-art claim.
 
-Full clean-install correction package for the modular renderer. It includes the playable files and required environment assets.
+## Source of truth
 
-## Fixes in v0.16.02
+- Playable baseline: v0.16.02
+- Existing artwork: the environment assets already uploaded to the repository
+- Packaging: future updates include only changed code, map data, and new or modified artwork
+- No full gameplay background image
+- `assets/art_preview.html` must display the same files actually used in gameplay
 
-- Removed Concept Art Background from playable map rendering. The game now always uses the live modular renderer.
-- Removed invalid `first_shop_art.jpg` title-screen fallback; the PNG may remain as title artwork only.
-- Added save migration from v0.16.00 and earlier supported builds.
-- Added Forever Skills and Legacy Point migration from v0.16.00, v0.15.01, and v0.15.00.
-- Enforced shared 8-item output capacity for Sword/Axe, Shield/Helmet, and Potion/Repair tables.
-- Repair Kits are consumed when they immediately upgrade a Poor item. If no Poor item exists, the crafted kit becomes normal output.
-- Wholesale crate visuals now separate up to three active contracts and show each contract's correct product icon and delivered crate progress.
-- Product cards show product stock and shared department shelf total.
-- Renamed the preview description to Dynamic Systems and Asset Requirements Preview.
-- Updated visible version and cache references to v0.16.02.
+## v0.17.00 release objective
 
-## Upload
+Convert the functional v0.16.02 modular prototype into a real-asset map without adding new gameplay systems.
 
-This is a full clean-install GitHub ZIP. Upload all contents to the repository root, preserving the included folder structure.
+The release is complete only when visible terrain, walls, doors, fences, gates, main furniture, and product stock are rendered from actual transparent assets or are explicitly marked as temporary when a production asset does not yet exist.
 
-## Validation
+## Mandatory implementation order
 
-JavaScript syntax, version consistency, forbidden concept-map references, ZIP integrity, and expected file list were checked before release.
+1. Externalize map objects, collisions, interactions, and visual slots into JSON.
+2. Integrate existing terrain, wall, door, fence, gate, tree, material, and prop PNGs.
+3. Verify visible walls and collision geometry together.
+4. Create and integrate missing production furniture PNGs.
+5. Create and integrate proper product PNGs.
+6. Replace the preview page with a gallery of actual file assets and integration status.
+7. Run route, save, inventory-state, mobile-control, and browser regression tests.
+8. Start character and monster sprite production only after the environment passes.
 
-## Version History
+## Deliverables expected from the eventual playable release
 
-### v0.16.02 - 2026-10-16
-- Critical playability fix: restored crate rendering, first-frame character rendering, movement, camera initialization, and zoom.
+- `Weapon_Shop_Empire_v0.17.00_Update.zip`
+- Changed root code files only
+- `data/world_map.json`
+- `data/collisions.json`
+- `data/interactions.json`
+- `data/visual_slots.json`
+- New or changed PNG assets only
+- Updated `assets/art_preview.html`
+- Updated asset manifest with integration status
+- Test report
 
-### v0.16.02 - 2026-10-16
-- Corrected modular rendering, migrations, shared output capacity, Repair Kit consumption, and multi-contract crate visuals.
+## Explicitly prohibited
 
-### v0.16.00 - 2026-10-16
-- Implemented 6-layer modular world rendering (eliminating baked-in static characters and stock).
-- Added 2D Grid A* pathfinding with anti-corner-cutting for all employees and customers.
-- Added Battle Axe, Guard Helmet, Repair Kit, physical monster loot drops, and player equipment stats.
-- Updated `assets/art_preview.html` with the 22-component dynamic station and sprite gallery.
-
-### v0.15.01 / v0.15.00 - 2026-10-16
-- Aligned `1870 × 2870` Forest Outpost coordinates, Special Visitor Plaza, Training Room, and Management Office.
-
-### v0.14.00 - 2026-10-16
-- First collision-aligned conversion of `1870 × 2870` Forest Outpost map.
-
-### v0.12.00 & v0.11.00
-- Added Material Yard, Shield crafting, Wholesale Contract Warehouse delivery, item quality inspection, and mobile context bar.
-## Full package contents
-
-This full GitHub package includes the v0.16.02 playable files, the finished transparent environment asset library, the systems preview page in its correct `assets/` location, and the PNG used only by the save-slot title screen. The live game world always uses the modular renderer and does not load a full-map background image.
+- Restoring a full-world JPG/PNG as the playable map
+- Baking products, customers, employees, monsters, coins, or contract quantities into scenery
+- Calling CSS boxes, emoji, or a concept sheet finished gameplay assets
+- Moving artwork without updating collision and navigation data
+- Resending unchanged artwork in routine update ZIPs

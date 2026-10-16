@@ -1,0 +1,49 @@
+{
+  "name": "Weapon Shop Empire v0.17.00 Real-Asset Plan",
+  "type": "planning-package",
+  "sourceBaseline": "v0.16.02",
+  "containsPlayableBuild": false,
+  "containsArtwork": false,
+  "files": [
+    {
+      "file": "README.md",
+      "bytes": 2242,
+      "sha256": "c9ce4fc9b1460260baadab8ea517bfe9b2c914e79f8b8c013a6a40844a5b4017"
+    },
+    {
+      "file": "data/collisions.schema.example.json",
+      "bytes": 373,
+      "sha256": "54fdf083002c1f10a3f437cf5f2400e9c7a69949eaf24f81e5df5a40d8d55753"
+    },
+    {
+      "file": "data/visual_slots.schema.example.json",
+      "bytes": 666,
+      "sha256": "e2312cab8b072eb8a08c3d355b14713d00af1a7868dfe4b372e85403f7d1b7cd"
+    },
+    {
+      "file": "data/world_map.schema.example.json",
+      "bytes": 1343,
+      "sha256": "1b90f13ae2508be09f0111f92e5aca0b16d98b94bce4f20f586bfd86724ba1f4"
+    },
+    {
+      "file": "docs/ASSET_REQUIREMENTS.md",
+      "bytes": 1114,
+      "sha256": "c6de4593e851d9d2dcb838e9ba5d2977f98fc5b4f97aacc5aecef9b2d6554b54"
+    },
+    {
+      "file": "docs/IMPLEMENTATION_PLAN.md",
+      "bytes": 3731,
+      "sha256": "50c76fc72159133e8f79ddaae231c3fff7177596cab03598f0951942ca931c63"
+    },
+    {
+      "file": "docs/TEST_MATRIX.md",
+      "bytes": 1045,
+      "sha256": "23648744cd35f553e3ba2add96e04ffa2552f87c9d9cfbddf36a5137655cf3bd"
+    },
+    {
+      "file": "metadata/integration_audit.json",
+      "bytes": 27302,
+      "sha256": "41714229a54ca5209df69f8e0d9e0fa85b6eab4b1b50c76f86d25b15e3d9bfce"
+    }
+  ]
+}

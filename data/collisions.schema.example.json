@@ -1,0 +1,21 @@
+{
+  "version": "v0.17.00",
+  "policy": "collision geometry is independent from artwork",
+  "objects": [
+    {
+      "id": "example-wall-001",
+      "shape": "rect",
+      "x": 0,
+      "y": 0,
+      "w": 100,
+      "h": 24,
+      "blocks": [
+        "player",
+        "employee",
+        "customer",
+        "monster"
+      ],
+      "visualObjectId": "wall-001"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "version": "v0.17.00",
+  "world": {
+    "width": 1870,
+    "height": 2870,
+    "units": "pixels",
+    "backgroundImage": null
+  },
+  "renderLayers": [
+    "ground",
+    "floor",
+    "walls",
+    "lowProps",
+    "stock",
+    "entities",
+    "highProps",
+    "effects",
+    "ui"
+  ],
+  "zones": [
+    {
+      "id": "material-yard",
+      "purpose": "gathering"
+    },
+    {
+      "id": "staff-house",
+      "purpose": "employees/recovery"
+    },
+    {
+      "id": "training-yard",
+      "purpose": "employee training"
+    },
+    {
+      "id": "forge",
+      "purpose": "attack/defense crafting"
+    },
+    {
+      "id": "alchemy",
+      "purpose": "other crafting"
+    },
+    {
+      "id": "contract-warehouse",
+      "purpose": "wholesale storage"
+    },
+    {
+      "id": "attack-retail",
+      "purpose": "attack sales"
+    },
+    {
+      "id": "defense-retail",
+      "purpose": "defense sales"
+    },
+    {
+      "id": "other-retail",
+      "purpose": "other sales"
+    },
+    {
+      "id": "rare-storage",
+      "purpose": "rare display"
+    },
+    {
+      "id": "checkout-hall",
+      "purpose": "customers/checkout"
+    },
+    {
+      "id": "management",
+      "purpose": "upgrades/contracts"
+    },
+    {
+      "id": "visitor-plaza",
+      "purpose": "events"
+    },
+    {
+      "id": "forest",
+      "purpose": "combat"
+    }
+  ]
+}

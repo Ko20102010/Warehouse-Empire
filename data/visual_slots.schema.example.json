@@ -1,0 +1,35 @@
+{
+  "version": "v0.17.00",
+  "shelves": {
+    "attack": {
+      "capacity": 12,
+      "asset": "furniture/shelf_attack_empty.png",
+      "status": "required-new"
+    },
+    "defense": {
+      "capacity": 12,
+      "asset": "furniture/shelf_defense_empty.png",
+      "status": "required-new"
+    },
+    "other": {
+      "capacity": 12,
+      "asset": "furniture/shelf_other_empty.png",
+      "status": "required-new"
+    }
+  },
+  "outputs": {
+    "forgeAttack": {
+      "capacity": 8
+    },
+    "forgeDefense": {
+      "capacity": 8
+    },
+    "alchemy": {
+      "capacity": 8
+    }
+  },
+  "contracts": {
+    "initialVisibleBays": 1,
+    "maximumPlannedBays": 3
+  }
+}
